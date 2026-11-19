@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: paperwork_squad_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: paperwork_user
+      POSTGRES_PASSWORD: paperwork_password
+      POSTGRES_DB: paperwork_squad
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
