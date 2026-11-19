@@ -1,0 +1,352 @@
+// Paperwork Squad — Phase-1 PostgreSQL Schema (Prisma ORM v6)
+// Course Mode A (Catalogue + Enquiry), Services, Licensing, Consultancy Leads,
+// Staff-only Admin CMS & Audit Trail. No Phase 2/3 LMS/Payments/Portal tables.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum PillarType {
+  COURSES
+  SERVICES
+  LICENSING
+  CONSULTANCY
+}
+
+enum ContentStatus {
+  DRAFT
+  PENDING_REVIEW
+  APPROVED
+  PUBLISHED
+}
+
+enum AvailabilityStatus {
+  ACTIVE
+  UPCOMING
+  INTEREST_ONLY
+  INACTIVE
+}
+
+enum LeadStatus {
+  NEW
+  REVIEWED
+  CONTACTED
+  QUALIFIED
+  CONVERTED
+  CLOSED
+  SPAM
+}
+
+enum AdminRole {
+  ADMIN
+  EDITOR
+  LEAD_MANAGER
+}
+
+enum PreferredContact {
+  PHONE
+  WHATSAPP
+  EMAIL
+  ANY
+}
+
+model Category {
+  id               String           @id @default(cuid())
+  pillar           PillarType
+  slug             String
+  nameBn           String
+  nameEn           String
+  shortDescBn      String
+  shortDescEn      String?
+  iconName         String?
+  sortOrder        Int              @default(0)
+  isActive         Boolean          @default(true)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  courses          Course[]
+  services         Service[]
+  licensingEntries LicensingEntry[]
+
+  @@unique([pillar, slug])
+  @@index([pillar, isActive, sortOrder])
+  @@map("categories")
+}
+
+model Instructor {
+  id                   String   @id @default(cuid())
+  nameBn               String
+  nameEn               String?
+  titleBn              String?
+  bioBn                String?
+  credentialsSummaryBn String?
+  isVerified           Boolean  @default(false)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  courses              Course[]
+
+  @@map("instructors")
+}
+
+model Course {
+  id                 String             @id @default(cuid())
+  slug               String             @unique
+  titleBn            String
+  titleEn            String?
+  summaryBn          String
+  summaryEn          String?
+  categoryId         String
+  category           Category           @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  audienceBn         String
+  outcomes           String[]
+  syllabus           Json
+  aliases            String[]           @default([])
+  // Populate ONLY when client verifies delivery, duration, fee, and instructor.
+  deliveryMode       String?
+  duration           String?
+  feeDisplay         String?
+  instructorId       String?
+  instructor         Instructor?        @relation(fields: [instructorId], references: [id], onDelete: SetNull)
+  contentStatus      ContentStatus      @default(DRAFT)
+  availabilityStatus AvailabilityStatus @default(INTEREST_ONLY)
+  featured           Boolean            @default(false)
+  sortOrder          Int                @default(0)
+  seoTitle           String?
+  seoDescription     String?
+  lastVerifiedAt     DateTime?
+  verifiedBy         String?
+  sourceReference    String?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  @@index([contentStatus, availabilityStatus, featured, sortOrder])
+  @@index([categoryId])
+  @@map("courses")
+}
+
+model Service {
+  id                  String             @id @default(cuid())
+  slug                String             @unique
+  titleBn             String
+  titleEn             String?
+  summaryBn           String
+  summaryEn           String?
+  categoryId          String
+  category            Category           @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  whoNeedsItBn        String
+  assistanceScopeBn   String
+  limitationsBn       String
+  documentsSummary    String[]
+  processSteps        Json
+  authorityName       String?
+  officialSourceLabel String?
+  officialSourceUrl   String?
+  requiresSpecialist  Boolean            @default(false)
+  aliases             String[]           @default([])
+  // Keep Paperwork Squad service fee note strictly separate from govt fees if enabled.
+  serviceFeeNoteBn    String?
+  govtFeeNoteBn       String?
+  contentStatus       ContentStatus      @default(DRAFT)
+  availabilityStatus  AvailabilityStatus @default(INTEREST_ONLY)
+  featured            Boolean            @default(false)
+  sortOrder           Int                @default(0)
+  seoTitle            String?
+  seoDescription      String?
+  lastVerifiedAt      DateTime?
+  verifiedBy          String?
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  @@index([contentStatus, availabilityStatus, featured, sortOrder])
+  @@index([categoryId])
+  @@map("services")
+}
+
+model LicensingEntry {
+  id                  String             @id @default(cuid())
+  slug                String             @unique
+  titleBn             String
+  titleEn             String?
+  summaryBn           String
+  summaryEn           String?
+  categoryId          String
+  category            Category           @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  authorityName       String
+  authorityType       String
+  officialSourceLabel String
+  officialSourceUrl   String?
+  serviceScopeBn      String
+  limitationsBn       String
+  documentsSummary    String[]
+  processSummaryBn    String
+  aliases             String[]           @default([])
+  contentStatus       ContentStatus      @default(DRAFT)
+  availabilityStatus  AvailabilityStatus @default(INTEREST_ONLY)
+  featured            Boolean            @default(false)
+  sortOrder           Int                @default(0)
+  seoTitle            String?
+  seoDescription      String?
+  lastVerifiedAt      DateTime?
+  verifiedBy          String?
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  @@index([contentStatus, availabilityStatus, featured, sortOrder])
+  @@index([categoryId])
+  @@map("licensing_entries")
+}
+
+model Faq {
+  id             String        @id @default(cuid())
+  questionBn     String
+  answerBn       String
+  pillar         PillarType?
+  isRegulatory   Boolean       @default(false)
+  contentStatus  ContentStatus @default(DRAFT)
+  sortOrder      Int           @default(0)
+  lastVerifiedAt DateTime?
+  verifiedBy     String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([contentStatus, pillar, sortOrder])
+  @@map("faqs")
+}
+
+model Lead {
+  id                   String            @id @default(cuid())
+  publicReference      String            @unique
+  idempotencyKey       String            @unique
+  name                 String
+  mobile               String
+  email                String?
+  whatsapp             String?
+  addressArea          String
+  categoryContext      String
+  pillar               PillarType        @default(CONSULTANCY)
+  targetSlug           String?
+  targetTitle          String?
+  problemDescription   String
+  preferredContact     PreferredContact?
+  consentAt            DateTime
+  privacyPolicyVersion String            @default("v1.0-2026-11")
+  sourcePage           String
+  utmSource            String?
+  utmMedium            String?
+  utmCampaign          String?
+  ipHash               String?
+  status               LeadStatus        @default(NEW)
+  assignedToId         String?
+  assignedTo           AdminUser?        @relation("AssignedLeads", fields: [assignedToId], references: [id], onDelete: SetNull)
+  internalNotes        String?
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+  contactedAt          DateTime?
+  closedAt             DateTime?
+
+  @@index([status, createdAt])
+  @@index([pillar, createdAt])
+  @@index([mobile])
+  @@map("leads")
+}
+
+model SiteSetting {
+  id                    String   @id @default("default")
+  brandName             String   @default("Paperwork Squad")
+  brandDisplayName      String   @default("PAPERWORK SQUAD")
+  brandNameBn           String   @default("পেপারওয়ার্ক স্কোয়াড")
+  taglineBn             String   @default("শিখুন, সেবা নিন, এগিয়ে যান।")
+  taglineEn             String   @default("Learn. Grow. Stay Compliant.")
+  logoAssetPath         String   @default("/brand/proposed-logo-concept.jpg")
+  isIdentityProvisional Boolean  @default(true)
+  verifiedPhone         String?
+  verifiedWhatsapp      String?
+  verifiedEmail         String?
+  verifiedAddressBn     String?
+  verifiedAddressEn     String?
+  facebookUrl           String?
+  linkedinUrl           String?
+  youtubeUrl            String?
+  defaultSeoTitleBn     String   @default("Paperwork Squad | পেশাদার কোর্স, ব্যবসায়িক সেবা, লাইসেন্সিং ও কনসালটেন্সি")
+  defaultSeoDescBn      String   @default("বাংলাদেশের উদ্যোক্তা ও পেশাজীবীদের জন্য কোর্স, ব্যবসায়িক কমপ্লায়েন্স সেবা, লাইসেন্সিং তথ্য ও পরামর্শ সহায়তার একটি সুসংগঠিত প্ল্যাটফর্ম।")
+  legalDisclaimerBn     String   @default("Paperwork Squad একটি স্বাধীন পেশাদার সহায়তা প্ল্যাটফর্ম; এটি কোনো সরকারি প্রতিষ্ঠান বা সরকারি পোর্টাল নয়। সকল নিবন্ধন, লাইসেন্স ও অনুমোদন সংশ্লিষ্ট কর্তৃপক্ষের বিধিমালা ও চূড়ান্ত সিদ্ধান্তসাপেক্ষ।")
+  legalDisclaimerEn     String   @default("Paperwork Squad is an independent professional learning and business compliance assistance platform; it is not a government institution or official portal.")
+  privacyPolicyVersion  String   @default("v1.0-2026-11")
+  leadRetentionDays     Int      @default(365)
+  stagingNoticeBn       String?  @default("প্রস্তাবিত ব্র্যান্ড কনসেপ্ট ও স্টেজিং সংস্করণ — চূড়ান্ত ব্যবসা ও যোগাযোগের তথ্য অনুমোদনসাপেক্ষ।")
+  updatedAt             DateTime @updatedAt
+  updatedBy             String?
+
+  @@map("site_settings")
+}
+
+model AdminUser {
+  id               String            @id @default(cuid())
+  email            String            @unique
+  name             String
+  passwordHash     String
+  role             AdminRole         @default(EDITOR)
+  isActive         Boolean           @default(true)
+  lastLoginAt      DateTime?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  sessions         AdminSession[]
+  assignedLeads    Lead[]            @relation("AssignedLeads")
+  auditLogs        AuditLog[]
+  contentRevisions ContentRevision[]
+
+  @@map("admin_users")
+}
+
+model AdminSession {
+  id        String    @id @default(cuid())
+  tokenHash String    @unique
+  userId    String
+  user      AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  ipHash    String?
+  userAgent String?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("admin_sessions")
+}
+
+model ContentRevision {
+  id         String     @id @default(cuid())
+  entityType String
+  entityId   String
+  action     String
+  snapshot   Json
+  actorId    String?
+  actor      AdminUser? @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  createdAt  DateTime   @default(now())
+
+  @@index([entityType, entityId, createdAt])
+  @@map("content_revisions")
+}
+
+model AuditLog {
+  id         String     @id @default(cuid())
+  actorId    String?
+  actor      AdminUser? @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  actorEmail String?
+  actorRole  AdminRole?
+  action     String
+  entityType String
+  entityId   String?
+  summary    String
+  metadata   Json?
+  ipHash     String?
+  createdAt  DateTime   @default(now())
+
+  @@index([entityType, createdAt])
+  @@index([actorId, createdAt])
+  @@map("audit_logs")
+}

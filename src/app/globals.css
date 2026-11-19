@@ -1,0 +1,223 @@
+@import "tailwindcss";
+
+/* PAPERWORK SQUAD | Design Tokens v1.0 | Concept identity, approval pending */
+:root {
+  --ps-midnight: #0b1726;
+  --ps-navy: #10243a;
+  --ps-gold: #c7a45d;
+  --ps-ivory: #f7f4ed;
+  --ps-ink: #263342;
+  --ps-cool: #f4f7fa;
+  --ps-white: #ffffff;
+  --ps-success: #0b7b62;
+  --ps-danger: #b42318;
+  --ps-warning: #8b5900;
+  --ps-border: #d9e1e8;
+  --ps-muted: #4b5b6d;
+
+  --ps-font-bn: var(--font-hind-siliguri), "Hind Siliguri", "Noto Sans Bengali", sans-serif;
+  --ps-font-en: var(--font-manrope), "Manrope", "Inter", "Noto Sans", sans-serif;
+  --ps-font-editorial: var(--font-eb-garamond), "EB Garamond", Georgia, serif;
+
+  --ps-radius-card: 16px;
+  --ps-radius-button: 12px;
+  --ps-container: 1200px;
+  --ps-gutter-mobile: 16px;
+  --ps-gutter-desktop: 24px;
+  --ps-button-min-h: 48px;
+  --ps-focus-ring: 3px solid var(--ps-gold);
+}
+
+@theme inline {
+  --color-ps-midnight: var(--ps-midnight);
+  --color-ps-navy: var(--ps-navy);
+  --color-ps-gold: var(--ps-gold);
+  --color-ps-ivory: var(--ps-ivory);
+  --color-ps-ink: var(--ps-ink);
+  --color-ps-cool: var(--ps-cool);
+  --color-ps-white: var(--ps-white);
+  --color-ps-success: var(--ps-success);
+  --color-ps-danger: var(--ps-danger);
+  --color-ps-warning: var(--ps-warning);
+  --color-ps-border: var(--ps-border);
+  --color-ps-muted: var(--ps-muted);
+
+  --font-bn: var(--ps-font-bn);
+  --font-en: var(--ps-font-en);
+  --font-editorial: var(--ps-font-editorial);
+}
+
+/* Base document & WCAG 2.2 AA accessibility defaults */
+html {
+  scroll-padding-top: 96px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+body {
+  background-color: var(--ps-ivory);
+  color: var(--ps-ink);
+  font-family: var(--ps-font-bn);
+  font-size: 1rem;
+  line-height: 1.68;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Skip to main content link (2.4.1 Bypass Blocks) */
+.skip-link {
+  position: absolute;
+  inset-block-start: -9999px;
+  inset-inline-start: 16px;
+  z-index: 100;
+  background-color: var(--ps-navy);
+  color: var(--ps-white);
+  padding: 12px 18px;
+  border-radius: var(--ps-radius-button);
+  font-weight: 600;
+  text-decoration: none;
+  border: 2px solid var(--ps-gold);
+}
+
+.skip-link:focus {
+  inset-block-start: 16px;
+  outline: var(--ps-focus-ring);
+  outline-offset: 3px;
+}
+
+/* Visually hidden utility (accessible to screen readers) */
+.visually-hidden:where(:not(:focus-within, :active)) {
+  position: absolute !important;
+  clip-path: inset(50%) !important;
+  overflow: hidden !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: -1px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  white-space: nowrap !important;
+}
+
+/* Layout container (1200px max, responsive gutters) */
+.ps-container {
+  width: 100%;
+  max-width: var(--ps-container);
+  margin-inline: auto;
+  padding-inline: var(--ps-gutter-mobile);
+}
+
+@media (min-width: 768px) {
+  .ps-container {
+    padding-inline: var(--ps-gutter-desktop);
+  }
+}
+
+/* Core Brand Buttons (WCAG compliant, 48px touch target) */
+/* NOTE: Never use --ps-gold text on --ps-white or --ps-ivory backgrounds (fails WCAG AA). */
+.ps-primary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: var(--ps-navy);
+  color: var(--ps-white);
+  min-height: var(--ps-button-min-h);
+  padding: 12px 24px;
+  border-radius: var(--ps-radius-button);
+  font-weight: 600;
+  line-height: 1.3;
+  cursor: pointer;
+  transition: background-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+}
+
+.ps-primary-button:hover {
+  background-color: var(--ps-midnight);
+}
+
+.ps-secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: var(--ps-white);
+  color: var(--ps-navy);
+  border: 1.5px solid var(--ps-navy);
+  min-height: var(--ps-button-min-h);
+  padding: 12px 24px;
+  border-radius: var(--ps-radius-button);
+  font-weight: 600;
+  line-height: 1.3;
+  cursor: pointer;
+  transition: background-color 180ms ease, border-color 180ms ease;
+}
+
+.ps-secondary-button:hover {
+  background-color: var(--ps-cool);
+}
+
+.ps-primary-button:focus-visible,
+.ps-secondary-button:focus-visible,
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible {
+  outline: var(--ps-focus-ring);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ps-primary-button,
+  .ps-secondary-button {
+    transition: none;
+  }
+}
+
+/* Native accessible form validation states (only after user interaction) */
+input:user-invalid,
+select:user-invalid,
+textarea:user-invalid {
+  border-color: var(--ps-danger);
+}
+
+/* Native <details> / <summary> accordion styling with progressive disclosure transition */
+details.ps-disclosure summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+details.ps-disclosure summary::-webkit-details-marker {
+  display: none;
+}
+
+details.ps-disclosure::details-content {
+  overflow: clip;
+  contain: layout;
+}
+
+@supports (interpolate-size: allow-keywords) {
+  details.ps-disclosure::details-content {
+    interpolate-size: allow-keywords;
+  }
+
+  details.ps-disclosure:not([open])::details-content {
+    block-size: 0;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    details.ps-disclosure::details-content {
+      transition: block-size 240ms ease-in-out, content-visibility 240ms allow-discrete;
+    }
+  }
+}
+
+/* Editorial hairline divider in restrained champagne gold */
+.ps-gold-rule {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--ps-gold) 20%, var(--ps-gold) 80%, transparent);
+}
