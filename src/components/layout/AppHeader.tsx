@@ -64,7 +64,7 @@ export function AppHeader({ siteConfig }: AppHeaderProps) {
         <div className="ps-container py-3 flex items-center justify-between gap-4">
           <Link
             href="/"
-            className="flex items-center gap-3 rounded-lg min-w-0 shrink-0"
+            className="flex items-center gap-2.5 sm:gap-3 rounded-lg min-w-0 flex-1 lg:flex-initial"
           >
             <Image
               src={siteConfig.logoAssetPath}

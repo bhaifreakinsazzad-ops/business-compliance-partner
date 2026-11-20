@@ -58,7 +58,7 @@ export function MobileNavigation({
   }, []);
 
   return (
-    <div className="lg:hidden flex items-center gap-2">
+    <div className="lg:hidden flex items-center gap-2 shrink-0">
       <Link
         href="/#unified-search"
         aria-label="ক্যাটালগ অনুসন্ধান"
