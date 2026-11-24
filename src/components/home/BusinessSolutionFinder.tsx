@@ -114,9 +114,18 @@ export function BusinessSolutionFinder() {
             </div>
           </>
         ) : (
-          <div className="m-auto max-w-md text-center">
+          <div className="m-auto max-w-md text-center space-y-3">
             <p className="text-xl font-bold">একটি লক্ষ্য নির্বাচন করুন</p>
-            <p className="mt-2 text-sm leading-relaxed text-white/70">গোপন তথ্য ছাড়াই কাঠামোবদ্ধ নিয়মের ভিত্তিতে প্রাসঙ্গিক কোর্স, সেবা, লাইসেন্সিং বা কনসালটেন্সি পথ দেখানো হবে।</p>
+            <p className="text-sm leading-relaxed text-white/70">গোপন তথ্য ছাড়াই কাঠামোবদ্ধ নিয়মের ভিত্তিতে প্রাসঙ্গিক কোর্স, সেবা, লাইসেন্সিং বা কনসালটেন্সি পথ দেখানো হবে।</p>
+            <div className="pt-2">
+              <Link
+                href="/tools"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-ps-gold underline underline-offset-4 hover:text-ps-ivory transition-colors"
+              >
+                <span>অথবা কমপ্লায়েন্স প্রস্তুতি ও চেকলিস্ট টুলস ব্যবহার করুন</span>
+                <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
+              </Link>
+            </div>
           </div>
         )}
       </div>

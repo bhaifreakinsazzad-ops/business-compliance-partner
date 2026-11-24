@@ -12,6 +12,7 @@ const PRIMARY_NAV_LINKS: NavLinkItem[] = [
   { href: "/courses", labelBn: "কোর্স" },
   { href: "/services", labelBn: "পেশাদার সেবা" },
   { href: "/licensing", labelBn: "লাইসেন্সিং" },
+  { href: "/tools", labelBn: "টুলস ও রোডম্যাপ" },
   { href: "/consultancy", labelBn: "কনসালটেন্সি" },
   { href: "/about", labelBn: "আমাদের সম্পর্কে" },
 ];

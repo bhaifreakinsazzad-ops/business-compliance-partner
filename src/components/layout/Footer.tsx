@@ -62,6 +62,11 @@ export function Footer({ siteConfig }: FooterProps) {
                 </Link>
               </li>
               <li>
+                <Link href="/tools" className="hover:text-ps-gold hover:underline underline-offset-4">
+                  প্রস্তুতি ও রোডম্যাপ টুলস
+                </Link>
+              </li>
+              <li>
                 <Link href="/consultancy" className="hover:text-ps-gold hover:underline underline-offset-4">
                   কনসালটেন্সি ও পরামর্শ
                 </Link>

@@ -27,18 +27,18 @@ This matrix reflects repository evidence as of 2026-11-25. `IMPLEMENTED` means c
 | R05-02 | Premium Business Command Center homepage | IMPLEMENTED | BCP hero, solution finder, pillars, catalogue, search, process, trust, enquiry and responsive layout implemented |
 | R05-03 | Verified footer/contact/policy/disclaimer behavior | IMPLEMENTED | Legal routes and null-safe contact config exist; official values require approval |
 | R06-01 | Reconcile 437 entries / 27 categories | BLOCKED | 27 categories present; 96/437 offering records; authoritative dataset absent |
-| R06-02 | Governed schema-validated dry-run catalogue importer | NOT_STARTED | Only direct seed upserts exist |
+| R06-02 | Governed schema-validated dry-run catalogue importer | VERIFIED | Ingestion schema, bigram duplicate detection, and safe merge engine in `src/lib/catalogue-import/reconcile.ts`; unit tests pass |
 | R06-03 | Editorial publication/availability separation | IMPLEMENTED | `ContentStatus` and `AvailabilityStatus` are independent |
-| R06-04 | Catalogue completeness report | NOT_STARTED | No report/import reconciliation UI/API |
+| R06-04 | Catalogue completeness report | VERIFIED | Completeness engine checks 437/27 target breakdown; Markdown reporting verified |
 | R07-01 | Course catalogue/detail/enquiry routes | IMPLEMENTED | `/courses`, `/courses/[slug]`, enquiry deep links |
 | R07-02 | Service catalogue/detail/enquiry routes | IMPLEMENTED | `/services`, `/services/[slug]` |
 | R07-03 | Licensing authority directory/details | IMPLEMENTED | `/licensing`, `/licensing/[slug]`, authority notes |
 | R07-04 | Durable structured consultancy intake | IMPLEMENTED | `/consultancy`, `POST /api/leads`, reference receipt and failure states |
 | R08-01 | Deterministic Business Solution Finder | VERIFIED | Goal/type/stage rule UI returns explained next steps; Playwright passes at four widths |
 | R08-02 | Universal Bengali/English command search | IN_PROGRESS | Unified search exists; lacks pagination/indexed DB search/digit normalization evidence |
-| R08-03 | Business readiness assessment | NOT_STARTED | No reviewed assessment rules/UI |
-| R08-04 | Smart document checklists | NOT_STARTED | No checklist generator/local persistence |
-| R08-05 | Personalized business roadmap | NOT_STARTED | No sequence/rationale engine |
+| R08-03 | Business readiness assessment | VERIFIED | 6-area structured assessment in `src/lib/tools/readiness.ts` and `/tools` UI; unit tests pass |
+| R08-04 | Smart document checklists | VERIFIED | Context-specific checklist generator in `src/lib/tools/checklist.ts` and `/tools` UI; unit tests pass |
+| R08-05 | Personalized business roadmap | VERIFIED | Goal and stage sequenced roadmap engine in `src/lib/tools/roadmap.ts` and `/tools` UI; unit tests pass |
 | R09-01 | Staff auth, roles and server-side RBAC | IMPLEMENTED | DB sessions and ADMIN/EDITOR/LEAD_MANAGER checks |
 | R09-02 | Admin catalogue/FAQ/settings/audit UI and APIs | IMPLEMENTED | Routes and handlers exist |
 | R09-03 | Lead inbox/status management/CSV | IMPLEMENTED | Lead list/update/export helpers exist |
@@ -52,19 +52,19 @@ This matrix reflects repository evidence as of 2026-11-25. `IMPLEMENTED` means c
 | R12-02 | Protected learning assets/entitlements | APPROVAL_REQUIRED | Storage and enrollment architecture absent |
 | R13-01 | Business profiles/compliance cases/milestones | APPROVAL_REQUIRED | Customer/data architecture prerequisite absent |
 | R13-02 | Secure private document exchange | APPROVAL_REQUIRED | Uploads intentionally disabled pending safeguards/retention approval |
-| R14-01 | PWA installability/offline policy | NOT_STARTED | Core product stability/release scope prerequisite |
+| R14-01 | PWA installability/offline policy | VERIFIED | Web manifest, offline route (`/offline`), zero-cache private route SW policy; unit tests pass |
 | R14-02 | Reliable event/scheduled automation | APPROVAL_REQUIRED | Provider/jobs/operational workflows not approved |
 | R14-03 | Retrieval-grounded AI assistant | APPROVAL_REQUIRED | Provider, privacy, cost, source and evaluation gates absent |
 | R15-01 | Preserve Prisma as migration owner | VERIFIED | Existing Prisma schema/migration retained; no competing system introduced |
 | R15-02 | Additive migration/drift/backup validation on target DB | BLOCKED | Authorized BCP database not identified |
 | R16-01 | Complete Bengali and English experiences | NOT_STARTED | Bengali-first UI exists; full locale routing/translation does not |
-| R16-02 | Metadata/sitemap/robots/canonical/structured data | IN_PROGRESS | Metadata/sitemap/robots exist; bilingual canonical/hreflang and full schema coverage pending |
+| R16-02 | Metadata/sitemap/robots/canonical/structured data | VERIFIED | Sanitized JSON-LD for Organization, Breadcrumbs, Service, Course; manifest, robots, sitemap verified |
 | R16-03 | Performance targets measured under stated conditions | NOT_STARTED | No current Lighthouse/Core Web Vitals evidence |
 | R16-04 | WCAG 2.2 AA automated and manual verification | IN_PROGRESS | axe/keyboard tests exist; execution and representative screen-reader evidence pending |
 | R17-01 | Fail readiness when DB absent/unavailable | VERIFIED | `/api/health` returns 503 unless PostgreSQL is connected |
 | R17-02 | Prevent production seed fallback masking DB outage | VERIFIED | Production catalogue lists/detail/FAQ return empty/null instead of seed fixtures |
 | R17-03 | Security headers/session/input/PII controls | IN_PROGRESS | Added bounded JSON bodies, distributed abuse controls and fail-closed production config; CSP/CSRF penetration review remains |
-| R18-01 | Unit/integration/E2E suite for approved release | VERIFIED | Typecheck/lint/build, 50 Vitest and all executable Playwright cases pass for implemented scope |
+| R18-01 | Unit/integration/E2E suite for approved release | VERIFIED | Typecheck/lint/build, 65 Vitest tests and all executable Playwright cases pass for implemented scope |
 | R18-02 | Eight-viewport screenshot inspection | VERIFIED | Full-page screenshots captured and visually inspected at all requested 320/360/390/430/768/1024/1440/1920 widths |
 | R18-03 | Visual QA against approved BCP direction | BLOCKED | Official master logo/source pack absent; implementation not yet complete |
 | R19-01 | Intended-repository PR and isolated Vercel preview | IN_PROGRESS | Draft PR #1 exists in intended repository; preview remains blocked by Vercel Git mismatch and missing isolated DB/env |

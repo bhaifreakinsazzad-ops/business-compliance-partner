@@ -10,6 +10,9 @@ import {
   getCanonicalBaseUrl,
   isStagingEnvironment,
 } from "@/lib/config/site";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { ServiceWorkerRegistration } from "@/components/seo/ServiceWorkerRegistration";
+import { buildOrganizationJsonLd } from "@/lib/seo/structured-data";
 import "./globals.css";
 
 const notoSansBengali = Noto_Sans_Bengali({
@@ -78,6 +81,14 @@ export default function RootLayout({
       className={`${notoSansBengali.variable} ${notoSerifBengali.variable} ${inter.variable} ${cormorant.variable}`}
     >
       <body className="min-h-screen flex flex-col bg-ps-ivory text-ps-ink antialiased">
+        <JsonLd
+          data={buildOrganizationJsonLd(
+            DEFAULT_PUBLIC_SITE_CONFIG,
+            getCanonicalBaseUrl(),
+          )}
+          id="organization-jsonld"
+        />
+        <ServiceWorkerRegistration />
         <a href="#main-content" className="skip-link">
           মূল বিষয়বস্তুতে যান
         </a>
