@@ -67,7 +67,7 @@ This matrix reflects repository evidence as of 2026-11-25. `IMPLEMENTED` means c
 | R18-01 | Unit/integration/E2E suite for approved release | VERIFIED | Typecheck/lint/build, 50 Vitest and all executable Playwright cases pass for implemented scope |
 | R18-02 | Eight-viewport screenshot inspection | VERIFIED | Full-page screenshots captured and visually inspected at all requested 320/360/390/430/768/1024/1440/1920 widths |
 | R18-03 | Visual QA against approved BCP direction | BLOCKED | Official master logo/source pack absent; implementation not yet complete |
-| R19-01 | Intended-repository PR and isolated Vercel preview | BLOCKED | Git/Vercel integration discrepancy and preview DB not reconciled |
+| R19-01 | Intended-repository PR and isolated Vercel preview | IN_PROGRESS | Draft PR #1 exists in intended repository; preview remains blocked by Vercel Git mismatch and missing isolated DB/env |
 | R19-02 | Production release gates and authorization | APPROVAL_REQUIRED | Explicit authorization plus infrastructure/catalogue/policy/test gates required |
 | R20-01 | Dependency-aware parallel workstreams with file ownership | VERIFIED | Non-overlapping Wave 0 assignments established by lead agent |
 | R21-01 | Accurate handover docs, routes, tests and limitations | VERIFIED | Source, audit, environment, deployment, security, admin, test and limitations records completed |

@@ -13,3 +13,4 @@
 - Added a deterministic Business Solution Finder to the homepage.
 - Added a distributed production rate-limit provider contract with fail-closed behavior.
 - Recorded missing official sources and kept approval-dependent modules disabled.
+- Committed `5260810`, pushed `feature/bcp-platform-v2` to the intended BCP repository and opened draft PR #1. No Vercel settings, domains or production deployment were changed.
