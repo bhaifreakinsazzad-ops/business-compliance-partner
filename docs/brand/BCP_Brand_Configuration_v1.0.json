@@ -1,0 +1,214 @@
+{
+  "schema_version": "1.0",
+  "brand_version": "1.0",
+  "date": "2026-11-24",
+  "name": "Business Compliance Partner",
+  "short_name": "BCP",
+  "status": {
+    "master_logo": "user approved",
+    "strategy": "based on user choices",
+    "implementation_tokens": "proposed defaults",
+    "logo_variants": "preview; require approval",
+    "trademark": "not verified"
+  },
+  "positioning": [
+    "All-in-One Business Solutions Platform",
+    "Integrated Business Compliance & Technology Ecosystem",
+    "Business Education & Professional Services Institution"
+  ],
+  "market_position": "budget-friendly mass-market",
+  "visual_personality": "premium, trustworthy, sophisticated",
+  "visual_style": "futuristic fintech with classic master badge",
+  "market": [
+    "Bangladesh",
+    "Bangladeshi diaspora entrepreneurs"
+  ],
+  "primary_audience": [
+    "entrepreneurs",
+    "SMEs"
+  ],
+  "other_audience": [
+    "individual taxpayers",
+    "corporate and industrial organizations",
+    "e-commerce businesses",
+    "importers and exporters",
+    "contractors",
+    "students and professionals"
+  ],
+  "tagline": {
+    "en": "One Partner. Complete Solutions. Confident Growth.",
+    "bn_proposed": "এক অংশীদার। পূর্ণাঙ্গ সমাধান। আত্মবিশ্বাসী প্রবৃদ্ধি।"
+  },
+  "promise": "Simplifying Compliance. Empowering Business Growth.",
+  "archetypes": [
+    "Sage",
+    "Ruler"
+  ],
+  "languages": [
+    "bn",
+    "en"
+  ],
+  "brand_book_language": "bn",
+  "tone": [
+    "professional",
+    "clear",
+    "trustworthy",
+    "solution-oriented"
+  ],
+  "architecture": {
+    "type": "single master brand",
+    "independent_subbrands": false,
+    "departments": [
+      {
+        "name": "Learn",
+        "accent": "#295C9B",
+        "planned_catalog_entries": 105
+      },
+      {
+        "name": "Services",
+        "accent": "#00865A",
+        "planned_catalog_entries": 247
+      },
+      {
+        "name": "Licensing & Registration",
+        "accent": "#946617",
+        "planned_catalog_entries": 85
+      },
+      {
+        "name": "Consultancy",
+        "accent": "#64748B",
+        "overlaps_services": true
+      }
+    ],
+    "planned_catalog_total": 437,
+    "catalog_not_verified_live": true,
+    "technology_status": "proposed future features only"
+  },
+  "logo": {
+    "master": "assets/BCP_Master_Badge.png",
+    "social_profile": "assets/BCP_Social_Profile_1080.png",
+    "sha256": "0df8611799c0cb011660ca6b89a77c125bcd760c7fbc108bd7de4028dced2971",
+    "width_px": 1254,
+    "height_px": 1254,
+    "preserve_original": true,
+    "clear_space_ratio_of_diameter": 0.1,
+    "proposed_minimum_digital_px": 160,
+    "proposed_minimum_print_mm": 40,
+    "preview_assets": [
+      "BCP_Favicon_PREVIEW.ico",
+      "BCP_Favicon_PREVIEW.png",
+      "BCP_Horizontal_Layout_PREVIEW.png",
+      "BCP_Text_Fallback_Dark_PREVIEW.png",
+      "BCP_Text_Fallback_Light_PREVIEW.png",
+      "BCP_Text_Fallback_Mono_PREVIEW.png",
+      "BCP_Vertical_Layout_PREVIEW.png"
+    ],
+    "vector_master": "not supplied; pending manual recreation and approval"
+  },
+  "colors": {
+    "midnight_navy": {
+      "hex": "#081838",
+      "role": "Primary"
+    },
+    "royal_gold": {
+      "hex": "#C59028",
+      "role": "Accent"
+    },
+    "pearl_white": {
+      "hex": "#F8F8F8",
+      "role": "Surface"
+    },
+    "emerald": {
+      "hex": "#00865A",
+      "role": "Support"
+    },
+    "champagne": {
+      "hex": "#E9C46A",
+      "role": "Decorative"
+    },
+    "ivory": {
+      "hex": "#F5F1E8",
+      "role": "Surface"
+    },
+    "charcoal": {
+      "hex": "#181D26",
+      "role": "Text"
+    },
+    "slate": {
+      "hex": "#596775",
+      "role": "Muted text"
+    }
+  },
+  "color_decision": "B primary; D emerald supporting only",
+  "type": {
+    "en_display": "Cormorant Garamond",
+    "en_display_fallback": "Noto Serif",
+    "en_body": "Inter",
+    "bn_heading": "Noto Serif Bengali",
+    "bn_body": "Noto Sans Bengali",
+    "logo": "custom lettering, exact font unknown"
+  },
+  "ui": {
+    "spacing_base_px": 8,
+    "card_radius_px": 12,
+    "button_radius_px": 8,
+    "primary_cta_bg": "#081838",
+    "primary_cta_text": "#FFFFFF",
+    "body_px": 16,
+    "bn_line_height": 1.65
+  },
+  "rules": {
+    "no_flags_maps_or_government_seals_in_identity": true,
+    "no_unverified_guarantees_or_credentials": true,
+    "no_invented_prices_contacts_or_traction": true,
+    "review_regulatory_content": true,
+    "protect_client_data": true,
+    "no_recreated_logo_by_ai": true,
+    "publish_after_human_approval": true
+  },
+  "questionnaire": {
+    "1": [
+      "C",
+      "D",
+      "E"
+    ],
+    "2": "A",
+    "3": "E",
+    "4": "C",
+    "5": "B",
+    "6": "D",
+    "7": "D",
+    "8": [
+      "D",
+      "B"
+    ],
+    "9": "C",
+    "10": "E",
+    "11": "D",
+    "12": "A",
+    "13": "C",
+    "14": "A",
+    "15": "C",
+    "16": "D",
+    "17": "E",
+    "18": "D",
+    "19": "A",
+    "20": "D",
+    "21": "B",
+    "22": "E"
+  },
+  "sources": [
+    "Business Compliance Partner Badge & Logo.png",
+    "User questionnaire responses",
+    "Business Compliance Partner.pdf",
+    "Business HQ.txt"
+  ],
+  "pending": [
+    "actual vector logo and monochrome badge",
+    "approval of alternate layouts and favicon",
+    "trademark and ownership checks",
+    "verified official contact and registration details",
+    "production-ready stationery/social templates",
+    "print proof"
+  ]
+}

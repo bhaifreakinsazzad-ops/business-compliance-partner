@@ -21,7 +21,9 @@ import { SEED_LICENSING } from "../../../prisma/seed-data/licensing";
 import { SEED_SERVICES } from "../../../prisma/seed-data/services";
 
 function canUseSeedFallback(): boolean {
-  return process.env.NEXT_PUBLIC_APP_ENV !== "production";
+  // Always permit seed fallback when database is not configured or in transition,
+  // guaranteeing high availability and zero blank pages for general usage and advertising.
+  return !isDatabaseConfigured() || process.env.NEXT_PUBLIC_APP_ENV !== "production";
 }
 
 function getSeedCategoriesByPillar(pillar: Pillar): PublicCategoryDTO[] {

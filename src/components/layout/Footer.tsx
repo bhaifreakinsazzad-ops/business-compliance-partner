@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import type { PublicSiteConfig } from "@/types/domain";
@@ -19,16 +20,29 @@ export function Footer({ siteConfig }: FooterProps) {
       <div className="ps-container space-y-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10">
           {/* Column 1: Brand Identity */}
-          <div className="lg:col-span-4 space-y-3">
-            <p
-              className="font-editorial text-xl font-semibold tracking-wide text-ps-white"
-              lang="en"
-            >
-              {siteConfig.brandDisplayName}
-            </p>
-            <p className="text-sm text-ps-gold font-medium">
-              {siteConfig.taglineBn}
-            </p>
+          <div className="lg:col-span-4 space-y-4">
+            <div className="flex items-center gap-3">
+              {siteConfig.logoAssetPath ? (
+                <Image
+                  src={siteConfig.logoAssetPath}
+                  alt={`${siteConfig.brandName} official badge`}
+                  width={52}
+                  height={52}
+                  className="rounded-full border border-ps-gold/60 object-contain shrink-0 shadow-md"
+                />
+              ) : null}
+              <div>
+                <p
+                  className="font-editorial text-lg font-semibold tracking-wide text-ps-white"
+                  lang="en"
+                >
+                  {siteConfig.brandDisplayName}
+                </p>
+                <p className="text-xs text-ps-gold font-medium">
+                  {siteConfig.taglineBn}
+                </p>
+              </div>
+            </div>
             <p className="text-xs text-white/75 leading-relaxed">
               বাংলাদেশের উদ্যোক্তা, ব্যবসায়ী ও পেশাজীবীদের জন্য কোর্স, ব্যবসায়িক সেবা,
               লাইসেন্সিং নির্দেশিকা এবং কনসালটেন্সি সহায়তার একটি সুসংগঠিত প্ল্যাটফর্ম।

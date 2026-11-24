@@ -29,9 +29,11 @@ import { AuthorityNote } from "@/components/shared/AuthorityNote";
 import { FAQAccordion } from "@/components/shared/FAQAccordion";
 import { CTASection } from "@/components/shared/CTASection";
 import { HeroPillarExplorer } from "@/components/illustrations/HeroPillarExplorer";
+import { StatCounters } from "@/components/ui/StatCounters";
 import { InteractiveTracksExplorer } from "@/components/home/InteractiveTracksExplorer";
 import { UnifiedSearchSection } from "@/components/home/UnifiedSearchSection";
 import { BusinessSolutionFinder } from "@/components/home/BusinessSolutionFinder";
+import { EcosystemInfographics } from "@/components/home/EcosystemInfographics";
 import { ConsultancyForm } from "@/components/forms/ConsultancyForm";
 
 const PROCESS_STEPS = [
@@ -127,6 +129,9 @@ export default async function HomePage() {
           </div>
         </section>
 
+        {/* Dynamic Animated Metrics Strip powered by Anime.js */}
+        <StatCounters />
+
         {/* Truthful Trust Strip (Inspired by Reference Mockups, Zero Fake Claims) */}
         <section
           aria-label="প্ল্যাটফর্মের মূল নীতিমালা"
@@ -165,6 +170,9 @@ export default async function HomePage() {
             <BusinessSolutionFinder />
           </div>
         </section>
+
+        {/* Master Infographic Ecosystem Gallery */}
+        <EcosystemInfographics />
 
         {/* 4. Four-Pillar Priority Grid (Courses & Services Visually Dominant) */}
         <section className="py-12 sm:py-16">

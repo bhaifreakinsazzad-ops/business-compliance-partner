@@ -20,7 +20,7 @@ async function main() {
       brandNameBn: "বিজনেস কমপ্লায়েন্স পার্টনার",
       taglineBn: "এক অংশীদার। সম্পূর্ণ সমাধান। আত্মবিশ্বাসী প্রবৃদ্ধি।",
       taglineEn: "One Partner. Complete Solutions. Confident Growth.",
-      logoAssetPath: "",
+      logoAssetPath: "/brand/bcp-master-logo.png",
       isIdentityProvisional: false,
       defaultSeoTitleBn:
         "Business Compliance Partner | ব্যবসা, কমপ্লায়েন্স, প্রশিক্ষণ ও পরামর্শ",
@@ -38,7 +38,7 @@ async function main() {
       brandNameBn: "বিজনেস কমপ্লায়েন্স পার্টনার",
       taglineBn: "এক অংশীদার। সম্পূর্ণ সমাধান। আত্মবিশ্বাসী প্রবৃদ্ধি।",
       taglineEn: "One Partner. Complete Solutions. Confident Growth.",
-      logoAssetPath: "",
+      logoAssetPath: "/brand/bcp-master-logo.png",
       isIdentityProvisional: false,
       verifiedPhone: null,
       verifiedWhatsapp: null,

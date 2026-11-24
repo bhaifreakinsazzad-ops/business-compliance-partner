@@ -22,15 +22,21 @@ describe("SEO structured data and PWA safety", () => {
     expect(value.icons).toBeUndefined();
   });
 
-  it("omits unverified organization contacts and missing logo", () => {
+  it("includes official logo when present and omits unverified organization contacts", () => {
     const data = buildOrganizationJsonLd(
       DEFAULT_PUBLIC_SITE_CONFIG,
       "https://bcp.example",
     );
     expect(data.name).toBe("Business Compliance Partner");
-    expect(data).not.toHaveProperty("logo");
+    expect(data.logo).toBe("https://bcp.example/brand/bcp-master-logo.png");
     expect(data).not.toHaveProperty("contactPoint");
     expect(data).not.toHaveProperty("address");
+
+    const noLogoData = buildOrganizationJsonLd(
+      { ...DEFAULT_PUBLIC_SITE_CONFIG, logoAssetPath: "" },
+      "https://bcp.example",
+    );
+    expect(noLogoData).not.toHaveProperty("logo");
   });
 
   it("builds ordered absolute breadcrumbs and escapes unsafe JSON-LD text", () => {

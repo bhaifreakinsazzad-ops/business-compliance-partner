@@ -13,9 +13,8 @@ export const DEFAULT_PUBLIC_SITE_CONFIG: PublicSiteConfig = {
   brandNameBn: "বিজনেস কমপ্লায়েন্স পার্টনার",
   taglineBn: "এক অংশীদার। সম্পূর্ণ সমাধান। আত্মবিশ্বাসী প্রবৃদ্ধি।",
   taglineEn: "One Partner. Complete Solutions. Confident Growth.",
-  // The approved master badge was not supplied in this workspace. An empty path
-  // intentionally renders a text identity instead of inventing or reusing a logo.
-  logoAssetPath: "",
+  // Official circular master badge integrated from approved Brand Book v1.0
+  logoAssetPath: "/brand/bcp-master-logo.png",
   isIdentityProvisional: false,
   // Never ship placeholder phone numbers, emails, WhatsApp numbers, or social links.
   verifiedPhone: null,
