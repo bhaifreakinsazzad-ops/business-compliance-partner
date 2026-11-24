@@ -19,6 +19,8 @@
     "db:migrate": "prisma migrate deploy",
     "db:migrate:dev": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
+    "catalogue:import": "tsx src/scripts/import-catalogue.ts",
+    "catalogue:dry-run": "tsx src/scripts/import-catalogue.ts --dry-run",
     "verify": "npm run typecheck && npm run lint && npm test && npm run build"
   },
   "prisma": {

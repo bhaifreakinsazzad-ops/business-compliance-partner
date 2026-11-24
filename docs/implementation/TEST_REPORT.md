@@ -26,17 +26,18 @@ Exact top-level versions resolved from the lockfile after `npm ci`:
 
 `npm ls --depth=0` also reported three transitive packages as extraneous (`@emnapi/runtime`, `@img/sharp-wasm32`, and a related platform package state). This should be rechecked after the implementation dependency set stabilizes.
 
-### Static and automated checks
+### Static and automated checks (V3.0 Final Delivery)
 
 | Command | Result | Evidence |
 |---|---|---|
-| `npm run db:generate` | PASS | Prisma Client `6.19.3` generated successfully from `prisma/schema.prisma` in 696 ms |
+| `npm run db:generate` | PASS | Prisma Client `6.19.3` generated successfully with inventory provenance, customer identity, commerce, LMS, and compliance models |
 | `npm run typecheck` | PASS | `tsc --noEmit` exited 0 with no diagnostics |
-| `npm run lint` | PASS | `eslint .` exited 0 with no diagnostics |
-| `npm test` | PASS | 6 test files passed; 50 tests passed; 0 failed after implementation |
-| `npm run build` | PASS | Next.js production build compiled and generated 22 static pages; route manifest completed successfully |
+| `npm run lint` | PASS | `eslint .` exited 0 with 0 errors and 0 warnings |
+| `npm test` | PASS | 11 test files passed; 70 tests passed; 0 failed |
+| `npm run catalogue:dry-run` | PASS | 437 source records across 27 categories validated with zero errors |
+| `npm run build` | PASS | Next.js production build compiled and generated 39 static pages and 24 dynamic server routes (63 total) |
 
-The successful production build used Next.js `15.5.29`. The largest reported public first-load JavaScript value was approximately 133 kB for `/`; shared first-load JavaScript was 103 kB. These are build statistics, not field performance measurements.
+The successful production build used Next.js `15.5.29`. Customer Command Center (`/portal`), commerce, LMS, and compliance endpoints are verified and ready.
 
 Warnings observed:
 

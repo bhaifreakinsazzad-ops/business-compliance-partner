@@ -1,5 +1,6 @@
 import { AdminRole, PillarType, PrismaClient } from "@prisma/client";
 import { hashPassword } from "../src/lib/security/password";
+import { ingestAuthoritativeCatalogue } from "../src/scripts/import-catalogue";
 import { SEED_CATEGORIES } from "./seed-data/categories";
 import { SEED_COURSES } from "./seed-data/courses";
 import { SEED_FAQS } from "./seed-data/faqs";
@@ -299,8 +300,15 @@ async function main() {
     );
   }
 
+  // 8. Ingest full 437-record authoritative source inventory & provenance
+  console.log("[seed] Ingesting 437-record authoritative inventory into CatalogueSourceRecord...");
+  const ingestion = await ingestAuthoritativeCatalogue(prisma, { dryRun: false });
   console.log(
-    `[seed] Complete: ${SEED_CATEGORIES.length} categories, ${SEED_COURSES.length} courses, ${SEED_SERVICES.length} services, ${SEED_LICENSING.length} licensing entries, ${SEED_FAQS.length} FAQs.`,
+    `[seed] 437-Record Inventory Ingested: ${ingestion.imported} records across ${ingestion.distinctCategories} categories.`,
+  );
+
+  console.log(
+    `[seed] Complete: ${SEED_CATEGORIES.length} categories, ${SEED_COURSES.length} courses, ${SEED_SERVICES.length} services, ${SEED_LICENSING.length} licensing entries, ${SEED_FAQS.length} FAQs, and ${ingestion.imported} provenance records.`,
   );
 }
 

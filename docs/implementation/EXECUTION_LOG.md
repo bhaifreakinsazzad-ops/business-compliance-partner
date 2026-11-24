@@ -21,3 +21,15 @@
 - Implemented Phase 16 structured data (JSON-LD) for Organization, BreadcrumbList, Service, and Course; mounted Organization structured data and ServiceWorkerRegistration in root layout.
 - Added comprehensive unit tests covering catalogue import reconciliation, interactive tools, and SEO/PWA, expanding passing Vitest suite to 65 tests across 9 test files. Production build verified compiling 25 static & dynamic pages.
 - Received explicit user authorization with confirmed GitHub repository and Vercel project deployment target to commit, push, and deploy.
+- Created dedicated integration branch `feature/bcp-final-delivery-v3` per V3.0 Master Directive.
+- Established repository-level `AGENTS.md` governing brand rules, 437 inventory provenance, architecture, and deployment constraints.
+- Extended database schema additively with models for 437 inventory provenance (`CatalogueSourceRecord`, `CatalogueOfferingMapping`, `ImportBatch`), customer identity (`Customer`, `CustomerSession`), multi-organization workspaces (`Organization`, `OrganizationMembership`), commercial pipeline (`ServiceRequest`, `Quote`, `QuoteItem`, `Order`, `Invoice`, `PaymentRecord`), LMS (`CourseModule`, `Lesson`, `Enrollment`, `LessonProgress`, `Certificate`), and compliance cases (`ComplianceCase`, `ComplianceMilestone`, `Document`, `ConsultationAppointment`, `Notification`).
+- Created executable, idempotent catalogue ingestion script `src/scripts/import-catalogue.ts` and added `npm run catalogue:import` and `npm run catalogue:dry-run` to `package.json`.
+- Integrated automated 437-item catalogue ingestion into `prisma/seed.ts`.
+- Implemented customer authentication, session management, and registration/login/logout endpoints in `src/lib/customer/auth.ts` and `src/app/api/customer/auth/`.
+- Designed and built Customer Business Command Center at `/portal`, `/portal/login`, and `/portal/register` with active requests, compliance cases, enrolled courses, and document vault.
+- Built commerce payment abstraction (`src/lib/commerce/payments.ts`) with safe BDT integer paisa arithmetic and server-side sandbox payment verification.
+- Implemented LMS enrollment, lesson progress tracking, and certificate verification endpoints.
+- Implemented compliance case management and secure document upload with MIME and size validation.
+- Expanded Vitest test suite to 11 test files and 70 passing unit/integration tests.
+- Re-ran full verification suite: Typecheck passed (0 errors), ESLint passed (0 errors, 0 warnings), Vitest passed (70/70), Next.js production build compiled 63 routes cleanly.

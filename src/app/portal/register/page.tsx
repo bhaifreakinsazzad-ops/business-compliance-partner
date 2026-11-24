@@ -1,0 +1,226 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Image from "next/image";
+import { ArrowRight, Building, Lock, Mail, Phone, ShieldCheck, User } from "lucide-react";
+
+export default function CustomerRegisterPage() {
+  const router = useRouter();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [password, setPassword] = useState("");
+  const [organizationName, setOrganizationName] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/customer/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          email,
+          mobile,
+          password,
+          organizationName,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "নিবন্ধন সম্পন্ন হতে সমস্যা হয়েছে।");
+      }
+
+      router.push("/portal");
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "নিবন্ধন প্রক্রিয়ায় ত্রুটি ঘটেছে।");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-ps-pearl flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center space-y-3">
+        <Link href="/" className="inline-flex items-center gap-2.5">
+          <Image
+            src="/brand/bcp-master-logo.png"
+            alt="Business Compliance Partner"
+            width={52}
+            height={52}
+            className="rounded-full border border-ps-gold/60 mx-auto"
+          />
+        </Link>
+        <h1 className="text-2xl font-extrabold text-ps-midnight">
+          নতুন কাস্টমার অ্যাকাউন্ট
+        </h1>
+        <p className="text-xs sm:text-sm text-ps-slate">
+          আপনার ব্যবসার লাইসেন্স, ট্যাক্স ও কোর্স এক প্ল্যাটফর্মে ট্র্যাক করুন
+        </p>
+      </div>
+
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="bg-white py-8 px-4 shadow-xl sm:rounded-[16px] sm:px-10 border border-ps-border space-y-6">
+          {error ? (
+            <div
+              role="alert"
+              className="p-3 rounded-lg bg-red-50 border border-red-200 text-xs text-red-700"
+            >
+              {error}
+            </div>
+          ) : null}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label
+                htmlFor="name"
+                className="block text-xs font-semibold text-ps-navy"
+              >
+                আপনার পুরো নাম *
+              </label>
+              <div className="mt-1 relative rounded-md shadow-sm">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <User className="h-4 w-4 text-ps-slate" aria-hidden="true" />
+                </div>
+                <input
+                  id="name"
+                  type="text"
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="যেমন: মোঃ রফিকুল ইসলাম"
+                  className="block w-full pl-10 pr-3 py-2 border border-ps-border rounded-[10px] text-sm focus:ring-ps-gold focus:border-ps-gold"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-xs font-semibold text-ps-navy"
+              >
+                ইমেইল ঠিকানা *
+              </label>
+              <div className="mt-1 relative rounded-md shadow-sm">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Mail className="h-4 w-4 text-ps-slate" aria-hidden="true" />
+                </div>
+                <input
+                  id="email"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="name@company.com"
+                  className="block w-full pl-10 pr-3 py-2 border border-ps-border rounded-[10px] text-sm focus:ring-ps-gold focus:border-ps-gold"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label
+                htmlFor="mobile"
+                className="block text-xs font-semibold text-ps-navy"
+              >
+                মোবাইল নম্বর
+              </label>
+              <div className="mt-1 relative rounded-md shadow-sm">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Phone className="h-4 w-4 text-ps-slate" aria-hidden="true" />
+                </div>
+                <input
+                  id="mobile"
+                  type="tel"
+                  value={mobile}
+                  onChange={(e) => setMobile(e.target.value)}
+                  placeholder="০১৭xxxxxxxx"
+                  className="block w-full pl-10 pr-3 py-2 border border-ps-border rounded-[10px] text-sm focus:ring-ps-gold focus:border-ps-gold"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label
+                htmlFor="org"
+                className="block text-xs font-semibold text-ps-navy"
+              >
+                প্রতিষ্ঠানের নাম (ঐচ্ছিক)
+              </label>
+              <div className="mt-1 relative rounded-md shadow-sm">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Building className="h-4 w-4 text-ps-slate" aria-hidden="true" />
+                </div>
+                <input
+                  id="org"
+                  type="text"
+                  value={organizationName}
+                  onChange={(e) => setOrganizationName(e.target.value)}
+                  placeholder="যেমন: এবিসি ট্রেডার্স লিমিটেড"
+                  className="block w-full pl-10 pr-3 py-2 border border-ps-border rounded-[10px] text-sm focus:ring-ps-gold focus:border-ps-gold"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label
+                htmlFor="password"
+                className="block text-xs font-semibold text-ps-navy"
+              >
+                পাসওয়ার্ড (কমপক্ষে ৮ অক্ষর) *
+              </label>
+              <div className="mt-1 relative rounded-md shadow-sm">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Lock className="h-4 w-4 text-ps-slate" aria-hidden="true" />
+                </div>
+                <input
+                  id="password"
+                  type="password"
+                  required
+                  minLength={8}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="block w-full pl-10 pr-3 py-2 border border-ps-border rounded-[10px] text-sm focus:ring-ps-gold focus:border-ps-gold"
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-[10px] shadow-sm text-sm font-bold text-ps-ivory bg-ps-midnight hover:bg-ps-navy focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ps-gold disabled:opacity-50 transition-colors"
+            >
+              <span>{loading ? "অ্যাকাউন্ট তৈরি হচ্ছে..." : "নিবন্ধন সম্পন্ন করুন"}</span>
+              <ArrowRight className="w-4 h-4" aria-hidden="true" />
+            </button>
+          </form>
+
+          <div className="border-t border-ps-border pt-4 text-center space-y-2">
+            <p className="text-xs text-ps-slate">
+              আগে থেকেই অ্যাকাউন্ট আছে?{" "}
+              <Link
+                href="/portal/login"
+                className="font-bold text-ps-gold hover:underline"
+              >
+                লগইন করুন
+              </Link>
+            </p>
+            <div className="flex items-center justify-center gap-1.5 text-[11px] text-ps-slate">
+              <ShieldCheck className="w-3.5 h-3.5 text-ps-gold" aria-hidden="true" />
+              <span>সুরক্ষিত প্ল্যাটফর্ম • কোনো থার্ড-পার্টি ডেটা শেয়ারিং নেই</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -13,6 +13,7 @@ const PRIMARY_NAV_LINKS: NavLinkItem[] = [
   { href: "/services", labelBn: "পেশাদার সেবা" },
   { href: "/licensing", labelBn: "লাইসেন্সিং" },
   { href: "/tools", labelBn: "টুলস ও রোডম্যাপ" },
+  { href: "/portal", labelBn: "কাস্টমার পোর্টাল" },
   { href: "/consultancy", labelBn: "কনসালটেন্সি" },
   { href: "/about", labelBn: "আমাদের সম্পর্কে" },
 ];

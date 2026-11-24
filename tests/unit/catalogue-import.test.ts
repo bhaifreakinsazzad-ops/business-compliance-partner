@@ -136,4 +136,20 @@ describe("Catalogue Import and Reconciliation", () => {
     expect(report.actions.UNCHANGED).toBe(1);
     expect(report.items[0]?.existingId).toBe("existing-c-1");
   });
+
+  it("validates the authoritative 437-record inventory breakdown across 27 categories", async () => {
+    const { ingestAuthoritativeCatalogue } = await import(
+      "../../src/scripts/import-catalogue"
+    );
+    // Mock minimal prisma client for dry-run
+    const mockPrisma = {} as unknown as import("@prisma/client").PrismaClient;
+    const res = await ingestAuthoritativeCatalogue(mockPrisma, { dryRun: true });
+
+    expect(res.totalRecords).toBe(437);
+    expect(res.learnCount).toBe(105);
+    expect(res.servicesCount).toBe(247);
+    expect(res.licensingCount).toBe(85);
+    expect(res.distinctCategories).toBe(27);
+    expect(res.dryRun).toBe(true);
+  });
 });
