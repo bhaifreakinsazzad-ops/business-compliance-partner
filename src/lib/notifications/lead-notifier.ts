@@ -58,7 +58,7 @@ export class ResendLeadNotifier implements LeadNotifier {
       body: JSON.stringify({
         from: this.fromEmail,
         to: [this.toEmail],
-        subject: `[Paperwork Squad] New ${event.pillar} Enquiry (${event.publicReference})`,
+        subject: `[BCP] New ${event.pillar} Enquiry (${event.publicReference})`,
         text: [
           `A new enquiry has been recorded.`,
           `Reference: ${event.publicReference}`,

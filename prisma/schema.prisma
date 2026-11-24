@@ -1,4 +1,4 @@
-// Paperwork Squad — Phase-1 PostgreSQL Schema (Prisma ORM v6)
+// Business Compliance Partner — PostgreSQL Schema (Prisma ORM v6)
 // Course Mode A (Catalogue + Enquiry), Services, Licensing, Consultancy Leads,
 // Staff-only Admin CMS & Audit Trail. No Phase 2/3 LMS/Payments/Portal tables.
 
@@ -148,7 +148,7 @@ model Service {
   officialSourceUrl   String?
   requiresSpecialist  Boolean            @default(false)
   aliases             String[]           @default([])
-  // Keep Paperwork Squad service fee note strictly separate from govt fees if enabled.
+  // Keep BCP service fee notes strictly separate from government fees.
   serviceFeeNoteBn    String?
   govtFeeNoteBn       String?
   contentStatus       ContentStatus      @default(DRAFT)
@@ -257,13 +257,13 @@ model Lead {
 
 model SiteSetting {
   id                    String   @id @default("default")
-  brandName             String   @default("Paperwork Squad")
-  brandDisplayName      String   @default("PAPERWORK SQUAD")
-  brandNameBn           String   @default("পেপারওয়ার্ক স্কোয়াড")
-  taglineBn             String   @default("শিখুন, সেবা নিন, এগিয়ে যান।")
-  taglineEn             String   @default("Learn. Grow. Stay Compliant.")
-  logoAssetPath         String   @default("/brand/proposed-logo-concept.jpg")
-  isIdentityProvisional Boolean  @default(true)
+  brandName             String   @default("Business Compliance Partner")
+  brandDisplayName      String   @default("BUSINESS COMPLIANCE PARTNER")
+  brandNameBn           String   @default("বিজনেস কমপ্লায়েন্স পার্টনার")
+  taglineBn             String   @default("এক অংশীদার। সম্পূর্ণ সমাধান। আত্মবিশ্বাসী প্রবৃদ্ধি।")
+  taglineEn             String   @default("One Partner. Complete Solutions. Confident Growth.")
+  logoAssetPath         String   @default("")
+  isIdentityProvisional Boolean  @default(false)
   verifiedPhone         String?
   verifiedWhatsapp      String?
   verifiedEmail         String?
@@ -272,13 +272,13 @@ model SiteSetting {
   facebookUrl           String?
   linkedinUrl           String?
   youtubeUrl            String?
-  defaultSeoTitleBn     String   @default("Paperwork Squad | পেশাদার কোর্স, ব্যবসায়িক সেবা, লাইসেন্সিং ও কনসালটেন্সি")
+  defaultSeoTitleBn     String   @default("Business Compliance Partner | ব্যবসা, কমপ্লায়েন্স, প্রশিক্ষণ ও পরামর্শ")
   defaultSeoDescBn      String   @default("বাংলাদেশের উদ্যোক্তা ও পেশাজীবীদের জন্য কোর্স, ব্যবসায়িক কমপ্লায়েন্স সেবা, লাইসেন্সিং তথ্য ও পরামর্শ সহায়তার একটি সুসংগঠিত প্ল্যাটফর্ম।")
-  legalDisclaimerBn     String   @default("Paperwork Squad একটি স্বাধীন পেশাদার সহায়তা প্ল্যাটফর্ম; এটি কোনো সরকারি প্রতিষ্ঠান বা সরকারি পোর্টাল নয়। সকল নিবন্ধন, লাইসেন্স ও অনুমোদন সংশ্লিষ্ট কর্তৃপক্ষের বিধিমালা ও চূড়ান্ত সিদ্ধান্তসাপেক্ষ।")
-  legalDisclaimerEn     String   @default("Paperwork Squad is an independent professional learning and business compliance assistance platform; it is not a government institution or official portal.")
+  legalDisclaimerBn     String   @default("Business Compliance Partner (BCP) একটি স্বাধীন পেশাদার সহায়তা প্ল্যাটফর্ম; এটি কোনো সরকারি প্রতিষ্ঠান বা সরকারি পোর্টাল নয়। সকল নিবন্ধন, লাইসেন্স ও অনুমোদন সংশ্লিষ্ট কর্তৃপক্ষের বিধিমালা ও চূড়ান্ত সিদ্ধান্তসাপেক্ষ।")
+  legalDisclaimerEn     String   @default("Business Compliance Partner (BCP) is an independent professional learning and business compliance assistance platform; it is not a government institution or official portal.")
   privacyPolicyVersion  String   @default("v1.0-2026-11")
   leadRetentionDays     Int      @default(365)
-  stagingNoticeBn       String?  @default("প্রস্তাবিত ব্র্যান্ড কনসেপ্ট ও স্টেজিং সংস্করণ — চূড়ান্ত ব্যবসা ও যোগাযোগের তথ্য অনুমোদনসাপেক্ষ।")
+  stagingNoticeBn       String?  @default("স্টেজিং সংস্করণ — যোগাযোগের তথ্য, মূল্য ও সক্রিয় অফার অনুমোদনসাপেক্ষ।")
   updatedAt             DateTime @updatedAt
   updatedBy             String?
 

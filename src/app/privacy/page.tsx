@@ -7,7 +7,7 @@ import { Footer } from "@/components/layout/Footer";
 export const metadata: Metadata = {
   title: "গোপনীয়তা নীতি (Privacy Policy)",
   description:
-    "Paperwork Squad-এর ব্যক্তিগত তথ্য সংগ্রহ, সম্মতি, ডেটা মিনিমাইজেশন ও সংরক্ষণ নীতি।",
+    "Business Compliance Partner-এর ব্যক্তিগত তথ্য সংগ্রহ, সম্মতি, ডেটা মিনিমাইজেশন ও সংরক্ষণ নীতি।",
   alternates: { canonical: "/privacy" },
 };
 

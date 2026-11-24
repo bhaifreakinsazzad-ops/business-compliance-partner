@@ -57,7 +57,11 @@ export function hashToken(rawToken: string): string {
 }
 
 export function hashClientIp(ipAddress: string): string {
-  const secret = process.env.AUTH_SESSION_SECRET || "ps-local-ip-salt";
+  const configuredSecret = process.env.AUTH_SESSION_SECRET?.trim();
+  if (!configuredSecret && process.env.NEXT_PUBLIC_APP_ENV === "production") {
+    throw new Error("AUTH_SESSION_SECRET is required in production");
+  }
+  const secret = configuredSecret || "bcp-local-ip-salt";
   return createHash("sha256")
     .update(`${secret}:${ipAddress}`)
     .digest("hex")

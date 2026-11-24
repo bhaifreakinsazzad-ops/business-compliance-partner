@@ -129,7 +129,7 @@ export default async function AdminDashboardPage() {
             অ্যাডমিন ওভারভিউ ড্যাশবোর্ড
           </h1>
           <p className="text-sm text-ps-ivory/80 mt-1">
-            পেপারওয়ার্ক স্কোয়াড ক্লায়েন্ট ইনকোয়ারি, ক্যাটালগ স্থিতি এবং নিরাপত্তা পর্যবেক্ষণ
+            Business Compliance Partner ক্লায়েন্ট ইনকোয়ারি, ক্যাটালগ স্থিতি এবং নিরাপত্তা পর্যবেক্ষণ
           </p>
         </div>
         {canViewAudit && (

@@ -41,7 +41,7 @@ export default async function AdminLoginPage({
           >
             <Shield className="w-8 h-8" aria-hidden="true" />
             <span className="font-en font-bold text-2xl tracking-wider text-ps-white">
-              PAPERWORK SQUAD
+              BUSINESS COMPLIANCE PARTNER
             </span>
           </Link>
           <h1 className="text-xl font-bn font-semibold text-ps-white">

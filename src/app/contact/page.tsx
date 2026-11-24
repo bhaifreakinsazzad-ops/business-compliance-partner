@@ -10,7 +10,7 @@ import { ConsultancyForm } from "@/components/forms/ConsultancyForm";
 export const metadata: Metadata = {
   title: "যোগাযোগ",
   description:
-    "Paperwork Squad-এর সাথে যোগাযোগ করুন অথবা সরাসরি আপনার প্রয়োজন লিখে পাঠান।",
+    "Business Compliance Partner-এর সাথে যোগাযোগ করুন অথবা সরাসরি আপনার প্রয়োজন লিখে পাঠান।",
   alternates: { canonical: "/contact" },
 };
 

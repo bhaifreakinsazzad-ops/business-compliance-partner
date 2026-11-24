@@ -9,7 +9,7 @@ import { CTASection } from "@/components/shared/CTASection";
 export const metadata: Metadata = {
   title: "আমাদের সম্পর্কে",
   description:
-    "Paperwork Squad-এর লক্ষ্য, চারটি মূল স্তম্ভ এবং স্বচ্ছ প্রক্রিয়া সম্পর্কে জানুন।",
+    "Business Compliance Partner-এর লক্ষ্য, চারটি মূল স্তম্ভ এবং স্বচ্ছ প্রক্রিয়া সম্পর্কে জানুন।",
   alternates: { canonical: "/about" },
 };
 

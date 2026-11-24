@@ -2,19 +2,21 @@ import type { PublicSiteConfig } from "@/types/domain";
 import { isDatabaseConfigured, prisma } from "@/lib/db/prisma";
 
 export const INDEPENDENT_DISCLAIMER_BN =
-  "Paperwork Squad একটি স্বাধীন পেশাদার সহায়তা প্ল্যাটফর্ম; এটি কোনো সরকারি প্রতিষ্ঠান বা সরকারি পোর্টাল নয়। সকল নিবন্ধন, লাইসেন্স ও অনুমোদন সংশ্লিষ্ট কর্তৃপক্ষের বিধিমালা ও চূড়ান্ত সিদ্ধান্তসাপেক্ষ।";
+  "Business Compliance Partner (BCP) একটি স্বাধীন পেশাদার সহায়তা প্ল্যাটফর্ম; এটি কোনো সরকারি প্রতিষ্ঠান বা সরকারি পোর্টাল নয়। সকল নিবন্ধন, লাইসেন্স ও অনুমোদন সংশ্লিষ্ট কর্তৃপক্ষের বিধিমালা ও চূড়ান্ত সিদ্ধান্তসাপেক্ষ।";
 
 export const INDEPENDENT_DISCLAIMER_EN =
-  "Paperwork Squad is an independent professional learning and business compliance assistance platform; it is not a government institution or official portal.";
+  "Business Compliance Partner (BCP) is an independent professional learning and business compliance assistance platform; it is not a government institution or official portal.";
 
 export const DEFAULT_PUBLIC_SITE_CONFIG: PublicSiteConfig = {
-  brandName: "Paperwork Squad",
-  brandDisplayName: "PAPERWORK SQUAD",
-  brandNameBn: "পেপারওয়ার্ক স্কোয়াড",
-  taglineBn: "শিখুন, সেবা নিন, এগিয়ে যান।",
-  taglineEn: "Learn. Grow. Stay Compliant.",
-  logoAssetPath: "/brand/proposed-logo-concept.jpg",
-  isIdentityProvisional: true,
+  brandName: "Business Compliance Partner",
+  brandDisplayName: "BUSINESS COMPLIANCE PARTNER",
+  brandNameBn: "বিজনেস কমপ্লায়েন্স পার্টনার",
+  taglineBn: "এক অংশীদার। সম্পূর্ণ সমাধান। আত্মবিশ্বাসী প্রবৃদ্ধি।",
+  taglineEn: "One Partner. Complete Solutions. Confident Growth.",
+  // The approved master badge was not supplied in this workspace. An empty path
+  // intentionally renders a text identity instead of inventing or reusing a logo.
+  logoAssetPath: "",
+  isIdentityProvisional: false,
   // Never ship placeholder phone numbers, emails, WhatsApp numbers, or social links.
   verifiedPhone: null,
   verifiedWhatsapp: null,
@@ -25,14 +27,14 @@ export const DEFAULT_PUBLIC_SITE_CONFIG: PublicSiteConfig = {
   linkedinUrl: null,
   youtubeUrl: null,
   defaultSeoTitleBn:
-    "Paperwork Squad | পেশাদার কোর্স, ব্যবসায়িক সেবা, লাইসেন্সিং ও কনসালটেন্সি",
+    "Business Compliance Partner | ব্যবসা, কমপ্লায়েন্স, প্রশিক্ষণ ও পরামর্শ",
   defaultSeoDescBn:
     "বাংলাদেশের উদ্যোক্তা ও পেশাজীবীদের জন্য কোর্স, ব্যবসায়িক কমপ্লায়েন্স সেবা, লাইসেন্সিং তথ্য ও পরামর্শ সহায়তার একটি সুসংগঠিত প্ল্যাটফর্ম।",
   legalDisclaimerBn: INDEPENDENT_DISCLAIMER_BN,
   legalDisclaimerEn: INDEPENDENT_DISCLAIMER_EN,
   privacyPolicyVersion: "v1.0-2026-11",
   stagingNoticeBn:
-    "প্রস্তাবিত ব্র্যান্ড কনসেপ্ট ও স্টেজিং সংস্করণ — চূড়ান্ত ব্যবসা ও যোগাযোগের তথ্য অনুমোদনসাপেক্ষ।",
+    "স্টেজিং সংস্করণ — যোগাযোগের তথ্য, মূল্য ও সক্রিয় অফার অনুমোদনসাপেক্ষ।",
 };
 
 export function isStagingEnvironment(): boolean {

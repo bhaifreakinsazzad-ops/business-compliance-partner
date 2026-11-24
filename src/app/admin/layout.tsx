@@ -22,7 +22,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: {
     default: "অ্যাডমিন প্যানেল",
-    template: "%s | Admin | Paperwork Squad",
+    template: "%s | Admin | Business Compliance Partner",
   },
   robots: { index: false, follow: false },
 };

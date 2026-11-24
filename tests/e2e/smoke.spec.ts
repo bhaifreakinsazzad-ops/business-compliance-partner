@@ -100,7 +100,7 @@ const FORBIDDEN_CTA_REGEX =
 const PAYMENT_GATEWAY_URL_REGEX =
   /sslcommerz|bkash|nagad|stripe|aamarpay|shurjopay/i;
 
-test.describe("Paperwork Squad baseline smoke & responsiveness", () => {
+test.describe("Business Compliance Partner smoke & responsiveness", () => {
   test("homepage renders Bengali-first shell with skip link and zero horizontal overflow", async ({
     page,
   }) => {
@@ -110,7 +110,7 @@ test.describe("Paperwork Squad baseline smoke & responsiveness", () => {
     await expect(page.locator("html")).toHaveAttribute("lang", "bn");
     await expect(page.locator("h1")).toHaveCount(1);
     await expect(page.locator("h1")).toBeVisible();
-    await expect(page.locator("h1")).toContainText("শিখুন, সেবা নিন");
+    await expect(page.locator("h1")).toContainText("ব্যবসা শুরু থেকে সফল পরিচালনা");
     await expect(page.locator('a[href="#main-content"]')).toBeAttached();
     await expect(page.locator("main#main-content")).toBeVisible();
 
@@ -336,6 +336,19 @@ test.describe("Homepage unified search (#unified-search)", () => {
     await expect(
       resultsRegion.locator('a[href="/licensing/fire-service-e-fire-licence"]'),
     ).toBeVisible();
+  });
+});
+
+test.describe("Business Solution Finder", () => {
+  test("returns a deterministic explained next step", async ({ page }) => {
+    await page.goto("/");
+    const finder = page.locator("#solution-finder");
+    await finder.locator("select").first().selectOption("start");
+    await expect(finder.getByText("ব্যবসা গঠন ও নিবন্ধন সেবা দেখুন")).toBeVisible();
+    await expect(finder.getByRole("link", { name: /পরবর্তী ধাপে যান/ })).toHaveAttribute(
+      "href",
+      "/services?category=business-formation-and-rjsc",
+    );
   });
 });
 

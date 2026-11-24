@@ -1,27 +1,55 @@
 @import "tailwindcss";
 
-/* PAPERWORK SQUAD | Design Tokens v1.0 | Concept identity, approval pending */
+/* BUSINESS COMPLIANCE PARTNER | Official palette + semantic design tokens */
 :root {
-  --ps-midnight: #0b1726;
-  --ps-navy: #10243a;
-  --ps-gold: #c7a45d;
-  --ps-ivory: #f7f4ed;
-  --ps-ink: #263342;
-  --ps-cool: #f4f7fa;
-  --ps-white: #ffffff;
-  --ps-success: #0b7b62;
-  --ps-danger: #b42318;
-  --ps-warning: #8b5900;
-  --ps-border: #d9e1e8;
-  --ps-muted: #4b5b6d;
+  --bcp-navy: #081838;
+  --bcp-gold: #c59028;
+  --bcp-pearl: #f8f8f8;
+  --bcp-emerald: #00865a;
+  --bcp-champagne: #e9c46a;
+  --bcp-ivory: #f5f1e8;
+  --bcp-charcoal: #181d26;
+  --bcp-slate: #596775;
+  --bcp-white: #ffffff;
 
-  --ps-font-bn: var(--font-hind-siliguri), "Hind Siliguri", "Noto Sans Bengali", sans-serif;
-  --ps-font-en: var(--font-manrope), "Manrope", "Inter", "Noto Sans", sans-serif;
-  --ps-font-editorial: var(--font-eb-garamond), "EB Garamond", Georgia, serif;
+  --color-background: var(--bcp-ivory);
+  --color-foreground: var(--bcp-charcoal);
+  --color-surface: var(--bcp-white);
+  --color-surface-elevated: var(--bcp-pearl);
+  --color-border: #d9dee6;
+  --color-muted: var(--bcp-slate);
+  --color-primary: var(--bcp-navy);
+  --color-secondary: var(--bcp-gold);
+  --color-success: var(--bcp-emerald);
+  --color-warning: #8a5800;
+  --color-error: #b42318;
+  --color-info: #1456a0;
+  --color-focus: var(--bcp-champagne);
+  --color-overlay: rgb(8 24 56 / 72%);
+  --color-disabled: #9aa4b1;
+
+  /* Compatibility aliases keep the existing component API stable while the
+     implementation migrates from its legacy namespace. */
+  --ps-midnight: var(--bcp-navy);
+  --ps-navy: #102b55;
+  --ps-gold: var(--bcp-gold);
+  --ps-ivory: var(--bcp-ivory);
+  --ps-ink: var(--bcp-charcoal);
+  --ps-cool: var(--bcp-pearl);
+  --ps-white: var(--bcp-white);
+  --ps-success: var(--bcp-emerald);
+  --ps-danger: var(--color-error);
+  --ps-warning: var(--color-warning);
+  --ps-border: var(--color-border);
+  --ps-muted: var(--bcp-slate);
+
+  --ps-font-bn: var(--font-noto-sans-bengali), "Noto Sans Bengali", sans-serif;
+  --ps-font-en: var(--font-inter), "Inter", "Noto Sans", sans-serif;
+  --ps-font-editorial: var(--font-cormorant), var(--font-noto-serif-bengali), Georgia, serif;
 
   --ps-radius-card: 16px;
   --ps-radius-button: 12px;
-  --ps-container: 1200px;
+  --ps-container: 1360px;
   --ps-gutter-mobile: 16px;
   --ps-gutter-desktop: 24px;
   --ps-button-min-h: 48px;

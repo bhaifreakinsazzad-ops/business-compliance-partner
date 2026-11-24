@@ -4,6 +4,7 @@ import { Prisma, type ContentStatus, type PillarType } from "@prisma/client";
 import type { z } from "zod";
 import { isDatabaseConfigured, prisma } from "@/lib/db/prisma";
 import { hashClientIp } from "@/lib/security/password";
+import { readJsonBody, RequestBodyError } from "@/lib/security/request-body";
 import {
   assertPermission,
   AuthenticationError,
@@ -92,8 +93,11 @@ export function requireDbConfigured(): void {
 
 export async function parseJsonBody(request: NextRequest): Promise<unknown> {
   try {
-    return await request.json();
-  } catch {
+    return await readJsonBody(request, 256 * 1024);
+  } catch (error) {
+    if (error instanceof RequestBodyError && error.code === "BODY_TOO_LARGE") {
+      throw new AdminApiError(413, "BODY_TOO_LARGE", "রিকোয়েস্টের তথ্য অতিরিক্ত বড়।");
+    }
     throw new BadRequestError("অবৈধ JSON রিকোয়েস্ট।", "INVALID_JSON");
   }
 }

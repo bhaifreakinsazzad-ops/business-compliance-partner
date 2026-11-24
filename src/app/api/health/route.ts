@@ -6,11 +6,11 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   const dbHealth = await checkDatabaseHealth();
-  const statusCode = dbHealth.status === "error" ? 503 : 200;
+  const statusCode = dbHealth.status === "connected" ? 200 : 503;
 
   return NextResponse.json(
     {
-      ok: dbHealth.status !== "error",
+      ok: dbHealth.status === "connected",
       status: dbHealth.status === "connected" ? "healthy" : dbHealth.status,
       environment: isStagingEnvironment() ? "staging" : "production",
       database: dbHealth.status,

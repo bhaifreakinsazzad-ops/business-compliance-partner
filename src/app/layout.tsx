@@ -1,5 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { EB_Garamond, Hind_Siliguri, Manrope } from "next/font/google";
+import {
+  Cormorant_Garamond,
+  Inter,
+  Noto_Sans_Bengali,
+  Noto_Serif_Bengali,
+} from "next/font/google";
 import {
   DEFAULT_PUBLIC_SITE_CONFIG,
   getCanonicalBaseUrl,
@@ -7,25 +12,32 @@ import {
 } from "@/lib/config/site";
 import "./globals.css";
 
-const hindSiliguri = Hind_Siliguri({
+const notoSansBengali = Noto_Sans_Bengali({
   subsets: ["bengali", "latin"],
   weight: ["400", "500", "600", "700"],
   display: "swap",
-  variable: "--font-hind-siliguri",
+  variable: "--font-noto-sans-bengali",
 });
 
-const manrope = Manrope({
+const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   display: "swap",
-  variable: "--font-manrope",
+  variable: "--font-inter",
 });
 
-const ebGaramond = EB_Garamond({
+const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["500", "600", "700"],
   display: "swap",
-  variable: "--font-eb-garamond",
+  variable: "--font-cormorant",
+});
+
+const notoSerifBengali = Noto_Serif_Bengali({
+  subsets: ["bengali", "latin"],
+  weight: ["500", "600", "700"],
+  display: "swap",
+  variable: "--font-noto-serif-bengali",
 });
 
 const isStaging = isStagingEnvironment();
@@ -34,7 +46,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(getCanonicalBaseUrl()),
   title: {
     default: DEFAULT_PUBLIC_SITE_CONFIG.defaultSeoTitleBn,
-    template: "%s | Paperwork Squad",
+    template: "%s | Business Compliance Partner",
   },
   description: DEFAULT_PUBLIC_SITE_CONFIG.defaultSeoDescBn,
   robots: isStaging
@@ -52,7 +64,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#0B1726",
+  themeColor: "#081838",
 };
 
 export default function RootLayout({
@@ -63,7 +75,7 @@ export default function RootLayout({
   return (
     <html
       lang="bn"
-      className={`${hindSiliguri.variable} ${manrope.variable} ${ebGaramond.variable}`}
+      className={`${notoSansBengali.variable} ${notoSerifBengali.variable} ${inter.variable} ${cormorant.variable}`}
     >
       <body className="min-h-screen flex flex-col bg-ps-ivory text-ps-ink antialiased">
         <a href="#main-content" className="skip-link">

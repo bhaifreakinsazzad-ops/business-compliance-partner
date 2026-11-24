@@ -9,21 +9,37 @@ import { SEED_SERVICES } from "./seed-data/services";
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("[seed] Starting Paperwork Squad Phase-1 database seed...");
+  console.log("[seed] Starting Business Compliance Partner database seed...");
 
   // 1. Default white-label SiteSetting (NO fake contacts, NO secrets)
   await prisma.siteSetting.upsert({
     where: { id: "default" },
-    update: {},
+    update: {
+      brandName: "Business Compliance Partner",
+      brandDisplayName: "BUSINESS COMPLIANCE PARTNER",
+      brandNameBn: "বিজনেস কমপ্লায়েন্স পার্টনার",
+      taglineBn: "এক অংশীদার। সম্পূর্ণ সমাধান। আত্মবিশ্বাসী প্রবৃদ্ধি।",
+      taglineEn: "One Partner. Complete Solutions. Confident Growth.",
+      logoAssetPath: "",
+      isIdentityProvisional: false,
+      defaultSeoTitleBn:
+        "Business Compliance Partner | ব্যবসা, কমপ্লায়েন্স, প্রশিক্ষণ ও পরামর্শ",
+      legalDisclaimerBn:
+        "Business Compliance Partner (BCP) একটি স্বাধীন পেশাদার সহায়তা প্ল্যাটফর্ম; এটি কোনো সরকারি প্রতিষ্ঠান বা সরকারি পোর্টাল নয়। সকল নিবন্ধন, লাইসেন্স ও অনুমোদন সংশ্লিষ্ট কর্তৃপক্ষের বিধিমালা ও চূড়ান্ত সিদ্ধান্তসাপেক্ষ।",
+      legalDisclaimerEn:
+        "Business Compliance Partner (BCP) is an independent professional learning and compliance assistance platform; it is not a government authority or portal.",
+      stagingNoticeBn:
+        "স্টেজিং সংস্করণ — যোগাযোগের তথ্য, মূল্য ও সক্রিয় অফার অনুমোদনসাপেক্ষ।",
+    },
     create: {
       id: "default",
-      brandName: "Paperwork Squad",
-      brandDisplayName: "PAPERWORK SQUAD",
-      brandNameBn: "পেপারওয়ার্ক স্কোয়াড",
-      taglineBn: "শিখুন, সেবা নিন, এগিয়ে যান।",
-      taglineEn: "Learn. Grow. Stay Compliant.",
-      logoAssetPath: "/brand/proposed-logo-concept.jpg",
-      isIdentityProvisional: true,
+      brandName: "Business Compliance Partner",
+      brandDisplayName: "BUSINESS COMPLIANCE PARTNER",
+      brandNameBn: "বিজনেস কমপ্লায়েন্স পার্টনার",
+      taglineBn: "এক অংশীদার। সম্পূর্ণ সমাধান। আত্মবিশ্বাসী প্রবৃদ্ধি।",
+      taglineEn: "One Partner. Complete Solutions. Confident Growth.",
+      logoAssetPath: "",
+      isIdentityProvisional: false,
       verifiedPhone: null,
       verifiedWhatsapp: null,
       verifiedEmail: null,
@@ -33,17 +49,17 @@ async function main() {
       linkedinUrl: null,
       youtubeUrl: null,
       defaultSeoTitleBn:
-        "Paperwork Squad | পেশাদার কোর্স, ব্যবসায়িক সেবা, লাইসেন্সিং ও কনসালটেন্সি",
+        "Business Compliance Partner | ব্যবসা, কমপ্লায়েন্স, প্রশিক্ষণ ও পরামর্শ",
       defaultSeoDescBn:
         "বাংলাদেশের উদ্যোক্তা ও পেশাজীবীদের জন্য কোর্স, ব্যবসায়িক কমপ্লায়েন্স সেবা, লাইসেন্সিং তথ্য ও পরামর্শ সহায়তার একটি সুসংগঠিত প্ল্যাটফর্ম।",
       legalDisclaimerBn:
-        "Paperwork Squad একটি স্বাধীন পেশাদার সহায়তা প্ল্যাটফর্ম; এটি কোনো সরকারি প্রতিষ্ঠান বা সরকারি পোর্টাল নয়। সকল নিবন্ধন, লাইসেন্স ও অনুমোদন সংশ্লিষ্ট কর্তৃপক্ষের বিধিমালা ও চূড়ান্ত সিদ্ধান্তসাপেক্ষ।",
+        "Business Compliance Partner (BCP) একটি স্বাধীন পেশাদার সহায়তা প্ল্যাটফর্ম; এটি কোনো সরকারি প্রতিষ্ঠান বা সরকারি পোর্টাল নয়। সকল নিবন্ধন, লাইসেন্স ও অনুমোদন সংশ্লিষ্ট কর্তৃপক্ষের বিধিমালা ও চূড়ান্ত সিদ্ধান্তসাপেক্ষ।",
       legalDisclaimerEn:
-        "Paperwork Squad is an independent professional learning and compliance assistance platform; it is not a government authority or portal.",
+        "Business Compliance Partner (BCP) is an independent professional learning and compliance assistance platform; it is not a government authority or portal.",
       privacyPolicyVersion: "v1.0-2026-11",
       leadRetentionDays: 365,
       stagingNoticeBn:
-        "প্রস্তাবিত ব্র্যান্ড কনসেপ্ট ও স্টেজিং সংস্করণ — চূড়ান্ত ব্যবসা ও যোগাযোগের তথ্য অনুমোদনসাপেক্ষ।",
+        "স্টেজিং সংস্করণ — যোগাযোগের তথ্য, মূল্য ও সক্রিয় অফার অনুমোদনসাপেক্ষ।",
     },
   });
 

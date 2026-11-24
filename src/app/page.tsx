@@ -31,6 +31,7 @@ import { CTASection } from "@/components/shared/CTASection";
 import { HeroPillarExplorer } from "@/components/illustrations/HeroPillarExplorer";
 import { InteractiveTracksExplorer } from "@/components/home/InteractiveTracksExplorer";
 import { UnifiedSearchSection } from "@/components/home/UnifiedSearchSection";
+import { BusinessSolutionFinder } from "@/components/home/BusinessSolutionFinder";
 import { ConsultancyForm } from "@/components/forms/ConsultancyForm";
 
 const PROCESS_STEPS = [
@@ -85,24 +86,24 @@ export default async function HomePage() {
             <div className="lg:col-span-6 space-y-6">
               <div className="inline-flex items-center gap-2 rounded-full border border-ps-gold/40 bg-ps-navy px-3.5 py-1 text-xs font-medium text-ps-ivory">
                 <span className="w-1.5 h-1.5 rounded-full bg-ps-gold" aria-hidden="true" />
-                <span lang="en">Quiet Confidence • Bangladesh Business Platform</span>
+                <span lang="en">One Partner • Complete Solutions • Confident Growth</span>
               </div>
 
               <h1 className="text-3xl sm:text-4xl lg:text-[2.65rem] font-bold leading-snug text-ps-white">
-                শিখুন, সেবা নিন, ব্যবসার প্রয়োজনীয় সমাধান খুঁজুন—এক জায়গায়।
+                ব্যবসা শুরু থেকে সফল পরিচালনা—সব সমাধান এক জায়গায়।
               </h1>
 
               <p className="text-base sm:text-lg text-white/85 leading-relaxed max-w-xl">
-                পেশাদার কোর্স, ব্যবসায়িক কমপ্লায়েন্স সেবা, লাইসেন্সিং নির্দেশনা ও
-                প্রয়োজনভিত্তিক কনসালটেন্সি—সহজ বাংলায়, সুসংগঠিতভাবে।
+                পেশাদার প্রশিক্ষণ, ব্যবসায়িক সেবা, লাইসেন্স ও নিবন্ধন এবং বিশেষজ্ঞ
+                পরামর্শের জন্য একটি সমন্বিত প্ল্যাটফর্ম।
               </p>
 
               <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3 pt-1">
                 <Link
-                  href="/courses"
+                  href="#solution-finder"
                   className="inline-flex items-center justify-center gap-2 min-h-12 px-6 py-3 rounded-[12px] bg-ps-ivory text-ps-midnight font-semibold hover:bg-ps-white transition-colors"
                 >
-                  <span>কোর্স দেখুন</span>
+                  <span>আপনার ব্যবসার সমাধান খুঁজুন</span>
                   <ArrowRight className="w-4 h-4" aria-hidden="true" />
                 </Link>
                 <Link
@@ -156,6 +157,12 @@ export default async function HomePage() {
                 তথ্য সুরক্ষা ও সম্মতি-ভিত্তিক অনুসন্ধান
               </span>
             </div>
+          </div>
+        </section>
+
+        <section id="solution-finder" className="scroll-mt-24 py-12 sm:py-16 bg-ps-cool border-b border-ps-border">
+          <div className="ps-container">
+            <BusinessSolutionFinder />
           </div>
         </section>
 
@@ -283,12 +290,12 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* 8. How Paperwork Squad Helps */}
+        {/* 8. How BCP Helps */}
         <section className="py-12 sm:py-16 bg-ps-white border-y border-ps-border">
           <div className="ps-container space-y-8">
             <SectionHeading
               eyebrowEn="How It Works"
-              titleBn="Paperwork Squad কীভাবে সহায়তা করে"
+              titleBn="Business Compliance Partner কীভাবে সহায়তা করে"
               descriptionBn="জটিলতা কমিয়ে চারটি স্পষ্ট ধাপে আপনার প্রয়োজন অনুযায়ী সহায়তা।"
             />
             <ProcessSteps steps={PROCESS_STEPS} columns={4} />

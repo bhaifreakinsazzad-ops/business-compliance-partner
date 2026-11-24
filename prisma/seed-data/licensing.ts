@@ -28,7 +28,7 @@ const VERIFIED_DATE = new Date("2026-11-19T00:00:00.000Z");
 const REVIEWER = "Regulatory Baseline Check (Bangladesh Nov 2026)";
 
 const LICENSING_LIMITATION_BN =
-  "Paperwork Squad একটি স্বাধীন সহায়তা প্ল্যাটফর্ম, কোনো সরকারি পোর্টাল বা অনুমোদনকারী কর্তৃপক্ষ নয়। সকল লাইসেন্স, সনদ ও নবায়ন সিদ্ধান্ত সংশ্লিষ্ট কর্তৃপক্ষের নিয়ম, পরিদর্শন ও অনুমোদনের ওপর নির্ভরশীল।";
+  "Business Compliance Partner (BCP) একটি স্বাধীন সহায়তা প্ল্যাটফর্ম, কোনো সরকারি পোর্টাল বা অনুমোদনকারী কর্তৃপক্ষ নয়। সকল লাইসেন্স, সনদ ও নবায়ন সিদ্ধান্ত সংশ্লিষ্ট কর্তৃপক্ষের নিয়ম, পরিদর্শন ও অনুমোদনের ওপর নির্ভরশীল।";
 
 const PUBLISHED_LICENSING: SeedLicensingEntry[] = [
   {

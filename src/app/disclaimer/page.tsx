@@ -8,7 +8,7 @@ import { AuthorityNote } from "@/components/shared/AuthorityNote";
 export const metadata: Metadata = {
   title: "আইনি ও রেগুলেটরি ডিসক্লেইমার",
   description:
-    "Paperwork Squad-এর স্বাধীন প্ল্যাটফর্ম অবস্থান ও বাংলাদেশি সরকারি কর্তৃপক্ষ সংক্রান্ত ডিসক্লেইমার।",
+    "Business Compliance Partner-এর স্বাধীন প্ল্যাটফর্ম অবস্থান ও বাংলাদেশি সরকারি কর্তৃপক্ষ সংক্রান্ত ডিসক্লেইমার।",
   alternates: { canonical: "/disclaimer" },
 };
 
@@ -45,7 +45,7 @@ export default async function DisclaimerPage() {
                 পরিচালনা করে।
               </p>
               <p>
-                Paperwork Squad এসব সংস্থার কোনো প্রতিনিধি, এজেন্ট বা সরকারি পোর্টাল
+                Business Compliance Partner এসব সংস্থার কোনো প্রতিনিধি, এজেন্ট বা সরকারি পোর্টাল
                 নয়। আমরা কখনোই কোনো অনুমোদন, লাইসেন্স বা টেন্ডার সাফল্যের নিশ্চয়তা
                 প্রদান করি না।
               </p>

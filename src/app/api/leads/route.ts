@@ -1,21 +1,28 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { submitPublicLead } from "@/lib/services/leads";
+import { readJsonBody, RequestBodyError } from "@/lib/security/request-body";
 
 export async function POST(request: NextRequest) {
   let rawBody: unknown;
   try {
-    rawBody = await request.json();
-  } catch {
+    rawBody = await readJsonBody(request, 32 * 1024);
+  } catch (error) {
+    const tooLarge =
+      error instanceof RequestBodyError && error.code === "BODY_TOO_LARGE";
     return NextResponse.json(
       {
         ok: false,
         error: {
-          code: "INVALID_JSON",
-          messageBn: "অনুরোধের তথ্য সঠিকভাবে পড়া যায়নি।",
-          messageEn: "Invalid JSON request body.",
+          code: tooLarge ? "BODY_TOO_LARGE" : "INVALID_JSON",
+          messageBn: tooLarge
+            ? "অনুরোধের তথ্য অনুমোদিত সীমার চেয়ে বড়।"
+            : "অনুরোধের তথ্য সঠিকভাবে পড়া যায়নি।",
+          messageEn: tooLarge
+            ? "Request body exceeds the allowed size."
+            : "Invalid JSON request body.",
         },
       },
-      { status: 400 },
+      { status: tooLarge ? 413 : 400 },
     );
   }
 

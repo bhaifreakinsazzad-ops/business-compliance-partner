@@ -53,7 +53,7 @@ export function AppHeader({ siteConfig }: AppHeaderProps) {
 
           {siteConfig.stagingNoticeBn ? (
             <span className="inline-flex items-center rounded-full border border-ps-gold/50 bg-ps-navy px-2.5 py-0.5 text-[11px] font-medium text-ps-ivory">
-              প্রস্তাবিত ব্র্যান্ড ও স্টেজিং প্রিভিউ
+              স্টেজিং প্রিভিউ
             </span>
           ) : null}
         </div>
@@ -66,14 +66,16 @@ export function AppHeader({ siteConfig }: AppHeaderProps) {
             href="/"
             className="flex items-center gap-2.5 sm:gap-3 rounded-lg min-w-0 flex-1 lg:flex-initial"
           >
-            <Image
-              src={siteConfig.logoAssetPath}
-              alt={`${siteConfig.brandName} প্রস্তাবিত লোগো কনসেপ্ট`}
-              width={44}
-              height={44}
-              priority
-              className="rounded-[10px] border border-ps-border object-cover shrink-0"
-            />
+            {siteConfig.logoAssetPath ? (
+              <Image
+                src={siteConfig.logoAssetPath}
+                alt={`${siteConfig.brandName} official brand mark`}
+                width={48}
+                height={48}
+                priority
+                className="rounded-full border border-ps-gold/45 object-contain shrink-0"
+              />
+            ) : null}
             <div className="min-w-0">
               <span
                 className="block font-editorial text-lg sm:text-xl font-semibold tracking-wide text-ps-navy leading-tight truncate"
@@ -83,7 +85,6 @@ export function AppHeader({ siteConfig }: AppHeaderProps) {
               </span>
               <span className="block text-xs text-ps-muted truncate">
                 {siteConfig.brandNameBn}
-                {siteConfig.isIdentityProvisional ? " (প্রস্তাবিত)" : ""}
               </span>
             </div>
           </Link>

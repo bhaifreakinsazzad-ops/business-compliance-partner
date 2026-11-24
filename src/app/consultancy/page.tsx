@@ -89,7 +89,7 @@ export default async function ConsultancyPage({
                 <ol className="space-y-3 text-sm text-ps-ink/90 list-decimal list-inside">
                   <li>
                     অনুরোধ জমা হলে সার্ভার থেকে একটি স্থায়ী রেফারেন্স নম্বর (
-                    <span lang="en">PS-YYYY-XXXXXXXX</span>) পাবেন।
+                    <span lang="en">BCP-YYYY-XXXXXXXX</span>) পাবেন।
                   </li>
                   <li>আমাদের সংশ্লিষ্ট টিম আপনার বিষয়টি প্রাথমিক পর্যালোচনা করবে।</li>
                   <li>টিম উপযুক্ত সময়ে আপনার প্রদত্ত মাধ্যমে যোগাযোগ করবে।</li>

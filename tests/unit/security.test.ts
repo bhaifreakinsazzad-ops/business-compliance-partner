@@ -4,22 +4,24 @@ import { sanitizeCsvCell, toCsv } from "@/lib/security/csv";
 import { hashPassword, verifyPassword } from "@/lib/security/password";
 import { InMemoryRateLimiter } from "@/lib/security/rate-limit";
 import { hasPermission } from "@/lib/security/rbac";
+import { readJsonBody } from "@/lib/security/request-body";
 import {
   generatePublicReference,
   isValidPublicReference,
 } from "@/lib/security/reference-id";
 
 describe("Security, RBAC, Reference ID, CSV & Analytics utilities", () => {
-  it("generates cryptographically valid PS-YYYY-XXXXXXXX reference IDs (never PS-DEMO)", () => {
+  it("generates BCP references while preserving validation for legacy PS references", () => {
     const ids = new Set<string>();
     for (let i = 0; i < 50; i += 1) {
       const ref = generatePublicReference(2026);
-      expect(ref).not.toContain("PS-DEMO");
+      expect(ref).toMatch(/^BCP-2026-/);
       expect(isValidPublicReference(ref)).toBe(true);
       ids.add(ref);
     }
     expect(ids.size).toBe(50);
     expect(isValidPublicReference("PS-DEMO-12345678")).toBe(false);
+    expect(isValidPublicReference("PS-2026-ABCDEFGH")).toBe(true);
   });
 
   it("hashes and verifies passwords with scrypt timing-safe comparison", async () => {
@@ -72,12 +74,23 @@ describe("Security, RBAC, Reference ID, CSV & Analytics utilities", () => {
       email: "user@domain.com",
       addressArea: "Dhaka",
       problemDescription: "Confidential issue",
-      publicReference: "PS-2026-12345678",
+      publicReference: "BCP-2026-12345678",
     });
 
     expect(clean).toEqual({
       pillar: "COURSES",
       slug: "complete-income-tax-course-bangladesh",
+    });
+  });
+
+  it("rejects oversized JSON before schema validation", async () => {
+    const request = new Request("http://localhost/api/leads", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ value: "x".repeat(128) }),
+    });
+    await expect(readJsonBody(request, 32)).rejects.toMatchObject({
+      code: "BODY_TOO_LARGE",
     });
   });
 });

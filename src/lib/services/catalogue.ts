@@ -20,6 +20,10 @@ import { SEED_FAQS } from "../../../prisma/seed-data/faqs";
 import { SEED_LICENSING } from "../../../prisma/seed-data/licensing";
 import { SEED_SERVICES } from "../../../prisma/seed-data/services";
 
+function canUseSeedFallback(): boolean {
+  return process.env.NEXT_PUBLIC_APP_ENV !== "production";
+}
+
 function getSeedCategoriesByPillar(pillar: Pillar): PublicCategoryDTO[] {
   return SEED_CATEGORIES.filter((c) => c.pillar === pillar)
     .sort((a, b) => a.sortOrder - b.sortOrder)
@@ -111,9 +115,11 @@ export async function listPublishedCourses(filter?: {
         items: mapped,
       };
     } catch {
-      // Fall through cleanly to truthful staging seed fallback if DB unreachable
+      // Development/staging may use reviewed seed fixtures; production fails closed.
     }
   }
+
+  if (!canUseSeedFallback()) return { categories: [], items: [] };
 
   const catLookup = getSeedCategoryLookup("COURSES");
   const categories = getSeedCategoriesByPillar("COURSES");
@@ -213,6 +219,8 @@ export async function getPublishedCourseBySlug(
       // Fallback below
     }
   }
+
+  if (!canUseSeedFallback()) return null;
 
   const catLookup = getSeedCategoryLookup("COURSES");
   const c = SEED_COURSES.find(
@@ -322,6 +330,8 @@ export async function listPublishedServices(filter?: {
     }
   }
 
+  if (!canUseSeedFallback()) return { categories: [], items: [] };
+
   const catLookup = getSeedCategoryLookup("SERVICES");
   const categories = getSeedCategoriesByPillar("SERVICES");
   const items: PublicServiceCard[] = SEED_SERVICES.filter((s) =>
@@ -414,6 +424,8 @@ export async function getPublishedServiceBySlug(
       // Fallback below
     }
   }
+
+  if (!canUseSeedFallback()) return null;
 
   const catLookup = getSeedCategoryLookup("SERVICES");
   const s = SEED_SERVICES.find(
@@ -525,6 +537,8 @@ export async function listPublishedLicensing(filter?: {
     }
   }
 
+  if (!canUseSeedFallback()) return { categories: [], items: [] };
+
   const catLookup = getSeedCategoryLookup("LICENSING");
   const categories = getSeedCategoriesByPillar("LICENSING");
   const items: PublicLicensingCard[] = SEED_LICENSING.filter((l) =>
@@ -611,6 +625,8 @@ export async function getPublishedLicensingBySlug(
     }
   }
 
+  if (!canUseSeedFallback()) return null;
+
   const catLookup = getSeedCategoryLookup("LICENSING");
   const l = SEED_LICENSING.find(
     (item) =>
@@ -670,6 +686,8 @@ export async function listPublishedFaqs(
       // Fallback below
     }
   }
+
+  if (!canUseSeedFallback()) return [];
 
   return SEED_FAQS.filter((f) => f.contentStatus === "PUBLISHED")
     .filter((f) => (pillar ? f.pillar === pillar : true))

@@ -3,13 +3,14 @@ import type { ApiResponse, LeadSubmissionReceipt } from "@/types/domain";
 import { isDatabaseConfigured, prisma } from "@/lib/db/prisma";
 import { getLeadNotifier } from "@/lib/notifications/lead-notifier";
 import { hashClientIp } from "@/lib/security/password";
-import { InMemoryRateLimiter } from "@/lib/security/rate-limit";
+import { createRateLimiter } from "@/lib/security/rate-limit";
 import { generatePublicReference } from "@/lib/security/reference-id";
 import { leadSubmissionSchema } from "@/lib/validation/lead";
 
-const leadRateLimiter = new InMemoryRateLimiter({
+const leadRateLimiter = createRateLimiter({
   maxRequests: 5,
   windowMs: 10 * 60 * 1000, // 5 submissions per 10 minutes per IP hash
+  namespace: "bcp:lead",
 });
 
 async function verifyTurnstileIfConfigured(
@@ -17,7 +18,7 @@ async function verifyTurnstileIfConfigured(
   remoteIp: string | null,
 ): Promise<boolean> {
   const secret = process.env.TURNSTILE_SECRET_KEY?.trim();
-  if (!secret) return true;
+  if (!secret) return process.env.NEXT_PUBLIC_APP_ENV !== "production";
   if (!token) return false;
 
   try {
@@ -64,8 +65,24 @@ export async function submitPublicLead(
   }
 
   // 2. Rate limiting per hashed client IP
-  const ipHash = meta.ipAddress ? hashClientIp(meta.ipAddress) : "anonymous";
-  const rateCheck = leadRateLimiter.check(ipHash);
+  let ipHash: string;
+  let rateCheck;
+  try {
+    ipHash = meta.ipAddress ? hashClientIp(meta.ipAddress) : "anonymous";
+    rateCheck = await leadRateLimiter.check(ipHash);
+  } catch {
+    return {
+      status: 503,
+      body: {
+        ok: false,
+        error: {
+          code: "RATE_LIMIT_UNAVAILABLE",
+          messageBn: "নিরাপত্তা যাচাই সাময়িকভাবে অনুপলভ্য। অনুগ্রহ করে পরে চেষ্টা করুন।",
+          messageEn: "Security verification is temporarily unavailable.",
+        },
+      },
+    };
+  }
   if (!rateCheck.allowed) {
     return {
       status: 429,

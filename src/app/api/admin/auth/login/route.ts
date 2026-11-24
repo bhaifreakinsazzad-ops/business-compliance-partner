@@ -1,13 +1,14 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { isDatabaseConfigured, prisma } from "@/lib/db/prisma";
-import { verifyPassword } from "@/lib/security/password";
+import { hashClientIp, verifyPassword } from "@/lib/security/password";
 import {
   createAdminSession,
   buildSessionCookieOptions,
   SESSION_COOKIE_NAME,
 } from "@/lib/security/session";
-import { InMemoryRateLimiter } from "@/lib/security/rate-limit";
+import { createRateLimiter } from "@/lib/security/rate-limit";
+import { readJsonBody, RequestBodyError } from "@/lib/security/request-body";
 
 const LoginSchema = z.object({
   email: z.string().trim().email("সঠিক ইমেইল প্রদান করুন"),
@@ -15,16 +16,25 @@ const LoginSchema = z.object({
 });
 
 // Strict rate limiter: 5 attempts per 15 minutes
-const loginLimiter = new InMemoryRateLimiter({
+const loginLimiter = createRateLimiter({
   maxRequests: 5,
   windowMs: 15 * 60 * 1000,
+  namespace: "bcp:admin-login",
 });
 
 export async function POST(request: NextRequest) {
   const ip =
     request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "127.0.0.1";
 
-  const rateCheck = loginLimiter.check(`admin-login:${ip}`);
+  let rateCheck;
+  try {
+    rateCheck = await loginLimiter.check(hashClientIp(ip));
+  } catch {
+    return NextResponse.json(
+      { success: false, error: "নিরাপত্তা যাচাই সাময়িকভাবে অনুপলভ্য।" },
+      { status: 503 },
+    );
+  }
   if (!rateCheck.allowed) {
     const retryAfter = Math.ceil((rateCheck.resetAtMs - Date.now()) / 1000);
     return NextResponse.json(
@@ -51,7 +61,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const json = await request.json();
+    const json = await readJsonBody(request, 8 * 1024);
     const result = LoginSchema.safeParse(json);
     if (!result.success) {
       return NextResponse.json(
@@ -120,6 +130,12 @@ export async function POST(request: NextRequest) {
 
     return response;
   } catch (error) {
+    if (error instanceof RequestBodyError) {
+      return NextResponse.json(
+        { success: false, error: "অবৈধ বা অতিরিক্ত বড় রিকোয়েস্ট।" },
+        { status: error.code === "BODY_TOO_LARGE" ? 413 : 400 },
+      );
+    }
     console.error("[Admin Login Error]", error);
     return NextResponse.json(
       { success: false, error: "সার্ভারে সমস্যা হয়েছে। অনুগ্রহ করে পরে চেষ্টা করুন।" },

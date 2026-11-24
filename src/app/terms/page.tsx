@@ -6,7 +6,7 @@ import { Footer } from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
   title: "ব্যবহারের শর্তাবলি (Terms of Use)",
-  description: "Paperwork Squad প্ল্যাটফর্ম ব্যবহারের সাধারণ শর্তাবলি।",
+  description: "Business Compliance Partner প্ল্যাটফর্ম ব্যবহারের সাধারণ শর্তাবলি।",
   alternates: { canonical: "/terms" },
 };
 

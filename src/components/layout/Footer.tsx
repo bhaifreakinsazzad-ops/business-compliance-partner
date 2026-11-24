@@ -181,7 +181,7 @@ export function Footer({ siteConfig }: FooterProps) {
         <div className="space-y-2 text-xs text-white/75 leading-relaxed">
           <p className="font-medium text-white/90">{siteConfig.legalDisclaimerBn}</p>
           <p className="text-white/60">
-            © {new Date().getUTCFullYear()} {siteConfig.brandName} (Working Identity).
+            © {new Date().getUTCFullYear()} {siteConfig.brandName}.
             সর্বস্বত্ব সংরক্ষিত।
           </p>
         </div>

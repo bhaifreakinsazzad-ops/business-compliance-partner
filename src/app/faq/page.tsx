@@ -10,7 +10,7 @@ import { CTASection } from "@/components/shared/CTASection";
 export const metadata: Metadata = {
   title: "সচরাচর জিজ্ঞাসা (FAQ)",
   description:
-    "Paperwork Squad-এর কোর্স, পেশাদার সেবা, লাইসেন্সিং ও কনসালটেন্সি প্রক্রিয়া সম্পর্কে সচরাচর জিজ্ঞাসিত প্রশ্নোত্তর।",
+    "Business Compliance Partner-এর কোর্স, পেশাদার সেবা, লাইসেন্সিং ও কনসালটেন্সি প্রক্রিয়া সম্পর্কে সচরাচর জিজ্ঞাসিত প্রশ্নোত্তর।",
   alternates: { canonical: "/faq" },
 };
 
