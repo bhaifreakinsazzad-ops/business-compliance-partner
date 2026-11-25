@@ -2,10 +2,25 @@ import Link from "next/link";
 import { ArrowRight, Building2 } from "lucide-react";
 import type { PublicLicensingCard } from "@/types/domain";
 import { Badge, StatusBadge } from "@/components/ui/Badge";
+import { WhatsAppEnquiryButton } from "@/components/shared/WhatsAppEnquiryButton";
 
-export function LicensingCard({ entry }: { entry: PublicLicensingCard }) {
+interface LicensingCardProps {
+  entry: PublicLicensingCard;
+  verifiedWhatsapp?: string | null;
+  canonicalBaseUrl?: string | null;
+}
+
+export function LicensingCard({
+  entry,
+  verifiedWhatsapp = null,
+  canonicalBaseUrl = null,
+}: LicensingCardProps) {
+  const enquiryHref = `/consultancy?pillar=LICENSING&slug=${encodeURIComponent(
+    entry.slug,
+  )}&topic=${encodeURIComponent(entry.titleBn)}`;
+
   return (
-    <article className="group rounded-[16px] border border-ps-border bg-ps-white p-6 flex flex-col justify-between gap-5 shadow-[0_2px_10px_rgba(11,23,38,0.03)] hover:border-ps-navy/30 hover:shadow-md transition-all duration-200">
+    <article className="group rounded-[16px] border border-ps-border bg-ps-white p-6 flex flex-col justify-between gap-5 shadow-[0_2px_10px_rgba(11,23,38,0.03)] hover:border-ps-navy/35 hover:shadow-md transition-all duration-200">
       <div className="space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <Badge variant="cool">{entry.categoryNameBn}</Badge>
@@ -28,13 +43,22 @@ export function LicensingCard({ entry }: { entry: PublicLicensingCard }) {
         </p>
       </div>
 
-      <div className="pt-3 border-t border-ps-border/70 flex items-center justify-between gap-3">
-        <span className="text-xs text-ps-muted">স্বাধীন সহায়তা নির্দেশিকা</span>
+      <div className="pt-3 border-t border-ps-border/70 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+        <WhatsAppEnquiryButton
+          verifiedWhatsapp={verifiedWhatsapp}
+          serviceName={entry.titleBn}
+          servicePath={`/licensing/${entry.slug}`}
+          canonicalBaseUrl={canonicalBaseUrl}
+          fallbackHref={enquiryHref}
+          fallbackLabelBn="সহায়তা চাই"
+          size="sm"
+          className="w-full sm:w-auto"
+        />
         <Link
           href={`/licensing/${entry.slug}`}
-          className="inline-flex items-center gap-1.5 text-sm font-semibold text-ps-navy hover:text-ps-midnight hover:underline underline-offset-4 shrink-0"
+          className="inline-flex items-center justify-center sm:justify-end gap-1.5 min-h-10 text-sm font-semibold text-ps-navy hover:text-ps-midnight hover:underline underline-offset-4 shrink-0"
         >
-          <span>সহায়তা চাই</span>
+          <span>বিস্তারিত দেখুন</span>
           <ArrowRight className="w-4 h-4" aria-hidden="true" />
         </Link>
       </div>

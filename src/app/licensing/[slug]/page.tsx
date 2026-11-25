@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, CheckCircle2, FileText } from "lucide-react";
-import { getPublicSiteConfig } from "@/lib/config/site";
+import { getCanonicalBaseUrl, getPublicSiteConfig } from "@/lib/config/site";
 import { getPublishedLicensingBySlug } from "@/lib/services/catalogue";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
@@ -10,6 +10,7 @@ import { Footer } from "@/components/layout/Footer";
 import { Badge, StatusBadge } from "@/components/ui/Badge";
 import { AuthorityNote } from "@/components/shared/AuthorityNote";
 import { VerificationMeta } from "@/components/shared/VerificationMeta";
+import { WhatsAppEnquiryButton } from "@/components/shared/WhatsAppEnquiryButton";
 
 interface LicensingDetailProps {
   params: Promise<{ slug: string }>;
@@ -43,6 +44,7 @@ export default async function LicensingDetailPage({
     notFound();
   }
 
+  const canonicalBaseUrl = getCanonicalBaseUrl();
   const enquiryHref = `/consultancy?pillar=LICENSING&slug=${encodeURIComponent(
     entry.slug,
   )}&topic=${encodeURIComponent(entry.titleBn)}`;
@@ -143,8 +145,19 @@ export default async function LicensingDetailPage({
                   আপনার প্রতিষ্ঠানের ধরন ও বর্তমান অবস্থা জানিয়ে অনুরোধ পাঠান—আমাদের টিম
                   তথ্য যাচাই করে যোগাযোগ করবে।
                 </p>
-                <Link href={enquiryHref} className="ps-primary-button w-full">
-                  <span>সহায়তা চাই</span>
+                <WhatsAppEnquiryButton
+                  verifiedWhatsapp={siteConfig.verifiedWhatsapp}
+                  serviceName={entry.titleBn}
+                  servicePath={`/licensing/${entry.slug}`}
+                  canonicalBaseUrl={canonicalBaseUrl}
+                  fallbackHref={enquiryHref}
+                  fallbackLabelBn="সহায়তা চাই"
+                  fullWidth
+                  size="lg"
+                />
+
+                <Link href={enquiryHref} className="ps-secondary-button w-full">
+                  <span>ফর্মের মাধ্যমে সহায়তা চাই</span>
                   <ArrowRight className="w-4 h-4" aria-hidden="true" />
                 </Link>
               </div>

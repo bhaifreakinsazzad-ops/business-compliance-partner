@@ -1,6 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
+import {
+  buildWhatsAppGeneralMessage,
+  buildWhatsAppUrl,
+} from "@/lib/contact/whatsapp";
 import type { PublicSiteConfig } from "@/types/domain";
 
 interface FooterProps {
@@ -8,9 +12,13 @@ interface FooterProps {
 }
 
 export function Footer({ siteConfig }: FooterProps) {
+  const whatsappHref = buildWhatsAppUrl(
+    siteConfig.verifiedWhatsapp,
+    buildWhatsAppGeneralMessage(),
+  );
   const hasAnyVerifiedContact = Boolean(
     siteConfig.verifiedPhone ||
-      siteConfig.verifiedWhatsapp ||
+      whatsappHref ||
       siteConfig.verifiedEmail ||
       siteConfig.verifiedAddressBn,
   );
@@ -146,11 +154,11 @@ export function Footer({ siteConfig }: FooterProps) {
                     </a>
                   </li>
                 ) : null}
-                {siteConfig.verifiedWhatsapp ? (
+                {whatsappHref ? (
                   <li className="flex items-center gap-2">
                     <MessageCircle className="w-4 h-4 text-ps-gold shrink-0" aria-hidden="true" />
                     <a
-                      href={`https://wa.me/${siteConfig.verifiedWhatsapp.replace(/\D/g, "")}`}
+                      href={whatsappHref}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="hover:text-ps-gold"

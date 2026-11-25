@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { getPublicSiteConfig } from "@/lib/config/site";
+import {
+  buildWhatsAppGeneralMessage,
+  buildWhatsAppUrl,
+} from "@/lib/contact/whatsapp";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { Footer } from "@/components/layout/Footer";
@@ -16,10 +20,14 @@ export const metadata: Metadata = {
 
 export default async function ContactPage() {
   const siteConfig = await getPublicSiteConfig();
+  const whatsappHref = buildWhatsAppUrl(
+    siteConfig.verifiedWhatsapp,
+    buildWhatsAppGeneralMessage(),
+  );
 
   const hasVerifiedContacts = Boolean(
     siteConfig.verifiedPhone ||
-      siteConfig.verifiedWhatsapp ||
+      whatsappHref ||
       siteConfig.verifiedEmail ||
       siteConfig.verifiedAddressBn,
   );
@@ -69,11 +77,11 @@ export default async function ContactPage() {
                         </a>
                       </li>
                     ) : null}
-                    {siteConfig.verifiedWhatsapp ? (
+                    {whatsappHref ? (
                       <li className="flex items-center gap-3">
                         <MessageCircle className="w-4 h-4 text-ps-navy shrink-0" aria-hidden="true" />
                         <a
-                          href={`https://wa.me/${siteConfig.verifiedWhatsapp.replace(/\D/g, "")}`}
+                          href={whatsappHref}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="font-medium hover:underline"

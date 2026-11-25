@@ -373,9 +373,11 @@ test.describe("Detail pages & Mode A enquiry deep-links", () => {
     await page.goto("/services/etin-individual-corporate-tax-return");
 
     await expect(
-      page.locator(
-        'a[href^="/consultancy?pillar=SERVICES&slug=etin-individual-corporate-tax-return"]',
-      ),
+      page
+        .locator(
+          'a[href^="/consultancy?pillar=SERVICES&slug=etin-individual-corporate-tax-return"]',
+        )
+        .first(),
     ).toBeVisible();
   });
 
@@ -383,9 +385,11 @@ test.describe("Detail pages & Mode A enquiry deep-links", () => {
     await page.goto("/licensing/trade-license-new-renewal");
 
     await expect(
-      page.locator(
-        'a[href^="/consultancy?pillar=LICENSING&slug=trade-license-new-renewal"]',
-      ),
+      page
+        .locator(
+          'a[href^="/consultancy?pillar=LICENSING&slug=trade-license-new-renewal"]',
+        )
+        .first(),
     ).toBeVisible();
   });
 });

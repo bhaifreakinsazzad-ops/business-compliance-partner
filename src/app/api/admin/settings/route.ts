@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import type { Prisma } from "@prisma/client";
 import { DEFAULT_PUBLIC_SITE_CONFIG } from "@/lib/config/site";
+import { normalizeWhatsAppNumber } from "@/lib/contact/whatsapp";
 import { isDatabaseConfigured, prisma } from "@/lib/db/prisma";
 import { requireAdminSession } from "@/lib/security/session";
 import {
@@ -96,7 +97,10 @@ export async function PATCH(request: NextRequest) {
       updateData.verifiedPhone = emptyToNull(data.verifiedPhone);
     }
     if (data.verifiedWhatsapp !== undefined) {
-      updateData.verifiedWhatsapp = emptyToNull(data.verifiedWhatsapp);
+      const cleaned = emptyToNull(data.verifiedWhatsapp);
+      updateData.verifiedWhatsapp = cleaned
+        ? normalizeWhatsAppNumber(cleaned)
+        : null;
     }
     if (data.verifiedEmail !== undefined) {
       updateData.verifiedEmail = emptyToNull(data.verifiedEmail);
@@ -157,7 +161,9 @@ export async function PATCH(request: NextRequest) {
           : DEFAULT_PUBLIC_SITE_CONFIG.verifiedPhone,
       verifiedWhatsapp:
         data.verifiedWhatsapp !== undefined
-          ? (emptyToNull(data.verifiedWhatsapp) ?? null)
+          ? ((emptyToNull(data.verifiedWhatsapp)
+              ? normalizeWhatsAppNumber(data.verifiedWhatsapp)
+              : null) ?? null)
           : DEFAULT_PUBLIC_SITE_CONFIG.verifiedWhatsapp,
       verifiedEmail:
         data.verifiedEmail !== undefined

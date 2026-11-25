@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, CheckCircle2, FileText } from "lucide-react";
-import { getPublicSiteConfig } from "@/lib/config/site";
+import { getCanonicalBaseUrl, getPublicSiteConfig } from "@/lib/config/site";
 import { getPublishedServiceBySlug } from "@/lib/services/catalogue";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
@@ -11,6 +11,7 @@ import { Badge, StatusBadge } from "@/components/ui/Badge";
 import { AuthorityNote } from "@/components/shared/AuthorityNote";
 import { ProcessSteps } from "@/components/shared/ProcessSteps";
 import { VerificationMeta } from "@/components/shared/VerificationMeta";
+import { WhatsAppEnquiryButton } from "@/components/shared/WhatsAppEnquiryButton";
 
 interface ServiceDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -44,6 +45,7 @@ export default async function ServiceDetailPage({
     notFound();
   }
 
+  const canonicalBaseUrl = getCanonicalBaseUrl();
   const enquiryHref = `/consultancy?pillar=SERVICES&slug=${encodeURIComponent(
     service.slug,
   )}&topic=${encodeURIComponent(service.titleBn)}`;
@@ -174,8 +176,18 @@ export default async function ServiceDetailPage({
                   </div>
                 ) : null}
 
-                <Link href={enquiryHref} className="ps-primary-button w-full">
-                  <span>সেবার অনুরোধ করুন</span>
+                <WhatsAppEnquiryButton
+                  verifiedWhatsapp={siteConfig.verifiedWhatsapp}
+                  serviceName={service.titleBn}
+                  servicePath={`/services/${service.slug}`}
+                  canonicalBaseUrl={canonicalBaseUrl}
+                  fallbackHref={enquiryHref}
+                  fullWidth
+                  size="lg"
+                />
+
+                <Link href={enquiryHref} className="ps-secondary-button w-full">
+                  <span>ফর্মের মাধ্যমে সেবার অনুরোধ</span>
                   <ArrowRight className="w-4 h-4" aria-hidden="true" />
                 </Link>
               </div>

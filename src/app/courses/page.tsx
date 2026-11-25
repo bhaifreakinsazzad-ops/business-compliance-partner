@@ -1,30 +1,35 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { BookOpen } from "lucide-react";
+import { BookOpen, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { getPublicSiteConfig } from "@/lib/config/site";
-import { listPublishedCourses } from "@/lib/services/catalogue";
+import {
+  listPublishedCourses,
+  sortCourseCategoriesByClientPriority,
+} from "@/lib/services/catalogue";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { Footer } from "@/components/layout/Footer";
+import { CategoryGrid } from "@/components/shared/CategoryGrid";
 import { CourseCard } from "@/components/shared/CourseCard";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { SearchBox } from "@/components/shared/SearchBox";
 import { CTASection } from "@/components/shared/CTASection";
-import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "পেশাদার কোর্স ও প্রশিক্ষণ ক্যাটালগ",
   description:
-    "বাংলাদেশে Income Tax, VAT & Mushak, e-GP, Customs, Accounting ও Company Secretarial বিষয়ে ব্যবহারিক কোর্স ক্যাটালগ ও আগ্রহ নিবন্ধন।",
+    "বাংলাদেশে Income Tax, VAT & Mushak, e-GP, E-commerce, RJSC, Customs ও Accounting বিষয়ে ব্যবহারিক কোর্স ক্যাটালগ ও আগ্রহ নিবন্ধন।",
   alternates: { canonical: "/courses" },
 };
 
+const PAGE_SIZE = 12;
+
 interface CoursesPageProps {
-  searchParams: Promise<{ category?: string; q?: string }>;
+  searchParams: Promise<{ category?: string; q?: string; page?: string }>;
 }
 
 export default async function CoursesPage({ searchParams }: CoursesPageProps) {
-  const { category = "", q = "" } = await searchParams;
+  const { category = "", q = "", page = "1" } = await searchParams;
   const [siteConfig, { categories, items }] = await Promise.all([
     getPublicSiteConfig(),
     listPublishedCourses({
@@ -33,38 +38,61 @@ export default async function CoursesPage({ searchParams }: CoursesPageProps) {
     }),
   ]);
 
+  const orderedCategories = sortCourseCategoriesByClientPriority(categories);
+  const activeCategory = orderedCategories.find((c) => c.slug === category);
+
+  const totalPages = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
+  const parsedPage = Number.parseInt(page, 10);
+  const currentPage =
+    Number.isFinite(parsedPage) && parsedPage >= 1
+      ? Math.min(parsedPage, totalPages)
+      : 1;
+  const paginatedItems = items.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE,
+  );
+
+  const buildPageHref = (targetPage: number) => {
+    const params = new URLSearchParams();
+    if (category) params.set("category", category);
+    if (q) params.set("q", q);
+    if (targetPage > 1) params.set("page", String(targetPage));
+    const qs = params.toString();
+    return qs ? `/courses?${qs}` : "/courses";
+  };
+
   return (
     <>
       <AppHeader siteConfig={siteConfig} />
 
       <main id="main-content" tabIndex={-1} className="flex-1">
-        {/* Hero */}
-        <section className="bg-ps-midnight text-ps-white py-12 sm:py-14 border-b border-ps-gold/30">
-          <div className="ps-container space-y-5">
+        {/* Compact Hero */}
+        <section className="bg-ps-midnight text-ps-white py-10 sm:py-12 border-b border-ps-gold/30">
+          <div className="ps-container space-y-4">
             <Breadcrumbs
               dark
               items={[{ labelBn: "হোম", href: "/" }, { labelBn: "কোর্স ও প্রশিক্ষণ" }]}
             />
-            <div className="max-w-3xl space-y-3">
+            <div className="max-w-3xl space-y-2.5">
               <span className="inline-flex items-center gap-2 rounded-full border border-ps-gold/40 bg-ps-navy px-3 py-1 text-xs font-medium text-ps-ivory">
                 <BookOpen className="w-3.5 h-3.5 text-ps-gold" aria-hidden="true" />
-                <span lang="en">Priority 01 • Course Catalogue (Mode A)</span>
+                <span lang="en">Course Discovery Hub • 10 Tracks</span>
               </span>
               <h1 className="text-3xl sm:text-4xl font-bold leading-snug">
                 পেশাদার কোর্স ও ব্যবসায়িক প্রশিক্ষণ
               </h1>
               <p className="text-sm sm:text-base text-white/85 leading-relaxed">
-                বাংলাদেশি ব্যবসায়িক আইন, কর, ভ্যাট, কাস্টমস, ই-জিপি এবং অ্যাকাউন্টিং
-                বিষয়ে কাঠামোগত প্রশিক্ষণ ক্যাটালগ। সিলেবাস দেখে আপনার আগ্রহ নিবন্ধন করুন।
+                Tax, VAT, e-GP, E-commerce এবং RJSC সহ ১০টি ক্যাটাগরি থেকে আপনার
+                প্রয়োজনীয় ব্যবহারিক প্রশিক্ষণ কোর্স বেছে নিন।
               </p>
             </div>
           </div>
         </section>
 
-        {/* Search & Category Filter */}
-        <section className="py-10 sm:py-12">
+        {/* Search & Category-First Discovery */}
+        <section className="py-8 sm:py-12">
           <div className="ps-container space-y-8">
-            <div className="rounded-[16px] bg-ps-white border border-ps-border p-5 sm:p-6 space-y-5 shadow-sm">
+            <div className="rounded-[16px] bg-ps-white border border-ps-border p-5 sm:p-6 space-y-4 shadow-sm">
               <SearchBox
                 action="/courses"
                 defaultValue={q}
@@ -73,46 +101,101 @@ export default async function CoursesPage({ searchParams }: CoursesPageProps) {
                 placeholderBn="কোর্সের নাম বা বিষয় লিখুন (যেমন: Income Tax, VAT, e-GP, RJSC)..."
               />
 
-              <div className="flex flex-wrap gap-2" role="navigation" aria-label="কোর্স ক্যাটাগরি">
-                <Link
-                  href={q ? `/courses?q=${encodeURIComponent(q)}` : "/courses"}
-                  className={cn(
-                    "inline-flex items-center min-h-10 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium border transition-colors",
-                    !category
-                      ? "bg-ps-navy text-ps-white border-ps-navy"
-                      : "bg-ps-cool text-ps-navy border-ps-border hover:bg-ps-white",
-                  )}
-                >
-                  সব ক্যাটাগরি
-                </Link>
-                {categories.map((cat) => {
-                  const active = cat.slug === category;
-                  const href = q
-                    ? `/courses?category=${encodeURIComponent(cat.slug)}&q=${encodeURIComponent(q)}`
-                    : `/courses?category=${encodeURIComponent(cat.slug)}`;
-                  return (
-                    <Link
-                      key={cat.slug}
-                      href={href}
-                      className={cn(
-                        "inline-flex items-center min-h-10 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium border transition-colors",
-                        active
-                          ? "bg-ps-navy text-ps-white border-ps-navy"
-                          : "bg-ps-white text-ps-navy border-ps-border hover:bg-ps-cool",
-                      )}
-                    >
-                      {cat.nameBn}
-                    </Link>
-                  );
-                })}
-              </div>
+              {(category || q) ? (
+                <div className="flex flex-wrap items-center justify-between gap-3 pt-1 text-xs sm:text-sm">
+                  <p className="text-ps-ink/85">
+                    মোট <strong>{items.length}</strong>টি প্রকাশিত কোর্স পাওয়া গেছে
+                    {activeCategory ? (
+                      <>
+                        {" "}
+                        — ক্যাটাগরি: <strong>{activeCategory.nameBn}</strong>
+                      </>
+                    ) : null}
+                  </p>
+                  <Link
+                    href="/courses"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-ps-border bg-ps-cool px-3 py-1.5 text-xs font-semibold text-ps-navy hover:bg-ps-ivory"
+                  >
+                    <X className="w-3.5 h-3.5" aria-hidden="true" />
+                    <span>ফিল্টার মুছুন</span>
+                  </Link>
+                </div>
+              ) : null}
             </div>
 
-            {items.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {items.map((course) => (
-                  <CourseCard key={course.slug} course={course} />
-                ))}
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
+                <div>
+                  <h2 className="text-xl sm:text-2xl font-bold text-ps-navy">
+                    কোর্স ক্যাটাগরি নির্বাচন করুন
+                  </h2>
+                  <p className="text-xs sm:text-sm text-ps-muted">
+                    Tax, VAT, e-GP, E-commerce ও Company Secretarial (RJSC) অগ্রাধিকার ক্রমে সাজানো।
+                  </p>
+                </div>
+              </div>
+
+              <CategoryGrid
+                categories={orderedCategories}
+                basePath="/courses"
+                activeSlug={category}
+                query={q}
+                ariaLabel="কোর্স ক্যাটাগরি"
+                showAllCard
+                allLabelBn="সব ক্যাটাগরি"
+                accent="gold"
+                columns={3}
+                highlightCount={5}
+              />
+            </div>
+
+            {paginatedItems.length > 0 ? (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between gap-3 border-b border-ps-border pb-3">
+                  <h2 className="text-lg sm:text-xl font-bold text-ps-navy">
+                    {activeCategory
+                      ? `${activeCategory.nameBn} — কোর্স তালিকা`
+                      : "প্রকাশিত কোর্সসমূহ"}
+                  </h2>
+                  <span className="text-xs sm:text-sm font-medium text-ps-muted">
+                    মোট {items.length}টি কোর্স
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {paginatedItems.map((course) => (
+                    <CourseCard key={course.slug} course={course} />
+                  ))}
+                </div>
+
+                {totalPages > 1 ? (
+                  <nav
+                    aria-label="কোর্স পেজিনেশন"
+                    className="flex flex-wrap items-center justify-center gap-2 pt-2"
+                  >
+                    {currentPage > 1 ? (
+                      <Link
+                        href={buildPageHref(currentPage - 1)}
+                        className="inline-flex items-center gap-1 min-h-11 px-4 rounded-[10px] border border-ps-border bg-ps-white text-sm font-semibold text-ps-navy hover:bg-ps-cool"
+                      >
+                        <ChevronLeft className="w-4 h-4" aria-hidden="true" />
+                        <span>পূর্ববর্তী</span>
+                      </Link>
+                    ) : null}
+                    <span className="px-3 text-sm font-medium text-ps-muted">
+                      পৃষ্ঠা {currentPage} / {totalPages}
+                    </span>
+                    {currentPage < totalPages ? (
+                      <Link
+                        href={buildPageHref(currentPage + 1)}
+                        className="inline-flex items-center gap-1 min-h-11 px-4 rounded-[10px] border border-ps-border bg-ps-white text-sm font-semibold text-ps-navy hover:bg-ps-cool"
+                      >
+                        <span>পরবর্তী</span>
+                        <ChevronRight className="w-4 h-4" aria-hidden="true" />
+                      </Link>
+                    ) : null}
+                  </nav>
+                ) : null}
               </div>
             ) : (
               <EmptyState

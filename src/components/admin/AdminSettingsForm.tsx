@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle2, Save } from "lucide-react";
+import { normalizeWhatsAppNumber } from "@/lib/contact/whatsapp";
 
 export interface SiteSettingsFormValues {
   brandName: string;
@@ -186,8 +187,24 @@ export function AdminSettingsForm({
               type="text"
               value={form.verifiedWhatsapp}
               onChange={(e) => updateField("verifiedWhatsapp", e.target.value)}
+              placeholder="+8801XXXXXXXXX বা 01XXXXXXXXX"
               className="w-full min-h-[44px] px-3 py-2 rounded-[10px] bg-ps-midnight border border-ps-white/25 text-ps-white text-sm font-en"
             />
+            {form.verifiedWhatsapp.trim() ? (
+              normalizeWhatsAppNumber(form.verifiedWhatsapp) ? (
+                <p className="mt-1 text-[11px] text-emerald-300 font-en" dir="ltr">
+                  wa.me/{normalizeWhatsAppNumber(form.verifiedWhatsapp)}
+                </p>
+              ) : (
+                <p className="mt-1 text-[11px] text-rose-300">
+                  সঠিক বাংলাদেশি বা আন্তর্জাতিক WhatsApp নম্বর দিন
+                </p>
+              )
+            ) : (
+              <p className="mt-1 text-[11px] text-ps-ivory/60">
+                খালি থাকলে পাবলিক সাইটে কনসালটেন্সি ফর্ম ফলব্যাক দেখাবে।
+              </p>
+            )}
           </div>
           <div>
             <label className="block text-xs text-ps-ivory/85 mb-1.5">

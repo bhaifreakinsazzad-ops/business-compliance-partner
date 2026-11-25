@@ -1,0 +1,383 @@
+"use client";
+
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type TouchEvent,
+} from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { animate } from "animejs";
+import {
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+  Pause,
+  Play,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+
+interface PromoSlide {
+  id: string;
+  badgeBn: string;
+  titleBn: string;
+  subtitleBn: string;
+  ctaHref: string;
+  ctaLabelBn: string;
+  imageSrc: string;
+  imageAlt: string;
+  accentTone: "gold" | "emerald";
+}
+
+const PROMO_SLIDES: PromoSlide[] = [
+  {
+    id: "ecosystem-overview",
+    badgeBn: "Business Compliance Partner • বাংলাদেশ",
+    titleBn: "ব্যবসা শুরু থেকে সফল পরিচালনা—সব সমাধান এক জায়গায়।",
+    subtitleBn:
+      "পেশাদার কোর্স, ট্যাক্স-ভ্যাট কমপ্লায়েন্স সেবা, লাইসেন্সিং ও বিশেষজ্ঞ পরামর্শের বিশ্বস্ত প্ল্যাটফর্ম।",
+    ctaHref: "/courses",
+    ctaLabelBn: "কোর্স ও সেবা দেখুন",
+    imageSrc: "/brand/infographics/bcp-infographic-01-overview.jpg",
+    imageAlt: "Business Compliance Partner প্ল্যাটফর্মের সমন্বিত ৪টি স্তম্ভের ওভারভিউ",
+    accentTone: "gold",
+  },
+  {
+    id: "professional-courses",
+    badgeBn: "দক্ষতা উন্নয়ন ও প্রশিক্ষণ",
+    titleBn: "Tax, VAT, e-GP, E-commerce ও RJSC ব্যবহারিক কোর্স",
+    subtitleBn:
+      "বাস্তবভিত্তিক সিলেবাস, পেশাদার প্রশিক্ষণ ট্র্যাক এবং সহজ আগ্রহ নিবন্ধনের সুবিধা।",
+    ctaHref: "/courses",
+    ctaLabelBn: "সকল কোর্স দেখুন",
+    imageSrc: "/brand/infographics/bcp-infographic-02-learn.jpg",
+    imageAlt: "BCP পেশাদার কোর্স ও প্রশিক্ষণ ট্র্যাকের ইনফোগ্রাফিক",
+    accentTone: "gold",
+  },
+  {
+    id: "tax-vat-services",
+    badgeBn: "সরাসরি WhatsApp সহায়তা",
+    titleBn: "আয়কর, ভ্যাট ও মূসক কমপ্লায়েন্স সেবা এখন আরও সহজ",
+    subtitleBn:
+      "e-TIN, BIN নিবন্ধন, মূসক ৯.১ রিটার্ন এবং কর্পোরেট কমপ্লায়েন্সে দ্রুত পেশাদার সহায়তা।",
+    ctaHref: "/services?category=income-tax-solutions",
+    ctaLabelBn: "ট্যাক্স ও ভ্যাট সেবা",
+    imageSrc: "/brand/infographics/bcp-infographic-04-vat-mushak.jpg",
+    imageAlt: "আয়কর ও ভ্যাট মূসক কমপ্লায়েন্স সেবার ইনফোগ্রাফিক",
+    accentTone: "emerald",
+  },
+  {
+    id: "licensing-registration",
+    badgeBn: "নিবন্ধন ও লাইসেন্সিং",
+    titleBn: "ট্রেড লাইসেন্স, Smart RJSC, DIFE ও ফায়ার লাইসেন্স সহায়তা",
+    subtitleBn:
+      "সরকারি কর্তৃপক্ষের সঠিক তথ্যসূত্র, প্রয়োজনীয় নথিপত্র ও ধাপে ধাপে আবেদন নির্দেশিকা।",
+    ctaHref: "/licensing",
+    ctaLabelBn: "লাইসেন্সিং নির্দেশিকা",
+    imageSrc: "/brand/infographics/bcp-infographic-05-licensing.jpg",
+    imageAlt: "ব্যবসায়িক লাইসেন্সিং ও নিবন্ধন সহায়তার ইনফোগ্রাফিক",
+    accentTone: "gold",
+  },
+  {
+    id: "professional-consultancy",
+    badgeBn: "বিশেষজ্ঞ পরামর্শ",
+    titleBn: "আপনার ব্যবসার জটিল কমপ্লায়েন্স সমস্যার সঠিক দিকনির্দেশনা",
+    subtitleBn:
+      "নতুন ব্যবসা শুরু থেকে সম্প্রসারণ—প্রতিটি ধাপে বাস্তবসম্মত ও স্বচ্ছ পরামর্শ।",
+    ctaHref: "/consultancy",
+    ctaLabelBn: "পরামর্শের অনুরোধ করুন",
+    imageSrc: "/brand/infographics/bcp-infographic-06-consultancy.jpg",
+    imageAlt: "বিশেষজ্ঞ ব্যবসায়িক কনসালটেন্সি সেবার ইনফোগ্রাফিক",
+    accentTone: "emerald",
+  },
+];
+
+const AUTO_ADVANCE_MS = 5500;
+
+interface PromotionalHeroSliderProps {
+  logoAssetPath: string;
+  brandName: string;
+}
+
+export function PromotionalHeroSlider({
+  logoAssetPath,
+  brandName,
+}: PromotionalHeroSliderProps) {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+  const touchStartX = useRef<number | null>(null);
+  const textPanelRef = useRef<HTMLDivElement | null>(null);
+  const hasInteractedRef = useRef(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setPrefersReducedMotion(media.matches);
+    const onChange = (e: MediaQueryListEvent) =>
+      setPrefersReducedMotion(e.matches);
+    media.addEventListener("change", onChange);
+    return () => media.removeEventListener("change", onChange);
+  }, []);
+
+  const goTo = useCallback((nextIndex: number) => {
+    hasInteractedRef.current = true;
+    setActiveIndex((nextIndex + PROMO_SLIDES.length) % PROMO_SLIDES.length);
+  }, []);
+
+  const goNext = useCallback(() => {
+    goTo(activeIndex + 1);
+  }, [activeIndex, goTo]);
+
+  const goPrev = useCallback(() => {
+    goTo(activeIndex - 1);
+  }, [activeIndex, goTo]);
+
+  useEffect(() => {
+    if (prefersReducedMotion || isPaused || isHovered || isFocused) {
+      return;
+    }
+    const timer = window.setInterval(() => {
+      hasInteractedRef.current = true;
+      setActiveIndex((prev) => (prev + 1) % PROMO_SLIDES.length);
+    }, AUTO_ADVANCE_MS);
+
+    return () => window.clearInterval(timer);
+  }, [prefersReducedMotion, isPaused, isHovered, isFocused]);
+
+  useEffect(() => {
+    if (!hasInteractedRef.current || prefersReducedMotion) return;
+    const panel = textPanelRef.current;
+    if (!panel) return;
+    animate(panel, {
+      opacity: [0.65, 1],
+      translateY: [8, 0],
+      duration: 360,
+      ease: "outCubic",
+    });
+  }, [activeIndex, prefersReducedMotion]);
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLElement>) => {
+    if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      goPrev();
+    } else if (e.key === "ArrowRight") {
+      e.preventDefault();
+      goNext();
+    }
+  };
+
+  const handleTouchStart = (e: TouchEvent<HTMLElement>) => {
+    touchStartX.current = e.touches[0]?.clientX ?? null;
+  };
+
+  const handleTouchEnd = (e: TouchEvent<HTMLElement>) => {
+    if (touchStartX.current === null) return;
+    const endX = e.changedTouches[0]?.clientX ?? touchStartX.current;
+    const deltaX = endX - touchStartX.current;
+    touchStartX.current = null;
+    if (Math.abs(deltaX) < 40) return;
+    if (deltaX < 0) {
+      goNext();
+    } else {
+      goPrev();
+    }
+  };
+
+  const activeSlide = PROMO_SLIDES[activeIndex] ?? PROMO_SLIDES[0]!;
+
+  return (
+    <section
+      aria-roledescription="carousel"
+      aria-label="প্রচারণামূলক ব্যানার স্লাইডার"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onFocus={() => setIsFocused(true)}
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
+          setIsFocused(false);
+        }
+      }}
+      onKeyDown={handleKeyDown}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      className="relative bg-ps-midnight text-ps-white border-b border-ps-gold/35 overflow-hidden"
+    >
+      {/* Subtle Brand Gradient Backdrop */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(197,144,40,0.18),transparent_55%),radial-gradient(circle_at_bottom_left,rgba(0,134,90,0.12),transparent_45%)] pointer-events-none"
+      />
+
+      <div className="ps-container relative py-5 sm:py-7 lg:py-8">
+        <div className="min-h-[220px] sm:min-h-[280px] lg:min-h-[320px] grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-center">
+          {/* Text Column — always renders immediately on SSR */}
+          <div
+            ref={textPanelRef}
+            aria-live={isPaused ? "polite" : "off"}
+            className="lg:col-span-7 space-y-3 sm:space-y-4"
+          >
+            <div className="flex items-center gap-2.5">
+              {logoAssetPath ? (
+                <Image
+                  src={logoAssetPath}
+                  alt={`${brandName} মাস্টার ব্যাজ`}
+                  width={34}
+                  height={34}
+                  priority
+                  className="rounded-full border border-ps-gold/60 object-contain shrink-0"
+                />
+              ) : null}
+              <span
+                className={cn(
+                  "inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold",
+                  activeSlide.accentTone === "emerald"
+                    ? "border-emerald-400/50 bg-emerald-950/60 text-emerald-100"
+                    : "border-ps-gold/50 bg-ps-navy text-ps-ivory",
+                )}
+              >
+                <span
+                  className={cn(
+                    "w-1.5 h-1.5 rounded-full",
+                    activeSlide.accentTone === "emerald"
+                      ? "bg-emerald-400"
+                      : "bg-ps-gold",
+                  )}
+                  aria-hidden="true"
+                />
+                <span>{activeSlide.badgeBn}</span>
+              </span>
+            </div>
+
+            {activeIndex === 0 ? (
+              <h1 className="text-xl sm:text-3xl lg:text-[2.35rem] font-bold leading-snug text-ps-white">
+                {activeSlide.titleBn}
+              </h1>
+            ) : (
+              <>
+                <h1 className="visually-hidden">
+                  {PROMO_SLIDES[0]!.titleBn}
+                </h1>
+                <p className="text-xl sm:text-3xl lg:text-[2.35rem] font-bold leading-snug text-ps-white">
+                  {activeSlide.titleBn}
+                </p>
+              </>
+            )}
+
+            <p className="text-sm sm:text-base text-white/85 leading-relaxed max-w-2xl">
+              {activeSlide.subtitleBn}
+            </p>
+
+            <div className="pt-1 flex flex-wrap items-center gap-3">
+              <Link
+                href={activeSlide.ctaHref}
+                className="inline-flex items-center justify-center gap-2 min-h-11 px-5 py-2.5 rounded-[10px] bg-ps-gold text-ps-midnight font-bold text-sm hover:bg-[#dfb15b] transition-colors"
+              >
+                <span>{activeSlide.ctaLabelBn}</span>
+                <ArrowRight className="w-4 h-4" aria-hidden="true" />
+              </Link>
+              <span className="text-xs text-white/70 hidden sm:inline">
+                স্লাইড {activeIndex + 1} / {PROMO_SLIDES.length}
+              </span>
+            </div>
+          </div>
+
+          {/* Visual Artwork Column — reserved dimensions prevent CLS */}
+          <div className="hidden sm:flex lg:col-span-5 justify-end">
+            <div className="relative w-full max-w-[440px] h-[220px] lg:h-[290px] rounded-[16px] overflow-hidden border border-ps-gold/40 bg-ps-navy/80 shadow-xl">
+              <Image
+                src={activeSlide.imageSrc}
+                alt={activeSlide.imageAlt}
+                fill
+                priority={activeIndex === 0}
+                sizes="(max-width: 1024px) 420px, 440px"
+                className="object-cover object-center"
+              />
+              <div
+                aria-hidden="true"
+                className="absolute inset-0 bg-gradient-to-t from-ps-midnight/50 via-transparent to-transparent pointer-events-none"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Carousel Controls Bar */}
+        <div className="mt-4 pt-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-3">
+          {/* Pagination Dots — 28px+ touch target for WCAG 2.2 AA SC 2.5.8 */}
+          <div className="flex items-center gap-1" role="group" aria-label="স্লাইড নির্বাচন">
+            {PROMO_SLIDES.map((slide, idx) => {
+              const isCurrent = idx === activeIndex;
+              return (
+                <button
+                  key={slide.id}
+                  type="button"
+                  onClick={() => goTo(idx)}
+                  aria-label={`স্লাইড ${idx + 1}: ${slide.badgeBn}`}
+                  aria-current={isCurrent ? "true" : undefined}
+                  className="inline-flex items-center justify-center min-w-7 min-h-7 px-1 rounded-full cursor-pointer"
+                >
+                  <span
+                    className={cn(
+                      "block h-2.5 rounded-full transition-all",
+                      isCurrent
+                        ? "w-7 bg-ps-gold"
+                        : "w-2.5 bg-white/40 hover:bg-white/70",
+                    )}
+                    aria-hidden="true"
+                  />
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Prev / Pause / Next */}
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={goPrev}
+              aria-label="পূর্ববর্তী স্লাইড"
+              className="inline-flex items-center justify-center w-9 h-9 rounded-[10px] border border-white/20 bg-ps-navy/80 text-ps-white hover:border-ps-gold hover:text-ps-gold transition-colors cursor-pointer"
+            >
+              <ChevronLeft className="w-4 h-4" aria-hidden="true" />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setIsPaused((prev) => !prev)}
+              aria-pressed={isPaused}
+              aria-label={isPaused ? "স্লাইডার চালু করুন" : "স্লাইডার থামান"}
+              className="inline-flex items-center justify-center gap-1.5 h-9 px-3 rounded-[10px] border border-white/20 bg-ps-navy/80 text-xs font-medium text-ps-ivory hover:border-ps-gold hover:text-ps-gold transition-colors cursor-pointer"
+            >
+              {isPaused ? (
+                <>
+                  <Play className="w-3.5 h-3.5" aria-hidden="true" />
+                  <span>চালু</span>
+                </>
+              ) : (
+                <>
+                  <Pause className="w-3.5 h-3.5" aria-hidden="true" />
+                  <span>থামান</span>
+                </>
+              )}
+            </button>
+
+            <button
+              type="button"
+              onClick={goNext}
+              aria-label="পরবর্তী স্লাইড"
+              className="inline-flex items-center justify-center w-9 h-9 rounded-[10px] border border-white/20 bg-ps-navy/80 text-ps-white hover:border-ps-gold hover:text-ps-gold transition-colors cursor-pointer"
+            >
+              <ChevronRight className="w-4 h-4" aria-hidden="true" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}

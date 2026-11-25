@@ -9,13 +9,17 @@ import {
 
 const PRIMARY_NAV_LINKS: NavLinkItem[] = [
   { href: "/", labelBn: "হোম" },
-  { href: "/courses", labelBn: "কোর্স" },
-  { href: "/services", labelBn: "পেশাদার সেবা" },
-  { href: "/licensing", labelBn: "লাইসেন্সিং" },
-  { href: "/tools", labelBn: "টুলস ও রোডম্যাপ" },
-  { href: "/portal", labelBn: "কাস্টমার পোর্টাল" },
-  { href: "/consultancy", labelBn: "কনসালটেন্সি" },
+  { href: "/courses", labelBn: "সকল কোর্স" },
+  { href: "/services", labelBn: "সকল সেবা" },
   { href: "/about", labelBn: "আমাদের সম্পর্কে" },
+  { href: "/contact", labelBn: "যোগাযোগ" },
+];
+
+const SECONDARY_NAV_LINKS: NavLinkItem[] = [
+  { href: "/licensing", labelBn: "লাইসেন্সিং" },
+  { href: "/consultancy", labelBn: "কনসালটেন্সি" },
+  { href: "/tools", labelBn: "বিজনেস টুলস" },
+  { href: "/portal", labelBn: "কাস্টমার পোর্টাল" },
 ];
 
 interface AppHeaderProps {
@@ -25,7 +29,7 @@ interface AppHeaderProps {
 export function AppHeader({ siteConfig }: AppHeaderProps) {
   return (
     <>
-      {/* Subtle Utility / Trust Bar — strictly verified contacts or governance status */}
+      {/* Utility Bar — Verified contacts + secondary ecosystem links */}
       <div className="bg-ps-midnight text-ps-cool border-b border-white/10 text-xs sm:text-sm">
         <div className="ps-container py-2 flex flex-wrap items-center justify-between gap-2">
           <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-white/85">
@@ -53,11 +57,25 @@ export function AppHeader({ siteConfig }: AppHeaderProps) {
             ) : null}
           </div>
 
-          {siteConfig.stagingNoticeBn ? (
-            <span className="inline-flex items-center rounded-full border border-ps-gold/50 bg-ps-navy px-2.5 py-0.5 text-[11px] font-medium text-ps-ivory">
-              স্টেজিং প্রিভিউ
-            </span>
-          ) : null}
+          <div className="flex items-center gap-4">
+            <nav aria-label="সেকেন্ডারি নেভিগেশন" className="hidden lg:flex items-center gap-4 text-xs text-white/80">
+              {SECONDARY_NAV_LINKS.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="hover:text-ps-gold transition-colors whitespace-nowrap"
+                >
+                  {item.labelBn}
+                </Link>
+              ))}
+            </nav>
+
+            {siteConfig.stagingNoticeBn ? (
+              <span className="inline-flex items-center rounded-full border border-ps-gold/50 bg-ps-navy px-2.5 py-0.5 text-[11px] font-medium text-ps-ivory">
+                স্টেজিং প্রিভিউ
+              </span>
+            ) : null}
+          </div>
         </div>
       </div>
 
@@ -93,7 +111,7 @@ export function AppHeader({ siteConfig }: AppHeaderProps) {
 
           <nav
             aria-label="প্রধান নেভিগেশন"
-            className="hidden lg:flex items-center gap-5 xl:gap-6 text-sm font-medium text-ps-navy"
+            className="hidden lg:flex items-center gap-6 xl:gap-7 text-sm font-semibold text-ps-navy"
           >
             {PRIMARY_NAV_LINKS.map((link) => (
               <Link
@@ -125,6 +143,7 @@ export function AppHeader({ siteConfig }: AppHeaderProps) {
             brandDisplayName={siteConfig.brandDisplayName}
             brandNameBn={siteConfig.brandNameBn}
             links={PRIMARY_NAV_LINKS}
+            secondaryLinks={SECONDARY_NAV_LINKS}
             ctaHref="/consultancy"
             ctaLabelBn="পরামর্শের অনুরোধ"
           />

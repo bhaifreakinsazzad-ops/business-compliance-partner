@@ -1,16 +1,23 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { BriefcaseBusiness } from "lucide-react";
-import { getPublicSiteConfig } from "@/lib/config/site";
+import {
+  BriefcaseBusiness,
+  ChevronLeft,
+  ChevronRight,
+  FileCheck2,
+  MessageSquareText,
+  X,
+} from "lucide-react";
+import { getCanonicalBaseUrl, getPublicSiteConfig } from "@/lib/config/site";
 import { listPublishedServices } from "@/lib/services/catalogue";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { Footer } from "@/components/layout/Footer";
+import { CategoryGrid } from "@/components/shared/CategoryGrid";
 import { ServiceCard } from "@/components/shared/ServiceCard";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { SearchBox } from "@/components/shared/SearchBox";
 import { CTASection } from "@/components/shared/CTASection";
-import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "পেশাদার ব্যবসায়িক সেবা ক্যাটালগ",
@@ -19,12 +26,14 @@ export const metadata: Metadata = {
   alternates: { canonical: "/services" },
 };
 
+const PAGE_SIZE = 12;
+
 interface ServicesPageProps {
-  searchParams: Promise<{ category?: string; q?: string }>;
+  searchParams: Promise<{ category?: string; q?: string; page?: string }>;
 }
 
 export default async function ServicesPage({ searchParams }: ServicesPageProps) {
-  const { category = "", q = "" } = await searchParams;
+  const { category = "", q = "", page = "1" } = await searchParams;
   const [siteConfig, { categories, items }] = await Promise.all([
     getPublicSiteConfig(),
     listPublishedServices({
@@ -33,36 +42,84 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
     }),
   ]);
 
+  const canonicalBaseUrl = getCanonicalBaseUrl();
+  const activeCategory = categories.find((c) => c.slug === category);
+
+  const totalPages = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
+  const parsedPage = Number.parseInt(page, 10);
+  const currentPage =
+    Number.isFinite(parsedPage) && parsedPage >= 1
+      ? Math.min(parsedPage, totalPages)
+      : 1;
+  const paginatedItems = items.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE,
+  );
+
+  const buildPageHref = (targetPage: number) => {
+    const params = new URLSearchParams();
+    if (category) params.set("category", category);
+    if (q) params.set("q", q);
+    if (targetPage > 1) params.set("page", String(targetPage));
+    const qs = params.toString();
+    return qs ? `/services?${qs}` : "/services";
+  };
+
   return (
     <>
       <AppHeader siteConfig={siteConfig} />
 
       <main id="main-content" tabIndex={-1} className="flex-1">
-        <section className="bg-ps-midnight text-ps-white py-12 sm:py-14 border-b border-ps-gold/30">
+        <section className="bg-ps-midnight text-ps-white py-10 sm:py-12 border-b border-ps-gold/30">
           <div className="ps-container space-y-5">
             <Breadcrumbs
               dark
               items={[{ labelBn: "হোম", href: "/" }, { labelBn: "পেশাদার সেবা" }]}
             />
-            <div className="max-w-3xl space-y-3">
+            <div className="max-w-3xl space-y-2.5">
               <span className="inline-flex items-center gap-2 rounded-full border border-ps-gold/40 bg-ps-navy px-3 py-1 text-xs font-medium text-ps-ivory">
                 <BriefcaseBusiness className="w-3.5 h-3.5 text-ps-gold" aria-hidden="true" />
-                <span lang="en">Priority 01 • Professional Business Services</span>
+                <span lang="en">Professional Business Services • 11 Categories</span>
               </span>
               <h1 className="text-3xl sm:text-4xl font-bold leading-snug">
                 পেশাদার ব্যবসায়িক ও কমপ্লায়েন্স সেবাসমূহ
               </h1>
               <p className="text-sm sm:text-base text-white/85 leading-relaxed">
-                ট্যাক্স, ভ্যাট, e-GP, কোম্পানি সেক্রেটারিয়াল, আমদানি-রপ্তানি এবং
-                অ্যাকাউন্টিং বিষয়ে সুসংগঠিত ডকুমেন্টেশন ও সহায়তা সেবা।
+                ট্যাক্স, ভ্যাট, e-GP, কোম্পানি সেক্রেটারিয়াল, আমদানি-রপ্তানি ও
+                অ্যাকাউন্টিং বিষয়ে সুসংগঠিত সেবা ও সরাসরি WhatsApp সহায়তা।
               </p>
+            </div>
+
+            {/* 3-Gateway Quick Switcher: Services, Licensing, Consultancy */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+              <Link
+                href="/services"
+                className="flex items-center gap-3 rounded-[12px] bg-ps-gold text-ps-midnight px-4 py-3 font-bold text-sm shadow-sm"
+              >
+                <BriefcaseBusiness className="w-5 h-5 shrink-0" aria-hidden="true" />
+                <span>পেশাদার ব্যবসায়িক সেবা</span>
+              </Link>
+              <Link
+                href="/licensing"
+                className="flex items-center gap-3 rounded-[12px] bg-ps-navy border border-ps-gold/40 text-ps-white px-4 py-3 font-semibold text-sm hover:border-ps-gold transition-colors"
+              >
+                <FileCheck2 className="w-5 h-5 text-ps-gold shrink-0" aria-hidden="true" />
+                <span>লাইসেন্সিং ও নিবন্ধন</span>
+              </Link>
+              <Link
+                href="/consultancy"
+                className="flex items-center gap-3 rounded-[12px] bg-ps-navy border border-ps-gold/40 text-ps-white px-4 py-3 font-semibold text-sm hover:border-ps-gold transition-colors"
+              >
+                <MessageSquareText className="w-5 h-5 text-ps-gold shrink-0" aria-hidden="true" />
+                <span>বিশেষজ্ঞ কনসালটেন্সি</span>
+              </Link>
             </div>
           </div>
         </section>
 
-        <section className="py-10 sm:py-12">
+        <section className="py-8 sm:py-12">
           <div className="ps-container space-y-8">
-            <div className="rounded-[16px] bg-ps-white border border-ps-border p-5 sm:p-6 space-y-5 shadow-sm">
+            <div className="rounded-[16px] bg-ps-white border border-ps-border p-5 sm:p-6 space-y-4 shadow-sm">
               <SearchBox
                 action="/services"
                 defaultValue={q}
@@ -71,46 +128,103 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
                 placeholderBn="সেবার নাম বা বিষয় লিখুন (যেমন: e-TIN, BIN, RJSC, e-GP, Bookkeeping)..."
               />
 
-              <div className="flex flex-wrap gap-2" role="navigation" aria-label="সেবা ক্যাটাগরি">
-                <Link
-                  href={q ? `/services?q=${encodeURIComponent(q)}` : "/services"}
-                  className={cn(
-                    "inline-flex items-center min-h-10 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium border transition-colors",
-                    !category
-                      ? "bg-ps-navy text-ps-white border-ps-navy"
-                      : "bg-ps-cool text-ps-navy border-ps-border hover:bg-ps-white",
-                  )}
-                >
-                  সব বিভাগ
-                </Link>
-                {categories.map((cat) => {
-                  const active = cat.slug === category;
-                  const href = q
-                    ? `/services?category=${encodeURIComponent(cat.slug)}&q=${encodeURIComponent(q)}`
-                    : `/services?category=${encodeURIComponent(cat.slug)}`;
-                  return (
-                    <Link
-                      key={cat.slug}
-                      href={href}
-                      className={cn(
-                        "inline-flex items-center min-h-10 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium border transition-colors",
-                        active
-                          ? "bg-ps-navy text-ps-white border-ps-navy"
-                          : "bg-ps-white text-ps-navy border-ps-border hover:bg-ps-cool",
-                      )}
-                    >
-                      {cat.nameBn}
-                    </Link>
-                  );
-                })}
-              </div>
+              {(category || q) ? (
+                <div className="flex flex-wrap items-center justify-between gap-3 pt-1 text-xs sm:text-sm">
+                  <p className="text-ps-ink/85">
+                    মোট <strong>{items.length}</strong>টি প্রকাশিত সেবা পাওয়া গেছে
+                    {activeCategory ? (
+                      <>
+                        {" "}
+                        — বিভাগ: <strong>{activeCategory.nameBn}</strong>
+                      </>
+                    ) : null}
+                  </p>
+                  <Link
+                    href="/services"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-ps-border bg-ps-cool px-3 py-1.5 text-xs font-semibold text-ps-navy hover:bg-ps-ivory"
+                  >
+                    <X className="w-3.5 h-3.5" aria-hidden="true" />
+                    <span>ফিল্টার মুছুন</span>
+                  </Link>
+                </div>
+              ) : null}
             </div>
 
-            {items.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {items.map((svc) => (
-                  <ServiceCard key={svc.slug} service={svc} />
-                ))}
+            <div className="space-y-4">
+              <div>
+                <h2 className="text-xl sm:text-2xl font-bold text-ps-navy">
+                  সেবা বিভাগ নির্বাচন করুন
+                </h2>
+                <p className="text-xs sm:text-sm text-ps-muted">
+                  আপনার প্রয়োজনীয় বিভাগ নির্বাচন করে সরাসরি WhatsApp বা অনলাইন অনুরোধ পাঠান।
+                </p>
+              </div>
+
+              <CategoryGrid
+                categories={categories}
+                basePath="/services"
+                activeSlug={category}
+                query={q}
+                ariaLabel="সেবা ক্যাটাগরি"
+                showAllCard
+                allLabelBn="সব বিভাগ"
+                accent="emerald"
+                columns={3}
+              />
+            </div>
+
+            {paginatedItems.length > 0 ? (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between gap-3 border-b border-ps-border pb-3">
+                  <h2 className="text-lg sm:text-xl font-bold text-ps-navy">
+                    {activeCategory
+                      ? `${activeCategory.nameBn} — সেবাসমূহ`
+                      : "প্রকাশিত পেশাদার সেবাসমূহ"}
+                  </h2>
+                  <span className="text-xs sm:text-sm font-medium text-ps-muted">
+                    মোট {items.length}টি সেবা
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {paginatedItems.map((svc) => (
+                    <ServiceCard
+                      key={svc.slug}
+                      service={svc}
+                      verifiedWhatsapp={siteConfig.verifiedWhatsapp}
+                      canonicalBaseUrl={canonicalBaseUrl}
+                    />
+                  ))}
+                </div>
+
+                {totalPages > 1 ? (
+                  <nav
+                    aria-label="সেবা পেজিনেশন"
+                    className="flex flex-wrap items-center justify-center gap-2 pt-2"
+                  >
+                    {currentPage > 1 ? (
+                      <Link
+                        href={buildPageHref(currentPage - 1)}
+                        className="inline-flex items-center gap-1 min-h-11 px-4 rounded-[10px] border border-ps-border bg-ps-white text-sm font-semibold text-ps-navy hover:bg-ps-cool"
+                      >
+                        <ChevronLeft className="w-4 h-4" aria-hidden="true" />
+                        <span>পূর্ববর্তী</span>
+                      </Link>
+                    ) : null}
+                    <span className="px-3 text-sm font-medium text-ps-muted">
+                      পৃষ্ঠা {currentPage} / {totalPages}
+                    </span>
+                    {currentPage < totalPages ? (
+                      <Link
+                        href={buildPageHref(currentPage + 1)}
+                        className="inline-flex items-center gap-1 min-h-11 px-4 rounded-[10px] border border-ps-border bg-ps-white text-sm font-semibold text-ps-navy hover:bg-ps-cool"
+                      >
+                        <span>পরবর্তী</span>
+                        <ChevronRight className="w-4 h-4" aria-hidden="true" />
+                      </Link>
+                    ) : null}
+                  </nav>
+                ) : null}
               </div>
             ) : (
               <EmptyState

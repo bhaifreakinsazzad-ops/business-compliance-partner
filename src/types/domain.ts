@@ -35,6 +35,7 @@ export interface PublicCategoryDTO {
   shortDescEn: string | null;
   iconName: string | null;
   sortOrder: number;
+  publishedCount?: number;
 }
 
 export interface CourseModuleDTO {
@@ -63,6 +64,9 @@ export interface PublicCourseCard {
   availabilityStatus: AvailabilityStatusValue;
   featured: boolean;
   lastVerifiedAt: string | null;
+  deliveryMode?: string | null;
+  duration?: string | null;
+  feeDisplay?: string | null;
 }
 
 export interface PublicCourseDetail extends PublicCourseCard {
