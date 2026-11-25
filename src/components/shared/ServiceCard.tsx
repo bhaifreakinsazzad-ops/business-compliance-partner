@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, Landmark } from "lucide-react";
 import type { PublicServiceCard } from "@/types/domain";
-import { Badge, StatusBadge } from "@/components/ui/Badge";
+import { getAvailabilityLabelBn } from "@/lib/content/helpers";
 import { WhatsAppEnquiryButton } from "@/components/shared/WhatsAppEnquiryButton";
 
 interface ServiceCardProps {
@@ -19,12 +19,24 @@ export function ServiceCard({
     service.slug,
   )}&topic=${encodeURIComponent(service.titleBn)}`;
 
+  const statusTone =
+    service.availabilityStatus === "ACTIVE"
+      ? "text-ps-success"
+      : service.availabilityStatus === "INTEREST_ONLY"
+        ? "text-ps-warning"
+        : "text-ps-navy";
+
   return (
-    <article className="group rounded-[16px] border border-ps-border bg-ps-white p-6 flex flex-col justify-between gap-5 shadow-[0_2px_10px_rgba(11,23,38,0.03)] hover:border-ps-navy/35 hover:shadow-md transition-all duration-200">
+    <article className="group rounded-[16px] border border-ps-border bg-ps-white p-6 flex flex-col justify-between gap-5 shadow-[0_2px_10px_rgba(11,23,38,0.03)] hover:border-ps-navy/35 hover:shadow-md transition-[border-color,box-shadow] duration-200">
       <div className="space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <Badge variant="cool">{service.categoryNameBn}</Badge>
-          <StatusBadge status={service.availabilityStatus} />
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-semibold">
+          <span className="text-ps-muted">{service.categoryNameBn}</span>
+          <span aria-hidden="true" className="text-ps-border">
+            ·
+          </span>
+          <span className={statusTone}>
+            {getAvailabilityLabelBn(service.availabilityStatus)}
+          </span>
         </div>
 
         <h3 className="text-lg sm:text-xl font-bold text-ps-navy leading-snug">
@@ -54,19 +66,19 @@ export function ServiceCard({
         ) : null}
       </div>
 
-      <div className="pt-3 border-t border-ps-border/70 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+      <div className="pt-3.5 border-t border-ps-border/70 flex flex-col gap-2.5">
         <WhatsAppEnquiryButton
           verifiedWhatsapp={verifiedWhatsapp}
           serviceName={service.titleBn}
           servicePath={`/services/${service.slug}`}
           canonicalBaseUrl={canonicalBaseUrl}
           fallbackHref={enquiryHref}
-          size="sm"
-          className="w-full sm:w-auto"
+          size="md"
+          fullWidth
         />
         <Link
           href={`/services/${service.slug}`}
-          className="inline-flex items-center justify-center sm:justify-end gap-1.5 min-h-10 text-sm font-semibold text-ps-navy hover:text-ps-midnight hover:underline underline-offset-4 shrink-0"
+          className="inline-flex items-center justify-center gap-1.5 min-h-10 text-sm font-semibold text-ps-navy hover:text-ps-midnight hover:underline underline-offset-4 whitespace-nowrap"
         >
           <span>বিস্তারিত দেখুন</span>
           <ArrowRight className="w-4 h-4" aria-hidden="true" />

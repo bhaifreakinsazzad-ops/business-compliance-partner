@@ -1,10 +1,15 @@
 import { describe, expect, it } from "vitest";
 import {
+  buildWhatsAppCourseMessage,
   buildWhatsAppGeneralMessage,
+  buildWhatsAppInquiryMessage,
   buildWhatsAppServiceMessage,
   buildWhatsAppUrl,
+  formatWhatsAppDisplay,
   isTrustedCanonicalUrl,
   normalizeWhatsAppNumber,
+  OFFICIAL_ADMIN_WHATSAPP_DISPLAY,
+  OFFICIAL_ADMIN_WHATSAPP_E164,
 } from "@/lib/contact/whatsapp";
 import { siteSettingUpdateSchema } from "@/lib/validation/content";
 import {
@@ -12,6 +17,10 @@ import {
   listPublishedServices,
   sortCourseCategoriesByClientPriority,
 } from "@/lib/services/catalogue";
+import {
+  getEnvVerifiedWhatsapp,
+  resolveVerifiedWhatsapp,
+} from "@/lib/config/site";
 
 describe("WhatsApp normalization, encoding & validation", () => {
   it("normalizes Bangladesh mobile numbers across common formats and Bengali digits", () => {
@@ -76,6 +85,33 @@ describe("WhatsApp normalization, encoding & validation", () => {
 
     expect(buildWhatsAppUrl("invalid-number", msg)).toBeNull();
     expect(buildWhatsAppGeneralMessage("ট্যাক্স")).toContain("ট্যাক্স");
+
+    expect(normalizeWhatsAppNumber(OFFICIAL_ADMIN_WHATSAPP_DISPLAY)).toBe(
+      OFFICIAL_ADMIN_WHATSAPP_E164,
+    );
+    expect(formatWhatsAppDisplay(OFFICIAL_ADMIN_WHATSAPP_E164)).toBe(
+      "+880 1521-537864",
+    );
+
+    const courseMsg = buildWhatsAppCourseMessage({
+      courseName: "Income Tax কোর্স",
+      coursePath: "/courses/income-tax-practical",
+      canonicalBaseUrl: "https://bcp.com.bd",
+    });
+    expect(courseMsg).toContain("Income Tax কোর্স");
+    expect(courseMsg).toContain("https://bcp.com.bd/courses/income-tax-practical");
+
+    const inquiryMsg = buildWhatsAppInquiryMessage({
+      name: "তানভীর আহমেদ",
+      mobile: "01712345678",
+      addressArea: "মতিঝিল, ঢাকা",
+      categoryContext: "VAT, BIN ও মূসক",
+      problemDescription: "নতুন কোম্পানির BIN নিবন্ধন প্রয়োজন",
+      publicReference: "BCP-2026-12345678",
+    });
+    expect(inquiryMsg).toContain("BCP-2026-12345678");
+    expect(inquiryMsg).toContain("তানভীর আহমেদ");
+    expect(inquiryMsg).toContain("নতুন কোম্পানির BIN নিবন্ধন প্রয়োজন");
   });
 
   it("validates verifiedWhatsapp in siteSettingUpdateSchema", () => {
@@ -119,6 +155,40 @@ describe("Course category priority & published-only catalogue filtering", () => 
     }
     for (const item of services.items) {
       expect(item.availabilityStatus).not.toBe("INACTIVE");
+    }
+  });
+});
+
+describe("Layered WhatsApp activation (Admin DB > Env Var > Official Admin Default)", () => {
+  it("prefers valid Admin DB value, falls back to validated env var, then defaults to official +880 1521-537864", () => {
+    const prevServer = process.env.VERIFIED_WHATSAPP_NUMBER;
+    const prevPublic = process.env.NEXT_PUBLIC_VERIFIED_WHATSAPP;
+
+    try {
+      delete process.env.VERIFIED_WHATSAPP_NUMBER;
+      delete process.env.NEXT_PUBLIC_VERIFIED_WHATSAPP;
+      expect(getEnvVerifiedWhatsapp()).toBeNull();
+      expect(resolveVerifiedWhatsapp(null)).toBe(OFFICIAL_ADMIN_WHATSAPP_E164);
+
+      process.env.VERIFIED_WHATSAPP_NUMBER = "01712345678";
+      expect(getEnvVerifiedWhatsapp()).toBe("8801712345678");
+      expect(resolveVerifiedWhatsapp(null)).toBe("8801712345678");
+      expect(resolveVerifiedWhatsapp("+8801812345678")).toBe("8801812345678");
+
+      process.env.VERIFIED_WHATSAPP_NUMBER = "1xxx-xxxxxx";
+      expect(getEnvVerifiedWhatsapp()).toBeNull();
+      expect(resolveVerifiedWhatsapp("")).toBe(OFFICIAL_ADMIN_WHATSAPP_E164);
+    } finally {
+      if (prevServer === undefined) {
+        delete process.env.VERIFIED_WHATSAPP_NUMBER;
+      } else {
+        process.env.VERIFIED_WHATSAPP_NUMBER = prevServer;
+      }
+      if (prevPublic === undefined) {
+        delete process.env.NEXT_PUBLIC_VERIFIED_WHATSAPP;
+      } else {
+        process.env.NEXT_PUBLIC_VERIFIED_WHATSAPP = prevPublic;
+      }
     }
   });
 });

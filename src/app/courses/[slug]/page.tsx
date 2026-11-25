@@ -2,13 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, CheckCircle2, Users } from "lucide-react";
-import { getPublicSiteConfig } from "@/lib/config/site";
+import { getCanonicalBaseUrl, getPublicSiteConfig } from "@/lib/config/site";
+import { buildWhatsAppCourseMessage } from "@/lib/contact/whatsapp";
 import { getPublishedCourseBySlug } from "@/lib/services/catalogue";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { Footer } from "@/components/layout/Footer";
 import { Badge, StatusBadge } from "@/components/ui/Badge";
 import { VerificationMeta } from "@/components/shared/VerificationMeta";
+import { WhatsAppEnquiryButton } from "@/components/shared/WhatsAppEnquiryButton";
 
 interface CourseDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -42,9 +44,16 @@ export default async function CourseDetailPage({
     notFound();
   }
 
+  const canonicalBaseUrl = getCanonicalBaseUrl();
+  const coursePath = `/courses/${course.slug}`;
   const enquiryHref = `/consultancy?pillar=COURSES&slug=${encodeURIComponent(
     course.slug,
   )}&topic=${encodeURIComponent(course.titleBn)}`;
+  const courseWhatsAppMessage = buildWhatsAppCourseMessage({
+    courseName: course.titleBn,
+    coursePath,
+    canonicalBaseUrl,
+  });
 
   return (
     <>
@@ -191,10 +200,24 @@ export default async function CourseDetailPage({
                   ) : null}
                 </dl>
 
-                <Link href={enquiryHref} className="ps-primary-button w-full">
-                  <span>কোর্স সম্পর্কে জানতে চাই</span>
-                  <ArrowRight className="w-4 h-4" aria-hidden="true" />
-                </Link>
+                <div className="space-y-2.5">
+                  <WhatsAppEnquiryButton
+                    verifiedWhatsapp={siteConfig.verifiedWhatsapp}
+                    serviceName={course.titleBn}
+                    servicePath={coursePath}
+                    canonicalBaseUrl={canonicalBaseUrl}
+                    customMessage={courseWhatsAppMessage}
+                    fallbackHref={enquiryHref}
+                    labelBn="WhatsApp-এ কোর্স সম্পর্কে জানুন"
+                    fallbackLabelBn="কোর্স সম্পর্কে জানতে চাই"
+                    size="lg"
+                    fullWidth
+                  />
+                  <Link href={enquiryHref} className="ps-secondary-button w-full">
+                    <span>অনলাইন ফর্মে আগ্রহ জানান</span>
+                    <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                  </Link>
+                </div>
               </div>
             </aside>
           </div>

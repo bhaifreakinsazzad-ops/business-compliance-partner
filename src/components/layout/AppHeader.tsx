@@ -1,7 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Mail, Phone, Search, ShieldCheck } from "lucide-react";
+import { Mail, MessageCircle, Phone, Search, ShieldCheck } from "lucide-react";
 import type { PublicSiteConfig } from "@/types/domain";
+import {
+  buildWhatsAppGeneralMessage,
+  buildWhatsAppUrl,
+  formatWhatsAppDisplay,
+} from "@/lib/contact/whatsapp";
 import {
   MobileNavigation,
   type NavLinkItem,
@@ -27,6 +32,12 @@ interface AppHeaderProps {
 }
 
 export function AppHeader({ siteConfig }: AppHeaderProps) {
+  const whatsappHref = buildWhatsAppUrl(
+    siteConfig.verifiedWhatsapp,
+    buildWhatsAppGeneralMessage(),
+  );
+  const whatsappDisplay = formatWhatsAppDisplay(siteConfig.verifiedWhatsapp);
+
   return (
     <>
       {/* Utility Bar — Verified contacts + secondary ecosystem links */}
@@ -37,6 +48,21 @@ export function AppHeader({ siteConfig }: AppHeaderProps) {
               <ShieldCheck className="w-3.5 h-3.5 text-ps-gold shrink-0" aria-hidden="true" />
               <span>বাংলাদেশে স্বাধীন ব্যবসায়িক শিক্ষা ও কমপ্লায়েন্স সহায়তা</span>
             </span>
+            {whatsappHref && whatsappDisplay ? (
+              <a
+                href={whatsappHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-whatsapp-cta="true"
+                className="inline-flex items-center gap-1.5 font-semibold text-[#5de2a5] hover:text-ps-gold transition-colors"
+              >
+                <MessageCircle className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+                <span>WhatsApp:</span>
+                <span className="font-en" dir="ltr">
+                  {whatsappDisplay}
+                </span>
+              </a>
+            ) : null}
             {siteConfig.verifiedPhone ? (
               <a
                 href={`tel:${siteConfig.verifiedPhone.replace(/\s+/g, "")}`}
@@ -146,6 +172,8 @@ export function AppHeader({ siteConfig }: AppHeaderProps) {
             secondaryLinks={SECONDARY_NAV_LINKS}
             ctaHref="/consultancy"
             ctaLabelBn="পরামর্শের অনুরোধ"
+            whatsappHref={whatsappHref}
+            whatsappDisplay={whatsappDisplay}
           />
         </div>
       </header>

@@ -96,10 +96,12 @@ test.describe("BCP V4.0 Client Acceptance Criteria", () => {
     );
     await expect(categoryNav.locator("a[data-category-card]")).toHaveCount(11);
 
-    // Since DEFAULT_PUBLIC_SITE_CONFIG.verifiedWhatsapp is null by default,
-    // ServiceCard renders a functional fallback enquiry button (zero broken wa.me links).
+    // Official client-authorized admin WhatsApp (+880 1521-537864) is active by default:
+    // every ServiceCard renders a valid wa.me/8801521537864?text=... link with zero broken wa.me links.
     const serviceCards = page.locator("main article");
     await expect(serviceCards.first()).toBeVisible();
+    const waLinks = page.locator('a[href^="https://wa.me/8801521537864?text="]');
+    await expect(waLinks.first()).toBeVisible();
     const brokenWaLinks = await page
       .locator('a[href^="https://wa.me/"]')
       .evaluateAll((els) =>

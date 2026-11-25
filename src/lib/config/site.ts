@@ -1,5 +1,12 @@
 import type { PublicSiteConfig } from "@/types/domain";
+import {
+  normalizeWhatsAppNumber,
+  OFFICIAL_ADMIN_WHATSAPP_DISPLAY,
+  OFFICIAL_ADMIN_WHATSAPP_E164,
+} from "@/lib/contact/whatsapp";
 import { isDatabaseConfigured, prisma } from "@/lib/db/prisma";
+
+export { OFFICIAL_ADMIN_WHATSAPP_DISPLAY, OFFICIAL_ADMIN_WHATSAPP_E164 };
 
 export const INDEPENDENT_DISCLAIMER_BN =
   "Business Compliance Partner (BCP) একটি স্বাধীন পেশাদার সহায়তা প্ল্যাটফর্ম; এটি কোনো সরকারি প্রতিষ্ঠান বা সরকারি পোর্টাল নয়। সকল নিবন্ধন, লাইসেন্স ও অনুমোদন সংশ্লিষ্ট কর্তৃপক্ষের বিধিমালা ও চূড়ান্ত সিদ্ধান্তসাপেক্ষ।";
@@ -16,9 +23,9 @@ export const DEFAULT_PUBLIC_SITE_CONFIG: PublicSiteConfig = {
   // Official circular master badge integrated from approved Brand Book v1.0
   logoAssetPath: "/brand/bcp-master-logo.png",
   isIdentityProvisional: false,
-  // Never ship placeholder phone numbers, emails, WhatsApp numbers, or social links.
+  // Client-verified official admin WhatsApp channel (+880 1521-537864); other unverified channels remain null.
   verifiedPhone: null,
-  verifiedWhatsapp: null,
+  verifiedWhatsapp: OFFICIAL_ADMIN_WHATSAPP_DISPLAY,
   verifiedEmail: null,
   verifiedAddressBn: null,
   verifiedAddressEn: null,
@@ -46,9 +53,44 @@ export function getCanonicalBaseUrl(): string {
   return configured.replace(/\/+$/, "");
 }
 
+/**
+ * Reads an optional verified WhatsApp number from environment variables and
+ * validates it strictly via `normalizeWhatsAppNumber` so placeholders or
+ * malformed numbers fail closed to `null`.
+ */
+export function getEnvVerifiedWhatsapp(): string | null {
+  const raw =
+    process.env.VERIFIED_WHATSAPP_NUMBER ??
+    process.env.NEXT_PUBLIC_VERIFIED_WHATSAPP ??
+    null;
+  return normalizeWhatsAppNumber(raw);
+}
+
+/**
+ * Resolves the active admin WhatsApp number in priority order:
+ * 1. Verified Admin SiteSetting value from database
+ * 2. Validated environment variable override (`VERIFIED_WHATSAPP_NUMBER` / `NEXT_PUBLIC_VERIFIED_WHATSAPP`)
+ * 3. Client-authorized official admin WhatsApp account (`+880 1521-537864`)
+ */
+export function resolveVerifiedWhatsapp(
+  dbValue?: string | null,
+): string {
+  const fromDb = normalizeWhatsAppNumber(dbValue);
+  if (fromDb) return fromDb;
+  const fromEnv = getEnvVerifiedWhatsapp();
+  if (fromEnv) return fromEnv;
+  return OFFICIAL_ADMIN_WHATSAPP_E164;
+}
+
 export async function getPublicSiteConfig(): Promise<PublicSiteConfig> {
+  const fallbackWhatsapp =
+    getEnvVerifiedWhatsapp() ?? DEFAULT_PUBLIC_SITE_CONFIG.verifiedWhatsapp;
+
   if (!isDatabaseConfigured()) {
-    return DEFAULT_PUBLIC_SITE_CONFIG;
+    return {
+      ...DEFAULT_PUBLIC_SITE_CONFIG,
+      verifiedWhatsapp: fallbackWhatsapp,
+    };
   }
 
   try {
@@ -56,7 +98,10 @@ export async function getPublicSiteConfig(): Promise<PublicSiteConfig> {
       where: { id: "default" },
     });
     if (!row) {
-      return DEFAULT_PUBLIC_SITE_CONFIG;
+      return {
+        ...DEFAULT_PUBLIC_SITE_CONFIG,
+        verifiedWhatsapp: fallbackWhatsapp,
+      };
     }
 
     return {
@@ -68,7 +113,7 @@ export async function getPublicSiteConfig(): Promise<PublicSiteConfig> {
       logoAssetPath: row.logoAssetPath,
       isIdentityProvisional: row.isIdentityProvisional,
       verifiedPhone: row.verifiedPhone,
-      verifiedWhatsapp: row.verifiedWhatsapp,
+      verifiedWhatsapp: resolveVerifiedWhatsapp(row.verifiedWhatsapp),
       verifiedEmail: row.verifiedEmail,
       verifiedAddressBn: row.verifiedAddressBn,
       verifiedAddressEn: row.verifiedAddressEn,
@@ -83,6 +128,9 @@ export async function getPublicSiteConfig(): Promise<PublicSiteConfig> {
       stagingNoticeBn: isStagingEnvironment() ? row.stagingNoticeBn : null,
     };
   } catch {
-    return DEFAULT_PUBLIC_SITE_CONFIG;
+    return {
+      ...DEFAULT_PUBLIC_SITE_CONFIG,
+      verifiedWhatsapp: fallbackWhatsapp,
+    };
   }
 }

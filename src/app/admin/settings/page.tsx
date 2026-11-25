@@ -32,7 +32,8 @@ export default async function AdminSettingsPage() {
     isIdentityProvisional:
       row?.isIdentityProvisional ?? DEFAULT_PUBLIC_SITE_CONFIG.isIdentityProvisional,
     verifiedPhone: row?.verifiedPhone ?? "",
-    verifiedWhatsapp: row?.verifiedWhatsapp ?? "",
+    verifiedWhatsapp:
+      row?.verifiedWhatsapp ?? DEFAULT_PUBLIC_SITE_CONFIG.verifiedWhatsapp ?? "",
     verifiedEmail: row?.verifiedEmail ?? "",
     verifiedAddressBn: row?.verifiedAddressBn ?? "",
     verifiedAddressEn: row?.verifiedAddressEn ?? "",

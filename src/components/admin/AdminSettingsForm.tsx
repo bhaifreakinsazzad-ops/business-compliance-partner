@@ -202,7 +202,7 @@ export function AdminSettingsForm({
               )
             ) : (
               <p className="mt-1 text-[11px] text-ps-ivory/60">
-                খালি থাকলে পাবলিক সাইটে কনসালটেন্সি ফর্ম ফলব্যাক দেখাবে।
+                খালি থাকলে এনভায়রনমেন্ট ভেরিয়েবল (VERIFIED_WHATSAPP_NUMBER) অথবা ডিফল্ট অফিশিয়াল নম্বর (+880 1521-537864) ব্যবহৃত হবে।
               </p>
             )}
           </div>

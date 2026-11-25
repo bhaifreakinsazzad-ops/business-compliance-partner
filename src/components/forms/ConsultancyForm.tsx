@@ -2,13 +2,19 @@
 
 import { useId, useRef, useState } from "react";
 import Link from "next/link";
-import { AlertCircle, Loader2, Lock, Send } from "lucide-react";
+import { AlertCircle, Loader2, Lock, MessageCircle, Send } from "lucide-react";
 import type {
   ApiResponse,
   LeadSubmissionReceipt,
   Pillar,
   PreferredContactValue,
 } from "@/types/domain";
+import {
+  buildWhatsAppInquiryMessage,
+  buildWhatsAppUrl,
+  formatWhatsAppDisplay,
+  OFFICIAL_ADMIN_WHATSAPP_DISPLAY,
+} from "@/lib/contact/whatsapp";
 import { trackEvent } from "@/lib/analytics/events";
 import { LeadSuccessReceipt } from "@/components/forms/LeadSuccessReceipt";
 import { cn } from "@/lib/utils";
@@ -20,6 +26,7 @@ interface ConsultancyFormProps {
   targetTitle?: string | null;
   sourcePage: string;
   compact?: boolean;
+  verifiedWhatsapp?: string | null;
 }
 
 const CATEGORY_OPTIONS = [
@@ -49,6 +56,7 @@ export function ConsultancyForm({
   targetTitle = null,
   sourcePage,
   compact = false,
+  verifiedWhatsapp = OFFICIAL_ADMIN_WHATSAPP_DISPLAY,
 }: ConsultancyFormProps) {
   const formId = useId();
   const formRef = useRef<HTMLFormElement | null>(null);
@@ -78,7 +86,25 @@ export function ConsultancyForm({
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
   const [serverErrorBn, setServerErrorBn] = useState<string | null>(null);
   const [receipt, setReceipt] = useState<LeadSubmissionReceipt | null>(null);
+  const [submittedWhatsAppUrl, setSubmittedWhatsAppUrl] = useState<string | null>(
+    null,
+  );
   const [startedTracking, setStartedTracking] = useState(false);
+
+  const effectiveWhatsapp = verifiedWhatsapp ?? OFFICIAL_ADMIN_WHATSAPP_DISPLAY;
+  const whatsappDisplay = formatWhatsAppDisplay(effectiveWhatsapp);
+  const liveWhatsAppUrl = buildWhatsAppUrl(
+    effectiveWhatsapp,
+    buildWhatsAppInquiryMessage({
+      name,
+      mobile,
+      addressArea,
+      categoryContext,
+      problemDescription,
+      email,
+      targetTitle,
+    }),
+  );
 
   const markFormStarted = () => {
     if (!startedTracking) {
@@ -111,6 +137,7 @@ export function ConsultancyForm({
     setFieldErrors({});
     setServerErrorBn(null);
     setReceipt(null);
+    setSubmittedWhatsAppUrl(null);
     setStatus("idle");
     setIdempotencyKey(createIdempotencyKey());
   };
@@ -197,6 +224,21 @@ export function ConsultancyForm({
 
       setStatus("success");
       setReceipt(payload.data);
+      setSubmittedWhatsAppUrl(
+        buildWhatsAppUrl(
+          effectiveWhatsapp,
+          buildWhatsAppInquiryMessage({
+            name,
+            mobile,
+            addressArea,
+            categoryContext,
+            problemDescription,
+            email,
+            targetTitle,
+            publicReference: payload.data.publicReference,
+          }),
+        ),
+      );
       trackEvent("consultancy_form_submit_success", {
         pillar: defaultPillar,
         sourcePage,
@@ -204,13 +246,20 @@ export function ConsultancyForm({
     } catch {
       setStatus("error");
       setServerErrorBn(
-        "নেটওয়ার্ক বা সার্ভারের সাথে সংযোগ বিচ্ছিন্ন হয়েছে। আপনার লেখা তথ্য মুছে যায়নি—পুনরায় চেষ্টা করুন।",
+        "নেটওয়ার্ক বা সার্ভারের সাথে সংযোগ বিচ্ছিন্ন হয়েছে। আপনার লেখা তথ্য মুছে যায়নি—পুনরায় চেষ্টা করুন অথবা সরাসরি WhatsApp-এ পাঠান।",
       );
     }
   };
 
   if (status === "success" && receipt) {
-    return <LeadSuccessReceipt receipt={receipt} onReset={handleReset} />;
+    return (
+      <LeadSuccessReceipt
+        receipt={receipt}
+        whatsappUrl={submittedWhatsAppUrl ?? liveWhatsAppUrl}
+        whatsappDisplay={whatsappDisplay}
+        onReset={handleReset}
+      />
+    );
   }
 
   const inputBaseClass =
@@ -249,10 +298,29 @@ export function ConsultancyForm({
         <div
           role="alert"
           aria-live="assertive"
-          className="rounded-[12px] border border-ps-danger/40 bg-ps-danger/5 p-4 flex items-start gap-2.5 text-sm text-ps-danger"
+          className="rounded-[12px] border border-ps-danger/40 bg-ps-danger/5 p-4 space-y-2.5 text-sm text-ps-danger"
         >
-          <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" aria-hidden="true" />
-          <span>{serverErrorBn}</span>
+          <div className="flex items-start gap-2.5">
+            <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" aria-hidden="true" />
+            <span>{serverErrorBn}</span>
+          </div>
+          {liveWhatsAppUrl ? (
+            <div className="ps-7">
+              <a
+                href={liveWhatsAppUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-whatsapp-cta="true"
+                className="inline-flex items-center gap-1.5 font-semibold text-ps-success hover:underline underline-offset-4"
+              >
+                <MessageCircle className="w-4 h-4 shrink-0" aria-hidden="true" />
+                <span>
+                  সরাসরি WhatsApp-এ বার্তা পাঠান
+                  {whatsappDisplay ? ` (${whatsappDisplay})` : ""}
+                </span>
+              </a>
+            </div>
+          ) : null}
         </div>
       ) : null}
 
@@ -589,23 +657,41 @@ export function ConsultancyForm({
         ) : null}
       </div>
 
-      <button
-        type="submit"
-        disabled={status === "pending"}
-        className="ps-primary-button w-full text-base disabled:opacity-65 disabled:cursor-not-allowed"
-      >
-        {status === "pending" ? (
-          <>
-            <Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" />
-            <span>অনুরোধ পাঠানো হচ্ছে...</span>
-          </>
-        ) : (
-          <>
-            <Send className="w-4 h-4" aria-hidden="true" />
-            <span>পরামর্শের অনুরোধ পাঠান</span>
-          </>
-        )}
-      </button>
+      <div className="space-y-2.5 pt-1">
+        <button
+          type="submit"
+          disabled={status === "pending"}
+          className="ps-primary-button w-full text-base disabled:opacity-65 disabled:cursor-not-allowed"
+        >
+          {status === "pending" ? (
+            <>
+              <Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" />
+              <span>অনুরোধ পাঠানো হচ্ছে...</span>
+            </>
+          ) : (
+            <>
+              <Send className="w-4 h-4" aria-hidden="true" />
+              <span>পরামর্শের অনুরোধ পাঠান</span>
+            </>
+          )}
+        </button>
+
+        {liveWhatsAppUrl ? (
+          <a
+            href={liveWhatsAppUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-whatsapp-cta="true"
+            className="inline-flex w-full items-center justify-center gap-2 min-h-12 px-5 py-2.5 rounded-[12px] border border-[#006443]/60 bg-gradient-to-r from-[#00865a] to-[#009c68] text-ps-white text-sm sm:text-base font-bold shadow-[0_4px_14px_rgba(0,134,90,0.2)] hover:from-[#006d49] hover:to-[#00865a] hover:-translate-y-0.5 transition-[transform,box-shadow,background-color] duration-200 focus-visible:outline-3 focus-visible:outline-ps-gold focus-visible:outline-offset-2"
+          >
+            <MessageCircle className="w-4 h-4 shrink-0" aria-hidden="true" />
+            <span>
+              সরাসরি WhatsApp-এ অ্যাডমিনকে পাঠান
+              {whatsappDisplay ? ` (${whatsappDisplay})` : ""}
+            </span>
+          </a>
+        ) : null}
+      </div>
     </form>
   );
 }

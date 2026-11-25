@@ -84,6 +84,7 @@ export default async function HomePage() {
                 accent="gold"
                 columns={5}
                 highlightCount={5}
+                luminousPriority
               />
             </MotionReveal>
           </div>
@@ -136,7 +137,12 @@ export default async function HomePage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {featuredCourses.map((course) => (
-                <CourseCard key={course.slug} course={course} />
+                <CourseCard
+                  key={course.slug}
+                  course={course}
+                  verifiedWhatsapp={siteConfig.verifiedWhatsapp}
+                  canonicalBaseUrl={canonicalBaseUrl}
+                />
               ))}
             </div>
           </div>
@@ -281,6 +287,7 @@ export default async function HomePage() {
                 compact
                 defaultPillar="CONSULTANCY"
                 sourcePage="/"
+                verifiedWhatsapp={siteConfig.verifiedWhatsapp}
               />
             </div>
           </div>
