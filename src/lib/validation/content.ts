@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { normalizeWhatsAppNumber } from "@/lib/contact/whatsapp";
 import { PILLAR_ENUM } from "@/lib/validation/lead";
 
 export const CONTENT_STATUS_ENUM = z.enum([
@@ -184,7 +185,16 @@ export const siteSettingUpdateSchema = z.object({
   logoAssetPath: z.string().trim().min(1).max(300),
   isIdentityProvisional: z.boolean(),
   verifiedPhone: z.string().trim().max(40).optional().nullable(),
-  verifiedWhatsapp: z.string().trim().max(30).optional().nullable(),
+  verifiedWhatsapp: z
+    .string()
+    .trim()
+    .max(30)
+    .optional()
+    .nullable()
+    .refine(
+      (val) => !val || normalizeWhatsAppNumber(val) !== null,
+      "সঠিক বাংলাদেশি বা আন্তর্জাতিক WhatsApp নম্বর দিন (যেমন: +8801XXXXXXXXX বা 01XXXXXXXXX)",
+    ),
   verifiedEmail: z.string().trim().email().optional().nullable().or(z.literal("")),
   verifiedAddressBn: z.string().trim().max(300).optional().nullable(),
   verifiedAddressEn: z.string().trim().max(300).optional().nullable(),

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { FileCheck2 } from "lucide-react";
-import { getPublicSiteConfig } from "@/lib/config/site";
+import { getCanonicalBaseUrl, getPublicSiteConfig } from "@/lib/config/site";
 import { listPublishedLicensing } from "@/lib/services/catalogue";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
@@ -35,6 +35,7 @@ export default async function LicensingPage({
       q: q || undefined,
     }),
   ]);
+  const canonicalBaseUrl = getCanonicalBaseUrl();
 
   return (
     <>
@@ -117,7 +118,12 @@ export default async function LicensingPage({
             {items.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {items.map((entry) => (
-                  <LicensingCard key={entry.slug} entry={entry} />
+                  <LicensingCard
+                    key={entry.slug}
+                    entry={entry}
+                    verifiedWhatsapp={siteConfig.verifiedWhatsapp}
+                    canonicalBaseUrl={canonicalBaseUrl}
+                  />
                 ))}
               </div>
             ) : (

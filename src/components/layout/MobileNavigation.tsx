@@ -13,6 +13,7 @@ interface MobileNavigationProps {
   brandDisplayName: string;
   brandNameBn: string;
   links: NavLinkItem[];
+  secondaryLinks?: NavLinkItem[];
   ctaHref: string;
   ctaLabelBn: string;
 }
@@ -21,6 +22,7 @@ export function MobileNavigation({
   brandDisplayName,
   brandNameBn,
   links,
+  secondaryLinks = [],
   ctaHref,
   ctaLabelBn,
 }: MobileNavigationProps) {
@@ -118,13 +120,33 @@ export function MobileNavigation({
                   <Link
                     href={item.href}
                     onClick={closeMenu}
-                    className="flex items-center min-h-12 px-3 rounded-[12px] text-base font-medium text-ps-navy hover:bg-ps-cool"
+                    className="flex items-center min-h-12 px-3 rounded-[12px] text-base font-semibold text-ps-navy hover:bg-ps-cool"
                   >
                     {item.labelBn}
                   </Link>
                 </li>
               ))}
             </ul>
+            {secondaryLinks.length > 0 ? (
+              <div className="mt-5 pt-4 border-t border-ps-border">
+                <p className="px-3 mb-2 text-xs font-semibold text-ps-muted">
+                  অন্যান্য বিভাগ ও টুলস
+                </p>
+                <ul className="space-y-1">
+                  {secondaryLinks.map((item) => (
+                    <li key={item.href}>
+                      <Link
+                        href={item.href}
+                        onClick={closeMenu}
+                        className="flex items-center min-h-11 px-3 rounded-[12px] text-sm font-medium text-ps-ink/85 hover:bg-ps-cool"
+                      >
+                        {item.labelBn}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
           </nav>
 
           <div className="p-5 border-t border-ps-border bg-ps-ivory/60">

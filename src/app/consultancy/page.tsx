@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { Lock, MessageSquareText, ShieldCheck } from "lucide-react";
 import type { Pillar } from "@/types/domain";
-import { getPublicSiteConfig } from "@/lib/config/site";
+import { getCanonicalBaseUrl, getPublicSiteConfig } from "@/lib/config/site";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { Footer } from "@/components/layout/Footer";
 import { ConsultancyForm } from "@/components/forms/ConsultancyForm";
+import { WhatsAppEnquiryButton } from "@/components/shared/WhatsAppEnquiryButton";
 
 export const metadata: Metadata = {
   title: "কনসালটেন্সি ও পরামর্শ অনুরোধ",
@@ -34,6 +35,7 @@ export default async function ConsultancyPage({
 }: ConsultancyPageProps) {
   const { pillar, slug, topic } = await searchParams;
   const siteConfig = await getPublicSiteConfig();
+  const canonicalBaseUrl = getCanonicalBaseUrl();
 
   const resolvedPillar: Pillar =
     pillar && VALID_PILLARS.has(pillar as Pillar)
@@ -82,6 +84,25 @@ export default async function ConsultancyPage({
             </div>
 
             <aside className="lg:col-span-4 space-y-5">
+              {siteConfig.verifiedWhatsapp ? (
+                <div className="rounded-[16px] border-2 border-ps-success/35 bg-ps-white p-6 space-y-3 shadow-sm">
+                  <h2 className="text-lg font-bold text-ps-navy">
+                    সরাসরি WhatsApp-এ কথা বলুন
+                  </h2>
+                  <p className="text-xs sm:text-sm text-ps-muted leading-relaxed">
+                    ফর্ম পূরণের পাশাপাশি চাইলে সরাসরি WhatsApp-এ আপনার প্রয়োজনের কথা জানাতে পারেন।
+                  </p>
+                  <WhatsAppEnquiryButton
+                    verifiedWhatsapp={siteConfig.verifiedWhatsapp}
+                    serviceName={topic ?? "ব্যবসায়িক কনসালটেন্সি"}
+                    servicePath="/consultancy"
+                    canonicalBaseUrl={canonicalBaseUrl}
+                    fallbackHref="/consultancy"
+                    fullWidth
+                  />
+                </div>
+              ) : null}
+
               <div className="rounded-[16px] border border-ps-border bg-ps-white p-6 space-y-4">
                 <h2 className="text-lg font-bold text-ps-navy">
                   জমা দেওয়ার পরবর্তী ধাপ

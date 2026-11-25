@@ -20,6 +20,35 @@ import { SEED_FAQS } from "../../../prisma/seed-data/faqs";
 import { SEED_LICENSING } from "../../../prisma/seed-data/licensing";
 import { SEED_SERVICES } from "../../../prisma/seed-data/services";
 
+export const PRIORITY_COURSE_CATEGORY_SLUGS: readonly string[] = [
+  "income-tax",
+  "vat-and-mushak",
+  "egp-and-tender",
+  "digital-business-ecommerce",
+  "company-secretarial",
+];
+
+/**
+ * Orders course categories so the 5 client-prioritized tracks appear first
+ * (Tax, VAT, e-GP, E-commerce, RJSC/Company Secretarial), preserving canonical
+ * sortOrder for the remaining categories.
+ */
+export function sortCourseCategoriesByClientPriority(
+  categories: PublicCategoryDTO[],
+): PublicCategoryDTO[] {
+  const priorityMap = new Map(
+    PRIORITY_COURSE_CATEGORY_SLUGS.map((slug, idx) => [slug, idx]),
+  );
+  return [...categories].sort((a, b) => {
+    const pA = priorityMap.get(a.slug);
+    const pB = priorityMap.get(b.slug);
+    if (pA !== undefined && pB !== undefined) return pA - pB;
+    if (pA !== undefined) return -1;
+    if (pB !== undefined) return 1;
+    return a.sortOrder - b.sortOrder;
+  });
+}
+
 function canUseSeedFallback(): boolean {
   // Always permit seed fallback when database is not configured or in transition,
   // guaranteeing high availability and zero blank pages for general usage and advertising.
@@ -55,7 +84,7 @@ export async function listPublishedCourses(filter?: {
 }): Promise<{ categories: PublicCategoryDTO[]; items: PublicCourseCard[] }> {
   if (isDatabaseConfigured()) {
     try {
-      const [categories, courses] = await Promise.all([
+      const [categories, courses, categoryCounts] = await Promise.all([
         prisma.category.findMany({
           where: { pillar: "COURSES", isActive: true },
           orderBy: { sortOrder: "asc" },
@@ -73,7 +102,19 @@ export async function listPublishedCourses(filter?: {
           include: { category: true },
           orderBy: [{ featured: "desc" }, { sortOrder: "asc" }],
         }),
+        prisma.course.groupBy({
+          by: ["categoryId"],
+          where: {
+            contentStatus: "PUBLISHED",
+            availabilityStatus: { not: "INACTIVE" },
+          },
+          _count: { _all: true },
+        }),
       ]);
+
+      const countByCatId = new Map(
+        categoryCounts.map((row) => [row.categoryId, row._count._all]),
+      );
 
       const mapped: PublicCourseCard[] = courses
         .filter((c) =>
@@ -100,6 +141,9 @@ export async function listPublishedCourses(filter?: {
           availabilityStatus: c.availabilityStatus,
           featured: c.featured,
           lastVerifiedAt: c.lastVerifiedAt ? c.lastVerifiedAt.toISOString() : null,
+          deliveryMode: c.deliveryMode,
+          duration: c.duration,
+          feeDisplay: c.feeDisplay,
         }));
 
       return {
@@ -113,6 +157,7 @@ export async function listPublishedCourses(filter?: {
           shortDescEn: c.shortDescEn,
           iconName: c.iconName,
           sortOrder: c.sortOrder,
+          publishedCount: countByCatId.get(c.id) ?? 0,
         })),
         items: mapped,
       };
@@ -124,10 +169,21 @@ export async function listPublishedCourses(filter?: {
   if (!canUseSeedFallback()) return { categories: [], items: [] };
 
   const catLookup = getSeedCategoryLookup("COURSES");
-  const categories = getSeedCategoriesByPillar("COURSES");
-  const items: PublicCourseCard[] = SEED_COURSES.filter((c) =>
+  const allVisibleSeedCourses = SEED_COURSES.filter((c) =>
     isPubliclyVisible(c.contentStatus, c.availabilityStatus),
-  )
+  );
+  const seedCourseCounts = new Map<string, number>();
+  for (const c of allVisibleSeedCourses) {
+    seedCourseCounts.set(
+      c.categorySlug,
+      (seedCourseCounts.get(c.categorySlug) ?? 0) + 1,
+    );
+  }
+  const categories = getSeedCategoriesByPillar("COURSES").map((cat) => ({
+    ...cat,
+    publishedCount: seedCourseCounts.get(cat.slug) ?? 0,
+  }));
+  const items: PublicCourseCard[] = allVisibleSeedCourses
     .filter((c) =>
       filter?.categorySlug ? c.categorySlug === filter.categorySlug : true,
     )
@@ -161,6 +217,9 @@ export async function listPublishedCourses(filter?: {
         availabilityStatus: c.availabilityStatus,
         featured: c.featured,
         lastVerifiedAt: c.lastVerifiedAt ? c.lastVerifiedAt.toISOString() : null,
+        deliveryMode: null,
+        duration: null,
+        feeDisplay: null,
       };
     });
 
@@ -265,7 +324,7 @@ export async function listPublishedServices(filter?: {
 }): Promise<{ categories: PublicCategoryDTO[]; items: PublicServiceCard[] }> {
   if (isDatabaseConfigured()) {
     try {
-      const [categories, services] = await Promise.all([
+      const [categories, services, categoryCounts] = await Promise.all([
         prisma.category.findMany({
           where: { pillar: "SERVICES", isActive: true },
           orderBy: { sortOrder: "asc" },
@@ -281,7 +340,19 @@ export async function listPublishedServices(filter?: {
           include: { category: true },
           orderBy: [{ featured: "desc" }, { sortOrder: "asc" }],
         }),
+        prisma.service.groupBy({
+          by: ["categoryId"],
+          where: {
+            contentStatus: "PUBLISHED",
+            availabilityStatus: { not: "INACTIVE" },
+          },
+          _count: { _all: true },
+        }),
       ]);
+
+      const countByCatId = new Map(
+        categoryCounts.map((row) => [row.categoryId, row._count._all]),
+      );
 
       const mapped: PublicServiceCard[] = services
         .filter((s) =>
@@ -324,6 +395,7 @@ export async function listPublishedServices(filter?: {
           shortDescEn: c.shortDescEn,
           iconName: c.iconName,
           sortOrder: c.sortOrder,
+          publishedCount: countByCatId.get(c.id) ?? 0,
         })),
         items: mapped,
       };
@@ -335,10 +407,21 @@ export async function listPublishedServices(filter?: {
   if (!canUseSeedFallback()) return { categories: [], items: [] };
 
   const catLookup = getSeedCategoryLookup("SERVICES");
-  const categories = getSeedCategoriesByPillar("SERVICES");
-  const items: PublicServiceCard[] = SEED_SERVICES.filter((s) =>
+  const allVisibleSeedServices = SEED_SERVICES.filter((s) =>
     isPubliclyVisible(s.contentStatus, s.availabilityStatus),
-  )
+  );
+  const seedServiceCounts = new Map<string, number>();
+  for (const s of allVisibleSeedServices) {
+    seedServiceCounts.set(
+      s.categorySlug,
+      (seedServiceCounts.get(s.categorySlug) ?? 0) + 1,
+    );
+  }
+  const categories = getSeedCategoriesByPillar("SERVICES").map((cat) => ({
+    ...cat,
+    publishedCount: seedServiceCounts.get(cat.slug) ?? 0,
+  }));
+  const items: PublicServiceCard[] = allVisibleSeedServices
     .filter((s) =>
       filter?.categorySlug ? s.categorySlug === filter.categorySlug : true,
     )
@@ -474,7 +557,7 @@ export async function listPublishedLicensing(filter?: {
 }): Promise<{ categories: PublicCategoryDTO[]; items: PublicLicensingCard[] }> {
   if (isDatabaseConfigured()) {
     try {
-      const [categories, entries] = await Promise.all([
+      const [categories, entries, categoryCounts] = await Promise.all([
         prisma.category.findMany({
           where: { pillar: "LICENSING", isActive: true },
           orderBy: { sortOrder: "asc" },
@@ -490,7 +573,19 @@ export async function listPublishedLicensing(filter?: {
           include: { category: true },
           orderBy: [{ featured: "desc" }, { sortOrder: "asc" }],
         }),
+        prisma.licensingEntry.groupBy({
+          by: ["categoryId"],
+          where: {
+            contentStatus: "PUBLISHED",
+            availabilityStatus: { not: "INACTIVE" },
+          },
+          _count: { _all: true },
+        }),
       ]);
+
+      const countByCatId = new Map(
+        categoryCounts.map((row) => [row.categoryId, row._count._all]),
+      );
 
       const mapped: PublicLicensingCard[] = entries
         .filter((l) =>
@@ -531,6 +626,7 @@ export async function listPublishedLicensing(filter?: {
           shortDescEn: c.shortDescEn,
           iconName: c.iconName,
           sortOrder: c.sortOrder,
+          publishedCount: countByCatId.get(c.id) ?? 0,
         })),
         items: mapped,
       };
@@ -542,10 +638,21 @@ export async function listPublishedLicensing(filter?: {
   if (!canUseSeedFallback()) return { categories: [], items: [] };
 
   const catLookup = getSeedCategoryLookup("LICENSING");
-  const categories = getSeedCategoriesByPillar("LICENSING");
-  const items: PublicLicensingCard[] = SEED_LICENSING.filter((l) =>
+  const allVisibleSeedLicensing = SEED_LICENSING.filter((l) =>
     isPubliclyVisible(l.contentStatus, l.availabilityStatus),
-  )
+  );
+  const seedLicensingCounts = new Map<string, number>();
+  for (const l of allVisibleSeedLicensing) {
+    seedLicensingCounts.set(
+      l.categorySlug,
+      (seedLicensingCounts.get(l.categorySlug) ?? 0) + 1,
+    );
+  }
+  const categories = getSeedCategoriesByPillar("LICENSING").map((cat) => ({
+    ...cat,
+    publishedCount: seedLicensingCounts.get(cat.slug) ?? 0,
+  }));
+  const items: PublicLicensingCard[] = allVisibleSeedLicensing
     .filter((l) =>
       filter?.categorySlug ? l.categorySlug === filter.categorySlug : true,
     )
