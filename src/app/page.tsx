@@ -25,8 +25,36 @@ import { MotionReveal } from "@/components/ui/MotionReveal";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { UnifiedSearchSection } from "@/components/home/UnifiedSearchSection";
 import { BusinessSolutionFinder } from "@/components/home/BusinessSolutionFinder";
+import { ProcessSteps } from "@/components/shared/ProcessSteps";
 import { ConsultancyForm } from "@/components/forms/ConsultancyForm";
 import { WhatsAppEnquiryButton } from "@/components/shared/WhatsAppEnquiryButton";
+
+const CLIENT_JOURNEY_STEPS = [
+  {
+    stepNumber: 1,
+    titleBn: "প্রয়োজন নির্বাচন",
+    descriptionBn:
+      "কোর্স শিখতে চান নাকি ট্যাক্স, ভ্যাট বা লাইসেন্সিং সেবা প্রয়োজন—তা বেছে নিন।",
+  },
+  {
+    stepNumber: 2,
+    titleBn: "বিস্তারিত ও নথি যাচাই",
+    descriptionBn:
+      "সিলেবাস বা সেবার পরিধি ও প্রাথমিক নথির চেকলিস্ট সহজেই দেখে নিন।",
+  },
+  {
+    stepNumber: 3,
+    titleBn: "সরাসরি WhatsApp বা ফর্ম",
+    descriptionBn:
+      "কোনো বাড়তি ধাপ ছাড়াই WhatsApp-এ বার্তা পাঠান বা অনলাইন অনুরোধ জমা দিন।",
+  },
+  {
+    stepNumber: 4,
+    titleBn: "পেশাদার সহায়তা",
+    descriptionBn:
+      "আমাদের টিম যাচাই শেষে উপযুক্ত সময়ে আপনার সাথে যোগাযোগ করে দিকনির্দেশনা দেবে।",
+  },
+];
 
 export default async function HomePage() {
   const [siteConfig, coursesData, servicesData, licensingData, faqs] =
@@ -166,6 +194,18 @@ export default async function HomePage() {
                 />
               ))}
             </div>
+          </div>
+        </section>
+
+        {/* 4-Step Client Journey */}
+        <section className="py-10 sm:py-12 bg-ps-ivory border-b border-ps-border">
+          <div className="ps-container space-y-6">
+            <SectionHeading
+              eyebrowEn="How BCP Works"
+              titleBn="চারটি সহজ ধাপে আপনার ব্যবসার সমাধান"
+              descriptionBn="অযথা জটিলতা ছাড়াই সঠিক কোর্স বা পেশাদার সেবায় পৌঁছানোর সুশৃঙ্খল প্রক্রিয়া।"
+            />
+            <ProcessSteps steps={CLIENT_JOURNEY_STEPS} columns={4} />
           </div>
         </section>
 

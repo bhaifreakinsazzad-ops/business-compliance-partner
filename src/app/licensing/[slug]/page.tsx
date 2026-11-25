@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, CheckCircle2, FileText } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { getCanonicalBaseUrl, getPublicSiteConfig } from "@/lib/config/site";
-import { getPublishedLicensingBySlug } from "@/lib/services/catalogue";
+import {
+  getPublishedLicensingBySlug,
+  listRelatedLicensing,
+} from "@/lib/services/catalogue";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { Footer } from "@/components/layout/Footer";
@@ -11,6 +14,8 @@ import { Badge, StatusBadge } from "@/components/ui/Badge";
 import { AuthorityNote } from "@/components/shared/AuthorityNote";
 import { VerificationMeta } from "@/components/shared/VerificationMeta";
 import { WhatsAppEnquiryButton } from "@/components/shared/WhatsAppEnquiryButton";
+import { DocumentReadinessWidget } from "@/components/shared/DocumentReadinessWidget";
+import { LicensingCard } from "@/components/shared/LicensingCard";
 
 interface LicensingDetailProps {
   params: Promise<{ slug: string }>;
@@ -45,6 +50,11 @@ export default async function LicensingDetailPage({
   }
 
   const canonicalBaseUrl = getCanonicalBaseUrl();
+  const relatedLicensing = await listRelatedLicensing(
+    entry.categorySlug,
+    entry.slug,
+    2,
+  );
   const enquiryHref = `/consultancy?pillar=LICENSING&slug=${encodeURIComponent(
     entry.slug,
   )}&topic=${encodeURIComponent(entry.titleBn)}`;
@@ -108,23 +118,10 @@ export default async function LicensingDetailPage({
                 </p>
               </div>
 
-              <div className="rounded-[16px] border border-ps-border bg-ps-white p-6 space-y-4">
-                <h2 className="text-xl font-bold text-ps-navy inline-flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-ps-navy" aria-hidden="true" />
-                  <span>প্রাথমিক নথিপত্র (পেশাদার পর্যালোচনা সাপেক্ষ)</span>
-                </h2>
-                <ul className="space-y-2.5">
-                  {entry.documentsSummary.map((doc, idx) => (
-                    <li key={idx} className="flex items-start gap-2.5 text-sm sm:text-base text-ps-ink/90">
-                      <CheckCircle2
-                        className="w-4 h-4 text-ps-navy shrink-0 mt-1"
-                        aria-hidden="true"
-                      />
-                      <span>{doc}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <DocumentReadinessWidget
+                documents={entry.documentsSummary}
+                headingBn="প্রাথমিক নথিপত্র (পেশাদার পর্যালোচনা সাপেক্ষ)"
+              />
 
               <div className="rounded-[16px] border border-ps-border bg-ps-white p-6 space-y-3">
                 <h2 className="text-xl font-bold text-ps-navy">
@@ -164,6 +161,34 @@ export default async function LicensingDetailPage({
             </aside>
           </div>
         </section>
+
+        {relatedLicensing.length > 0 ? (
+          <section className="py-10 sm:py-12 bg-ps-white border-t border-ps-border">
+            <div className="ps-container space-y-6">
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="text-xl sm:text-2xl font-bold text-ps-navy">
+                  সম্পর্কিত অন্যান্য লাইসেন্সিং
+                </h2>
+                <Link
+                  href={`/licensing?category=${encodeURIComponent(entry.categorySlug)}`}
+                  className="text-sm font-semibold text-ps-navy hover:underline underline-offset-4"
+                >
+                  এই বিভাগের সব লাইসেন্সিং →
+                </Link>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {relatedLicensing.map((item) => (
+                  <LicensingCard
+                    key={item.slug}
+                    entry={item}
+                    verifiedWhatsapp={siteConfig.verifiedWhatsapp}
+                    canonicalBaseUrl={canonicalBaseUrl}
+                  />
+                ))}
+              </div>
+            </div>
+          </section>
+        ) : null}
       </main>
 
       <Footer siteConfig={siteConfig} />

@@ -1,11 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Mail, Phone, Search, ShieldCheck } from "lucide-react";
+import { Mail, Phone, ShieldCheck } from "lucide-react";
 import type { PublicSiteConfig } from "@/types/domain";
 import {
   MobileNavigation,
   type NavLinkItem,
 } from "@/components/layout/MobileNavigation";
+import { NavLinksClient } from "@/components/layout/NavLinksClient";
+import { QuickSearchDialog } from "@/components/layout/QuickSearchDialog";
 
 const PRIMARY_NAV_LINKS: NavLinkItem[] = [
   { href: "/", labelBn: "হোম" },
@@ -111,25 +113,11 @@ export function AppHeader({ siteConfig }: AppHeaderProps) {
 
           <nav
             aria-label="প্রধান নেভিগেশন"
-            className="hidden lg:flex items-center gap-6 xl:gap-7 text-sm font-semibold text-ps-navy"
+            className="hidden lg:flex items-center gap-5 xl:gap-6 text-sm font-semibold text-ps-navy"
           >
-            {PRIMARY_NAV_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="py-2 hover:text-ps-midnight hover:underline underline-offset-4 decoration-ps-gold decoration-2 transition-colors whitespace-nowrap"
-              >
-                {link.labelBn}
-              </Link>
-            ))}
+            <NavLinksClient links={PRIMARY_NAV_LINKS} />
 
-            <Link
-              href="/#unified-search"
-              aria-label="ক্যাটালগ অনুসন্ধান"
-              className="inline-flex items-center justify-center w-10 h-10 rounded-[10px] border border-ps-border text-ps-navy hover:bg-ps-cool transition-colors"
-            >
-              <Search className="w-4 h-4" aria-hidden="true" />
-            </Link>
+            <QuickSearchDialog variant="desktop" />
 
             <Link
               href="/consultancy"

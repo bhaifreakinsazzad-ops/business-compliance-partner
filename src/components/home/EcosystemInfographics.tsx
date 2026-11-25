@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Expand, ShieldCheck } from "lucide-react";
@@ -83,6 +83,17 @@ const INFOGRAPHICS: InfographicTab[] = [
 export function EcosystemInfographics() {
   const [activeId, setActiveId] = useState<string>("overview");
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!isFullscreen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsFullscreen(false);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [isFullscreen]);
 
   const activeItem = INFOGRAPHICS.find((i) => i.id === activeId) ?? INFOGRAPHICS[0]!;
 

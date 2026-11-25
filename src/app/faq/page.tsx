@@ -5,6 +5,7 @@ import { AppHeader } from "@/components/layout/AppHeader";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { Footer } from "@/components/layout/Footer";
 import { FAQAccordion } from "@/components/shared/FAQAccordion";
+import { InteractiveFaqExplorer } from "@/components/shared/InteractiveFaqExplorer";
 import { CTASection } from "@/components/shared/CTASection";
 
 export const metadata: Metadata = {
@@ -45,7 +46,10 @@ export default async function FaqPage() {
 
         <section className="py-12 sm:py-16">
           <div className="ps-container max-w-4xl">
-            <FAQAccordion items={faqs} />
+            <InteractiveFaqExplorer items={faqs} />
+            <noscript>
+              <FAQAccordion items={faqs} />
+            </noscript>
           </div>
         </section>
 

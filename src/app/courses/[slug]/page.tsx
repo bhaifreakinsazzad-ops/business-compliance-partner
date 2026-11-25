@@ -2,13 +2,19 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, CheckCircle2, Users } from "lucide-react";
-import { getPublicSiteConfig } from "@/lib/config/site";
-import { getPublishedCourseBySlug } from "@/lib/services/catalogue";
+import { getCanonicalBaseUrl, getPublicSiteConfig } from "@/lib/config/site";
+import {
+  getPublishedCourseBySlug,
+  listRelatedCourses,
+} from "@/lib/services/catalogue";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { Footer } from "@/components/layout/Footer";
 import { Badge, StatusBadge } from "@/components/ui/Badge";
 import { VerificationMeta } from "@/components/shared/VerificationMeta";
+import { SyllabusExplorer } from "@/components/shared/SyllabusExplorer";
+import { WhatsAppEnquiryButton } from "@/components/shared/WhatsAppEnquiryButton";
+import { CourseCard } from "@/components/shared/CourseCard";
 
 interface CourseDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -42,6 +48,12 @@ export default async function CourseDetailPage({
     notFound();
   }
 
+  const canonicalBaseUrl = getCanonicalBaseUrl();
+  const relatedCourses = await listRelatedCourses(
+    course.categorySlug,
+    course.slug,
+    3,
+  );
   const enquiryHref = `/consultancy?pillar=COURSES&slug=${encodeURIComponent(
     course.slug,
   )}&topic=${encodeURIComponent(course.titleBn)}`;
@@ -120,29 +132,7 @@ export default async function CourseDetailPage({
               </div>
 
               {/* Syllabus Modules */}
-              <div className="rounded-[16px] border border-ps-border bg-ps-white p-6 space-y-4">
-                <h2 className="text-xl font-bold text-ps-navy">
-                  প্রস্তাবিত মডিউল ও সিলেবাস
-                </h2>
-                <div className="space-y-3">
-                  {course.syllabus.map((mod, idx) => (
-                    <details
-                      key={idx}
-                      open={idx === 0}
-                      className="ps-disclosure rounded-[12px] border border-ps-border bg-ps-ivory/50"
-                    >
-                      <summary className="p-4 font-bold text-ps-navy text-sm sm:text-base">
-                        {mod.titleBn}
-                      </summary>
-                      <ul className="px-4 pb-4 space-y-1.5 text-sm text-ps-ink/85 list-disc list-inside">
-                        {mod.topicsBn.map((topic, tIdx) => (
-                          <li key={tIdx}>{topic}</li>
-                        ))}
-                      </ul>
-                    </details>
-                  ))}
-                </div>
-              </div>
+              <SyllabusExplorer modules={course.syllabus} />
             </div>
 
             {/* Sidebar — Strictly Verified Fields ONLY (Mode A) */}
@@ -191,6 +181,19 @@ export default async function CourseDetailPage({
                   ) : null}
                 </dl>
 
+                {siteConfig.verifiedWhatsapp ? (
+                  <WhatsAppEnquiryButton
+                    verifiedWhatsapp={siteConfig.verifiedWhatsapp}
+                    serviceName={course.titleBn}
+                    servicePath={`/courses/${course.slug}`}
+                    canonicalBaseUrl={canonicalBaseUrl}
+                    fallbackHref={enquiryHref}
+                    labelBn="WhatsApp-এ কোর্স সম্পর্কে জানুন"
+                    fallbackLabelBn="কোর্স সম্পর্কে জানতে চাই"
+                    fullWidth
+                  />
+                ) : null}
+
                 <Link href={enquiryHref} className="ps-primary-button w-full">
                   <span>কোর্স সম্পর্কে জানতে চাই</span>
                   <ArrowRight className="w-4 h-4" aria-hidden="true" />
@@ -199,6 +202,29 @@ export default async function CourseDetailPage({
             </aside>
           </div>
         </section>
+
+        {relatedCourses.length > 0 ? (
+          <section className="py-10 sm:py-12 bg-ps-white border-t border-ps-border">
+            <div className="ps-container space-y-6">
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="text-xl sm:text-2xl font-bold text-ps-navy">
+                  সম্পর্কিত অন্যান্য কোর্স
+                </h2>
+                <Link
+                  href={`/courses?category=${encodeURIComponent(course.categorySlug)}`}
+                  className="text-sm font-semibold text-ps-navy hover:underline underline-offset-4"
+                >
+                  এই বিভাগের সব কোর্স →
+                </Link>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {relatedCourses.map((item) => (
+                  <CourseCard key={item.slug} course={item} />
+                ))}
+              </div>
+            </div>
+          </section>
+        ) : null}
       </main>
 
       <Footer siteConfig={siteConfig} />

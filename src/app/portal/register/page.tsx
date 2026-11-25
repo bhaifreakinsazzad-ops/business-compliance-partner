@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Building, Lock, Mail, Phone, ShieldCheck, User } from "lucide-react";
+import { ArrowLeft, ArrowRight, Building, Eye, EyeOff, Lock, Mail, Phone, ShieldCheck, User } from "lucide-react";
 
 export default function CustomerRegisterPage() {
   const router = useRouter();
@@ -12,6 +12,7 @@ export default function CustomerRegisterPage() {
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [organizationName, setOrganizationName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -49,7 +50,16 @@ export default function CustomerRegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-ps-pearl flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-ps-pearl flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md mb-4">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-ps-navy hover:underline underline-offset-4"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" aria-hidden="true" />
+          <span>মূল ওয়েবসাইটে ফিরে যান</span>
+        </Link>
+      </div>
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center space-y-3">
         <Link href="/" className="inline-flex items-center gap-2.5">
           <Image
@@ -183,14 +193,26 @@ export default function CustomerRegisterPage() {
                 </div>
                 <input
                   id="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   required
                   minLength={8}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="block w-full pl-10 pr-3 py-2 border border-ps-border rounded-[10px] text-sm focus:ring-ps-gold focus:border-ps-gold"
+                  className="block w-full pl-10 pr-11 py-2 border border-ps-border rounded-[10px] text-sm focus:ring-ps-gold focus:border-ps-gold"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  aria-label={showPassword ? "পাসওয়ার্ড লুকান" : "পাসওয়ার্ড দেখুন"}
+                  className="absolute inset-y-0 right-0 px-3 flex items-center text-ps-slate hover:text-ps-navy cursor-pointer"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" aria-hidden="true" />
+                  ) : (
+                    <Eye className="h-4 w-4" aria-hidden="true" />
+                  )}
+                </button>
               </div>
             </div>
 

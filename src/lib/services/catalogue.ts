@@ -28,6 +28,22 @@ export const PRIORITY_COURSE_CATEGORY_SLUGS: readonly string[] = [
   "company-secretarial",
 ];
 
+const LEGACY_SERVICE_CATEGORY_ALIASES: Record<string, string> = {
+  "business-formation-and-rjsc": "company-secretarial-compliance",
+  "tax-vat-and-compliance": "income-tax-solutions",
+};
+
+/**
+ * Resolves legacy service category slugs (used in older bookmarks or guided
+ * finder deep-links) to their canonical V4.0 category slugs.
+ */
+export function resolveServiceCategorySlug(slug?: string): string | undefined {
+  if (!slug) return undefined;
+  const trimmed = slug.trim();
+  if (!trimmed) return undefined;
+  return LEGACY_SERVICE_CATEGORY_ALIASES[trimmed] ?? trimmed;
+}
+
 /**
  * Orders course categories so the 5 client-prioritized tracks appear first
  * (Tax, VAT, e-GP, E-commerce, RJSC/Company Secretarial), preserving canonical
@@ -322,6 +338,8 @@ export async function listPublishedServices(filter?: {
   categorySlug?: string;
   q?: string;
 }): Promise<{ categories: PublicCategoryDTO[]; items: PublicServiceCard[] }> {
+  const resolvedCategorySlug = resolveServiceCategorySlug(filter?.categorySlug);
+
   if (isDatabaseConfigured()) {
     try {
       const [categories, services, categoryCounts] = await Promise.all([
@@ -333,8 +351,8 @@ export async function listPublishedServices(filter?: {
           where: {
             contentStatus: "PUBLISHED",
             availabilityStatus: { not: "INACTIVE" },
-            ...(filter?.categorySlug
-              ? { category: { slug: filter.categorySlug } }
+            ...(resolvedCategorySlug
+              ? { category: { slug: resolvedCategorySlug } }
               : {}),
           },
           include: { category: true },
@@ -423,7 +441,7 @@ export async function listPublishedServices(filter?: {
   }));
   const items: PublicServiceCard[] = allVisibleSeedServices
     .filter((s) =>
-      filter?.categorySlug ? s.categorySlug === filter.categorySlug : true,
+      resolvedCategorySlug ? s.categorySlug === resolvedCategorySlug : true,
     )
     .filter((s) =>
       filter?.q
@@ -850,4 +868,52 @@ export async function getPublishedSlugManifest(): Promise<{
     services: servicesRes.items.map((s) => s.slug),
     licensing: licensingRes.items.map((l) => l.slug),
   };
+}
+
+export async function listRelatedCourses(
+  categorySlug: string,
+  excludeSlug: string,
+  limit = 3,
+): Promise<PublicCourseCard[]> {
+  const { items } = await listPublishedCourses({ categorySlug });
+  const sameCategory = items.filter((c) => c.slug !== excludeSlug);
+  if (sameCategory.length >= limit) {
+    return sameCategory.slice(0, limit);
+  }
+  const { items: allItems } = await listPublishedCourses();
+  const seen = new Set([excludeSlug, ...sameCategory.map((c) => c.slug)]);
+  const extras = allItems.filter((c) => !seen.has(c.slug));
+  return [...sameCategory, ...extras].slice(0, limit);
+}
+
+export async function listRelatedServices(
+  categorySlug: string,
+  excludeSlug: string,
+  limit = 3,
+): Promise<PublicServiceCard[]> {
+  const { items } = await listPublishedServices({ categorySlug });
+  const sameCategory = items.filter((s) => s.slug !== excludeSlug);
+  if (sameCategory.length >= limit) {
+    return sameCategory.slice(0, limit);
+  }
+  const { items: allItems } = await listPublishedServices();
+  const seen = new Set([excludeSlug, ...sameCategory.map((s) => s.slug)]);
+  const extras = allItems.filter((s) => !seen.has(s.slug));
+  return [...sameCategory, ...extras].slice(0, limit);
+}
+
+export async function listRelatedLicensing(
+  categorySlug: string,
+  excludeSlug: string,
+  limit = 2,
+): Promise<PublicLicensingCard[]> {
+  const { items } = await listPublishedLicensing({ categorySlug });
+  const sameCategory = items.filter((l) => l.slug !== excludeSlug);
+  if (sameCategory.length >= limit) {
+    return sameCategory.slice(0, limit);
+  }
+  const { items: allItems } = await listPublishedLicensing();
+  const seen = new Set([excludeSlug, ...sameCategory.map((l) => l.slug)]);
+  const extras = allItems.filter((l) => !seen.has(l.slug));
+  return [...sameCategory, ...extras].slice(0, limit);
 }

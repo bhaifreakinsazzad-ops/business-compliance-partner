@@ -16,7 +16,9 @@ test.describe("BCP V4.0 Client Acceptance Criteria", () => {
 
     const nextBtn = carousel.getByRole("button", { name: "পরবর্তী স্লাইড" });
     const prevBtn = carousel.getByRole("button", { name: "পূর্ববর্তী স্লাইড" });
-    const pauseBtn = carousel.getByRole("button", { name: "স্লাইডার থামান" });
+    const pauseBtn = carousel.getByRole("button", {
+      name: "স্লাইডার অটোপ্লে থামান",
+    });
 
     await expect(nextBtn).toBeVisible();
     await expect(prevBtn).toBeVisible();
@@ -29,9 +31,7 @@ test.describe("BCP V4.0 Client Acceptance Criteria", () => {
     await expect(carousel).toContainText("ব্যবসা শুরু থেকে সফল পরিচালনা");
 
     await pauseBtn.click();
-    await expect(
-      carousel.getByRole("button", { name: "স্লাইডার চালু করুন" }),
-    ).toHaveAttribute("aria-pressed", "true");
+    await expect(pauseBtn).toHaveAttribute("aria-pressed", "true");
 
     // Two flagship buttons remain visible regardless of slide
     const coursesCta = page.locator('a[data-flagship-cta="courses"]');
@@ -83,10 +83,10 @@ test.describe("BCP V4.0 Client Acceptance Criteria", () => {
     ]);
   });
 
-  test("services page renders category cards, licensing/consultancy gateway, and enquiry fallback", async ({
+  test("services page renders category cards, licensing/consultancy gateway, and resolves legacy slugs", async ({
     page,
   }) => {
-    await page.goto("/services");
+    await page.goto("/services?category=business-formation-and-rjsc");
 
     await expect(page.locator('main a[href="/licensing"]').first()).toBeVisible();
     await expect(page.locator('main a[href="/consultancy"]').first()).toBeVisible();
@@ -96,10 +96,10 @@ test.describe("BCP V4.0 Client Acceptance Criteria", () => {
     );
     await expect(categoryNav.locator("a[data-category-card]")).toHaveCount(11);
 
-    // Since DEFAULT_PUBLIC_SITE_CONFIG.verifiedWhatsapp is null by default,
-    // ServiceCard renders a functional fallback enquiry button (zero broken wa.me links).
+    // Legacy slug from BusinessSolutionFinder must resolve to real published services
     const serviceCards = page.locator("main article");
     await expect(serviceCards.first()).toBeVisible();
+
     const brokenWaLinks = await page
       .locator('a[href^="https://wa.me/"]')
       .evaluateAll((els) =>
@@ -108,6 +108,60 @@ test.describe("BCP V4.0 Client Acceptance Criteria", () => {
           .filter((href) => /^https:\/\/wa\.me\/(?:\?|$)/.test(href)),
       );
     expect(brokenWaLinks).toEqual([]);
+  });
+
+  test("quick-search dialog opens from header, searches catalogue, and closes on Escape", async ({
+    page,
+  }) => {
+    await page.goto("/courses");
+
+    const trigger = page
+      .locator("button[data-quick-search-trigger]:visible")
+      .first();
+    await trigger.click();
+
+    const dialog = page.locator("dialog[open]");
+    await expect(dialog).toBeVisible();
+
+    const searchResPromise = page.waitForResponse(
+      (res) =>
+        res.url().includes("/api/catalogue/search") &&
+        res.url().includes("q=VAT") &&
+        res.status() === 200,
+    );
+    await dialog.getByRole("button", { name: "VAT", exact: true }).click();
+    await searchResPromise;
+    await expect(dialog).toContainText("ভ্যাট");
+
+    await page.keyboard.press("Escape");
+    await expect(dialog).not.toBeVisible();
+  });
+
+  test("course detail SyllabusExplorer toggles modules and service detail DocumentReadinessWidget updates progress", async ({
+    page,
+  }) => {
+    await page.goto("/courses/complete-income-tax-course-bangladesh");
+    const toggleAllBtn = page.getByRole("button", {
+      name: /সব মডিউল খুলুন|সব সংকুচিত করুন/,
+    });
+    await expect(toggleAllBtn).toBeVisible();
+    await toggleAllBtn.click();
+
+    await page.goto("/services/etin-individual-corporate-tax-return");
+    const firstCheckbox = page
+      .locator('main input[type="checkbox"]')
+      .first();
+    await expect(firstCheckbox).toBeVisible();
+    await firstCheckbox.check();
+    await expect(page.locator("main")).toContainText("প্রস্তুতি: 1 /");
+  });
+
+  test("FAQ page filters interactively by pillar", async ({ page }) => {
+    await page.goto("/faq");
+    const coursesTab = page.getByRole("tab", { name: "কোর্স" });
+    await expect(coursesTab).toBeVisible();
+    await coursesTab.click();
+    await expect(coursesTab).toHaveAttribute("aria-selected", "true");
   });
 
   test("customer portal and admin routes remain protected", async ({ page }) => {

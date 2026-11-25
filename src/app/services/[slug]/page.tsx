@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, CheckCircle2, FileText } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { getCanonicalBaseUrl, getPublicSiteConfig } from "@/lib/config/site";
-import { getPublishedServiceBySlug } from "@/lib/services/catalogue";
+import {
+  getPublishedServiceBySlug,
+  listRelatedServices,
+} from "@/lib/services/catalogue";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { Footer } from "@/components/layout/Footer";
@@ -12,6 +15,8 @@ import { AuthorityNote } from "@/components/shared/AuthorityNote";
 import { ProcessSteps } from "@/components/shared/ProcessSteps";
 import { VerificationMeta } from "@/components/shared/VerificationMeta";
 import { WhatsAppEnquiryButton } from "@/components/shared/WhatsAppEnquiryButton";
+import { DocumentReadinessWidget } from "@/components/shared/DocumentReadinessWidget";
+import { ServiceCard } from "@/components/shared/ServiceCard";
 
 interface ServiceDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -46,6 +51,11 @@ export default async function ServiceDetailPage({
   }
 
   const canonicalBaseUrl = getCanonicalBaseUrl();
+  const relatedServices = await listRelatedServices(
+    service.categorySlug,
+    service.slug,
+    3,
+  );
   const enquiryHref = `/consultancy?pillar=SERVICES&slug=${encodeURIComponent(
     service.slug,
   )}&topic=${encodeURIComponent(service.titleBn)}`;
@@ -118,28 +128,7 @@ export default async function ServiceDetailPage({
                 limitationsBn={service.limitationsBn}
               />
 
-              <div className="rounded-[16px] border border-ps-border bg-ps-white p-6 space-y-4">
-                <div className="space-y-1">
-                  <h2 className="text-xl font-bold text-ps-navy inline-flex items-center gap-2">
-                    <FileText className="w-5 h-5 text-ps-navy" aria-hidden="true" />
-                    <span>প্রাথমিক প্রয়োজনীয় নথিপত্র (পেশাদার পর্যালোচনা সাপেক্ষ)</span>
-                  </h2>
-                  <p className="text-xs text-ps-muted">
-                    ব্যবসার ধরন ও সর্বশেষ সরকারি নির্দেশনা অনুযায়ী নথির তালিকা পরিবর্তিত হতে পারে।
-                  </p>
-                </div>
-                <ul className="space-y-2.5">
-                  {service.documentsSummary.map((doc, idx) => (
-                    <li key={idx} className="flex items-start gap-2.5 text-sm sm:text-base text-ps-ink/90">
-                      <CheckCircle2
-                        className="w-4 h-4 text-ps-navy shrink-0 mt-1"
-                        aria-hidden="true"
-                      />
-                      <span>{doc}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <DocumentReadinessWidget documents={service.documentsSummary} />
 
               {service.processSteps.length > 0 ? (
                 <div className="space-y-4">
@@ -194,6 +183,34 @@ export default async function ServiceDetailPage({
             </aside>
           </div>
         </section>
+
+        {relatedServices.length > 0 ? (
+          <section className="py-10 sm:py-12 bg-ps-white border-t border-ps-border">
+            <div className="ps-container space-y-6">
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="text-xl sm:text-2xl font-bold text-ps-navy">
+                  সম্পর্কিত অন্যান্য সেবা
+                </h2>
+                <Link
+                  href={`/services?category=${encodeURIComponent(service.categorySlug)}`}
+                  className="text-sm font-semibold text-ps-navy hover:underline underline-offset-4"
+                >
+                  এই বিভাগের সব সেবা →
+                </Link>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {relatedServices.map((item) => (
+                  <ServiceCard
+                    key={item.slug}
+                    service={item}
+                    verifiedWhatsapp={siteConfig.verifiedWhatsapp}
+                    canonicalBaseUrl={canonicalBaseUrl}
+                  />
+                ))}
+              </div>
+            </div>
+          </section>
+        ) : null}
       </main>
 
       <Footer siteConfig={siteConfig} />

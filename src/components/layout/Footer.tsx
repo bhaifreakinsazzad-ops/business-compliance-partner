@@ -5,6 +5,7 @@ import {
   buildWhatsAppGeneralMessage,
   buildWhatsAppUrl,
 } from "@/lib/contact/whatsapp";
+import { FloatingConversionDock } from "@/components/layout/FloatingConversionDock";
 import type { PublicSiteConfig } from "@/types/domain";
 
 interface FooterProps {
@@ -24,7 +25,8 @@ export function Footer({ siteConfig }: FooterProps) {
   );
 
   return (
-    <footer className="bg-ps-midnight text-white/85 border-t border-ps-gold/30 pt-14 pb-10 text-sm">
+    <>
+      <footer className="bg-ps-midnight text-white/85 border-t border-ps-gold/30 pt-14 pb-20 sm:pb-12 text-sm">
       <div className="ps-container space-y-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10">
           {/* Column 1: Brand Identity */}
@@ -214,5 +216,7 @@ export function Footer({ siteConfig }: FooterProps) {
         </div>
       </div>
     </footer>
+    <FloatingConversionDock verifiedWhatsapp={siteConfig.verifiedWhatsapp} />
+    </>
   );
 }

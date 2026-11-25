@@ -9,7 +9,10 @@ import {
   X,
 } from "lucide-react";
 import { getCanonicalBaseUrl, getPublicSiteConfig } from "@/lib/config/site";
-import { listPublishedServices } from "@/lib/services/catalogue";
+import {
+  listPublishedServices,
+  resolveServiceCategorySlug,
+} from "@/lib/services/catalogue";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { Footer } from "@/components/layout/Footer";
@@ -34,16 +37,17 @@ interface ServicesPageProps {
 
 export default async function ServicesPage({ searchParams }: ServicesPageProps) {
   const { category = "", q = "", page = "1" } = await searchParams;
+  const resolvedCategory = resolveServiceCategorySlug(category) ?? "";
   const [siteConfig, { categories, items }] = await Promise.all([
     getPublicSiteConfig(),
     listPublishedServices({
-      categorySlug: category || undefined,
+      categorySlug: resolvedCategory || undefined,
       q: q || undefined,
     }),
   ]);
 
   const canonicalBaseUrl = getCanonicalBaseUrl();
-  const activeCategory = categories.find((c) => c.slug === category);
+  const activeCategory = categories.find((c) => c.slug === resolvedCategory);
 
   const totalPages = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
   const parsedPage = Number.parseInt(page, 10);
@@ -163,7 +167,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
               <CategoryGrid
                 categories={categories}
                 basePath="/services"
-                activeSlug={category}
+                activeSlug={resolvedCategory}
                 query={q}
                 ariaLabel="সেবা ক্যাটাগরি"
                 showAllCard

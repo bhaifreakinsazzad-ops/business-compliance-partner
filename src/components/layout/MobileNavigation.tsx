@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Menu, Search, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import { QuickSearchDialog } from "@/components/layout/QuickSearchDialog";
 
 export interface NavLinkItem {
   href: string;
@@ -61,13 +62,7 @@ export function MobileNavigation({
 
   return (
     <div className="lg:hidden flex items-center gap-2 shrink-0">
-      <Link
-        href="/#unified-search"
-        aria-label="ক্যাটালগ অনুসন্ধান"
-        className="inline-flex items-center justify-center w-11 h-11 rounded-[12px] border border-ps-border text-ps-navy hover:bg-ps-cool"
-      >
-        <Search className="w-5 h-5" aria-hidden="true" />
-      </Link>
+      <QuickSearchDialog variant="mobile" />
 
       <button
         ref={triggerRef}

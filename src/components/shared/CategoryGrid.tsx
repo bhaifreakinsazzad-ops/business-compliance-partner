@@ -49,7 +49,7 @@ function resolveCategoryIcon(iconName: string | null): LucideIcon {
 
 interface CategoryGridProps {
   categories: PublicCategoryDTO[];
-  basePath: "/courses" | "/services";
+  basePath: "/courses" | "/services" | "/licensing";
   activeSlug?: string;
   query?: string;
   ariaLabel: string;

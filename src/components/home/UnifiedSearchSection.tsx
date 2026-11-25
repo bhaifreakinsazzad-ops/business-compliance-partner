@@ -118,7 +118,7 @@ export function UnifiedSearchSection() {
         </form>
       </search>
 
-      {/* Quick suggestion chips */}
+      {/* Quick suggestion chips — min-h-9 (36px) for WCAG 2.2 AA target-size */}
       <div className="flex flex-wrap items-center gap-2 text-xs">
         <span className="text-ps-muted font-medium">জনপ্রিয় অনুসন্ধান:</span>
         {["Income Tax", "VAT", "e-GP", "RJSC", "Fire", "IRC"].map((tag) => (
@@ -129,11 +129,24 @@ export function UnifiedSearchSection() {
               setQuery(tag);
               void runSearch(tag);
             }}
-            className="rounded-full border border-ps-border bg-ps-cool px-3 py-1 font-medium text-ps-navy hover:border-ps-navy/40 transition-colors"
+            className="inline-flex items-center min-h-9 rounded-full border border-ps-border bg-ps-cool px-3.5 py-1.5 font-medium text-ps-navy hover:border-ps-navy/45 hover:bg-ps-ivory transition-colors cursor-pointer"
           >
             {tag}
           </button>
         ))}
+        {query ? (
+          <button
+            type="button"
+            onClick={() => {
+              setQuery("");
+              setResults(null);
+              setSearchedQuery(null);
+            }}
+            className="inline-flex items-center min-h-9 rounded-full border border-ps-border bg-ps-white px-3 py-1.5 font-semibold text-ps-muted hover:text-ps-navy transition-colors cursor-pointer"
+          >
+            মুছুন
+          </button>
+        ) : null}
       </div>
 
       {errorMsg ? (

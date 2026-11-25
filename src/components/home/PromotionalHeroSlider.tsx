@@ -351,7 +351,7 @@ export function PromotionalHeroSlider({
               type="button"
               onClick={() => setIsPaused((prev) => !prev)}
               aria-pressed={isPaused}
-              aria-label={isPaused ? "স্লাইডার চালু করুন" : "স্লাইডার থামান"}
+              aria-label="স্লাইডার অটোপ্লে থামান"
               className="inline-flex items-center justify-center gap-1.5 h-9 px-3 rounded-[10px] border border-white/20 bg-ps-navy/80 text-xs font-medium text-ps-ivory hover:border-ps-gold hover:text-ps-gold transition-colors cursor-pointer"
             >
               {isPaused ? (
@@ -378,6 +378,18 @@ export function PromotionalHeroSlider({
           </div>
         </div>
       </div>
+
+      {/* Subtle Royal Gold auto-progress indicator */}
+      {!prefersReducedMotion && !isPaused && !isHovered && !isFocused ? (
+        <div
+          key={`progress-${activeIndex}`}
+          aria-hidden="true"
+          className="h-0.5 w-full bg-ps-gold/85 origin-left"
+          style={{
+            animation: `bcp-slide-progress ${AUTO_ADVANCE_MS}ms linear 1`,
+          }}
+        />
+      ) : null}
     </section>
   );
 }

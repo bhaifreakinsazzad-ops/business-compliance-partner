@@ -1,17 +1,24 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { FileCheck2 } from "lucide-react";
+import {
+  BriefcaseBusiness,
+  ChevronLeft,
+  ChevronRight,
+  FileCheck2,
+  MessageSquareText,
+  X,
+} from "lucide-react";
 import { getCanonicalBaseUrl, getPublicSiteConfig } from "@/lib/config/site";
 import { listPublishedLicensing } from "@/lib/services/catalogue";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { Footer } from "@/components/layout/Footer";
 import { AuthorityNote } from "@/components/shared/AuthorityNote";
+import { CategoryGrid } from "@/components/shared/CategoryGrid";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { LicensingCard } from "@/components/shared/LicensingCard";
 import { SearchBox } from "@/components/shared/SearchBox";
 import { CTASection } from "@/components/shared/CTASection";
-import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "লাইসেন্সিং ও নিবন্ধন নির্দেশিকা",
@@ -20,14 +27,16 @@ export const metadata: Metadata = {
   alternates: { canonical: "/licensing" },
 };
 
+const PAGE_SIZE = 12;
+
 interface LicensingPageProps {
-  searchParams: Promise<{ category?: string; q?: string }>;
+  searchParams: Promise<{ category?: string; q?: string; page?: string }>;
 }
 
 export default async function LicensingPage({
   searchParams,
 }: LicensingPageProps) {
-  const { category = "", q = "" } = await searchParams;
+  const { category = "", q = "", page = "1" } = await searchParams;
   const [siteConfig, { categories, items }] = await Promise.all([
     getPublicSiteConfig(),
     listPublishedLicensing({
@@ -36,13 +45,34 @@ export default async function LicensingPage({
     }),
   ]);
   const canonicalBaseUrl = getCanonicalBaseUrl();
+  const activeCategory = categories.find((c) => c.slug === category);
+
+  const totalPages = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
+  const parsedPage = Number.parseInt(page, 10);
+  const currentPage =
+    Number.isFinite(parsedPage) && parsedPage >= 1
+      ? Math.min(parsedPage, totalPages)
+      : 1;
+  const paginatedItems = items.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE,
+  );
+
+  const buildPageHref = (targetPage: number) => {
+    const params = new URLSearchParams();
+    if (category) params.set("category", category);
+    if (q) params.set("q", q);
+    if (targetPage > 1) params.set("page", String(targetPage));
+    const qs = params.toString();
+    return qs ? `/licensing?${qs}` : "/licensing";
+  };
 
   return (
     <>
       <AppHeader siteConfig={siteConfig} />
 
       <main id="main-content" tabIndex={-1} className="flex-1">
-        <section className="bg-ps-midnight text-ps-white py-12 sm:py-14 border-b border-ps-gold/30">
+        <section className="bg-ps-midnight text-ps-white py-10 sm:py-12 border-b border-ps-gold/30">
           <div className="ps-container space-y-5">
             <Breadcrumbs
               dark
@@ -51,10 +81,10 @@ export default async function LicensingPage({
                 { labelBn: "লাইসেন্সিং ও নিবন্ধন" },
               ]}
             />
-            <div className="max-w-3xl space-y-3">
+            <div className="max-w-3xl space-y-2.5">
               <span className="inline-flex items-center gap-2 rounded-full border border-ps-gold/40 bg-ps-navy px-3 py-1 text-xs font-medium text-ps-ivory">
                 <FileCheck2 className="w-3.5 h-3.5 text-ps-gold" aria-hidden="true" />
-                <span lang="en">Licensing &amp; Registration Directory</span>
+                <span lang="en">Licensing &amp; Registration Directory • 6 Categories</span>
               </span>
               <h1 className="text-3xl sm:text-4xl font-bold leading-snug">
                 ব্যবসায়িক লাইসেন্সিং ও নিবন্ধন সহায়তা
@@ -64,14 +94,39 @@ export default async function LicensingPage({
                 আবেদন প্রস্তুতির নির্দেশিকা।
               </p>
             </div>
+
+            {/* 3-Gateway Quick Switcher */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+              <Link
+                href="/services"
+                className="flex items-center gap-3 rounded-[12px] bg-ps-navy border border-ps-gold/40 text-ps-white px-4 py-3 font-semibold text-sm hover:border-ps-gold transition-colors"
+              >
+                <BriefcaseBusiness className="w-5 h-5 text-ps-gold shrink-0" aria-hidden="true" />
+                <span>পেশাদার ব্যবসায়িক সেবা</span>
+              </Link>
+              <Link
+                href="/licensing"
+                className="flex items-center gap-3 rounded-[12px] bg-ps-gold text-ps-midnight px-4 py-3 font-bold text-sm shadow-sm"
+              >
+                <FileCheck2 className="w-5 h-5 shrink-0" aria-hidden="true" />
+                <span>লাইসেন্সিং ও নিবন্ধন</span>
+              </Link>
+              <Link
+                href="/consultancy"
+                className="flex items-center gap-3 rounded-[12px] bg-ps-navy border border-ps-gold/40 text-ps-white px-4 py-3 font-semibold text-sm hover:border-ps-gold transition-colors"
+              >
+                <MessageSquareText className="w-5 h-5 text-ps-gold shrink-0" aria-hidden="true" />
+                <span>বিশেষজ্ঞ কনসালটেন্সি</span>
+              </Link>
+            </div>
           </div>
         </section>
 
-        <section className="py-10 sm:py-12">
+        <section className="py-8 sm:py-12">
           <div className="ps-container space-y-8">
             <AuthorityNote limitationsBn={siteConfig.legalDisclaimerBn} />
 
-            <div className="rounded-[16px] bg-ps-white border border-ps-border p-5 sm:p-6 space-y-5 shadow-sm">
+            <div className="rounded-[16px] bg-ps-white border border-ps-border p-5 sm:p-6 space-y-4 shadow-sm">
               <SearchBox
                 action="/licensing"
                 defaultValue={q}
@@ -80,51 +135,103 @@ export default async function LicensingPage({
                 placeholderBn="যেমন: Trade Licence, RJSC, DIFE, Fire, IRC, ERC..."
               />
 
-              <div className="flex flex-wrap gap-2" role="navigation" aria-label="লাইসেন্সিং বিভাগ">
-                <Link
-                  href={q ? `/licensing?q=${encodeURIComponent(q)}` : "/licensing"}
-                  className={cn(
-                    "inline-flex items-center min-h-10 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium border transition-colors",
-                    !category
-                      ? "bg-ps-navy text-ps-white border-ps-navy"
-                      : "bg-ps-cool text-ps-navy border-ps-border hover:bg-ps-white",
-                  )}
-                >
-                  সব বিভাগ
-                </Link>
-                {categories.map((cat) => {
-                  const active = cat.slug === category;
-                  const href = q
-                    ? `/licensing?category=${encodeURIComponent(cat.slug)}&q=${encodeURIComponent(q)}`
-                    : `/licensing?category=${encodeURIComponent(cat.slug)}`;
-                  return (
-                    <Link
-                      key={cat.slug}
-                      href={href}
-                      className={cn(
-                        "inline-flex items-center min-h-10 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium border transition-colors",
-                        active
-                          ? "bg-ps-navy text-ps-white border-ps-navy"
-                          : "bg-ps-white text-ps-navy border-ps-border hover:bg-ps-cool",
-                      )}
-                    >
-                      {cat.nameBn}
-                    </Link>
-                  );
-                })}
-              </div>
+              {(category || q) ? (
+                <div className="flex flex-wrap items-center justify-between gap-3 pt-1 text-xs sm:text-sm">
+                  <p className="text-ps-ink/85">
+                    মোট <strong>{items.length}</strong>টি প্রকাশিত লাইসেন্সিং তথ্য পাওয়া গেছে
+                    {activeCategory ? (
+                      <>
+                        {" "}
+                        — বিভাগ: <strong>{activeCategory.nameBn}</strong>
+                      </>
+                    ) : null}
+                  </p>
+                  <Link
+                    href="/licensing"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-ps-border bg-ps-cool px-3 py-1.5 text-xs font-semibold text-ps-navy hover:bg-ps-ivory"
+                  >
+                    <X className="w-3.5 h-3.5" aria-hidden="true" />
+                    <span>ফিল্টার মুছুন</span>
+                  </Link>
+                </div>
+              ) : null}
             </div>
 
-            {items.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {items.map((entry) => (
-                  <LicensingCard
-                    key={entry.slug}
-                    entry={entry}
-                    verifiedWhatsapp={siteConfig.verifiedWhatsapp}
-                    canonicalBaseUrl={canonicalBaseUrl}
-                  />
-                ))}
+            <div className="space-y-4">
+              <div>
+                <h2 className="text-xl sm:text-2xl font-bold text-ps-navy">
+                  লাইসেন্সিং বিভাগ নির্বাচন করুন
+                </h2>
+                <p className="text-xs sm:text-sm text-ps-muted">
+                  ব্যবসা, পরিবেশ, কারখানা, পণ্য ও আমদানি-রপ্তানি সংক্রান্ত লাইসেন্স বিভাগ।
+                </p>
+              </div>
+
+              <CategoryGrid
+                categories={categories}
+                basePath="/licensing"
+                activeSlug={category}
+                query={q}
+                ariaLabel="লাইসেন্সিং বিভাগ"
+                showAllCard
+                allLabelBn="সব বিভাগ"
+                accent="navy"
+                columns={3}
+              />
+            </div>
+
+            {paginatedItems.length > 0 ? (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between gap-3 border-b border-ps-border pb-3">
+                  <h2 className="text-lg sm:text-xl font-bold text-ps-navy">
+                    {activeCategory
+                      ? `${activeCategory.nameBn} — তালিকা`
+                      : "প্রকাশিত লাইসেন্সিং ও নিবন্ধনসমূহ"}
+                  </h2>
+                  <span className="text-xs sm:text-sm font-medium text-ps-muted">
+                    মোট {items.length}টি এন্ট্রি
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {paginatedItems.map((entry) => (
+                    <LicensingCard
+                      key={entry.slug}
+                      entry={entry}
+                      verifiedWhatsapp={siteConfig.verifiedWhatsapp}
+                      canonicalBaseUrl={canonicalBaseUrl}
+                    />
+                  ))}
+                </div>
+
+                {totalPages > 1 ? (
+                  <nav
+                    aria-label="লাইসেন্সিং পেজিনেশন"
+                    className="flex flex-wrap items-center justify-center gap-2 pt-2"
+                  >
+                    {currentPage > 1 ? (
+                      <Link
+                        href={buildPageHref(currentPage - 1)}
+                        className="inline-flex items-center gap-1 min-h-11 px-4 rounded-[10px] border border-ps-border bg-ps-white text-sm font-semibold text-ps-navy hover:bg-ps-cool"
+                      >
+                        <ChevronLeft className="w-4 h-4" aria-hidden="true" />
+                        <span>পূর্ববর্তী</span>
+                      </Link>
+                    ) : null}
+                    <span className="px-3 text-sm font-medium text-ps-muted">
+                      পৃষ্ঠা {currentPage} / {totalPages}
+                    </span>
+                    {currentPage < totalPages ? (
+                      <Link
+                        href={buildPageHref(currentPage + 1)}
+                        className="inline-flex items-center gap-1 min-h-11 px-4 rounded-[10px] border border-ps-border bg-ps-white text-sm font-semibold text-ps-navy hover:bg-ps-cool"
+                      >
+                        <span>পরবর্তী</span>
+                        <ChevronRight className="w-4 h-4" aria-hidden="true" />
+                      </Link>
+                    ) : null}
+                  </nav>
+                ) : null}
               </div>
             ) : (
               <EmptyState
