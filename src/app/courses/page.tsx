@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BookOpen, ChevronLeft, ChevronRight, X } from "lucide-react";
-import { getPublicSiteConfig } from "@/lib/config/site";
+import { getCanonicalBaseUrl, getPublicSiteConfig } from "@/lib/config/site";
 import {
   listPublishedCourses,
   sortCourseCategoriesByClientPriority,
@@ -38,6 +38,7 @@ export default async function CoursesPage({ searchParams }: CoursesPageProps) {
     }),
   ]);
 
+  const canonicalBaseUrl = getCanonicalBaseUrl();
   const orderedCategories = sortCourseCategoriesByClientPriority(categories);
   const activeCategory = orderedCategories.find((c) => c.slug === category);
 
@@ -146,6 +147,7 @@ export default async function CoursesPage({ searchParams }: CoursesPageProps) {
                 accent="gold"
                 columns={3}
                 highlightCount={5}
+                luminousPriority
               />
             </div>
 
@@ -164,7 +166,12 @@ export default async function CoursesPage({ searchParams }: CoursesPageProps) {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {paginatedItems.map((course) => (
-                    <CourseCard key={course.slug} course={course} />
+                    <CourseCard
+                      key={course.slug}
+                      course={course}
+                      verifiedWhatsapp={siteConfig.verifiedWhatsapp}
+                      canonicalBaseUrl={canonicalBaseUrl}
+                    />
                   ))}
                 </div>
 

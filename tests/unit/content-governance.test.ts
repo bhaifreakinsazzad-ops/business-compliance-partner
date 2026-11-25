@@ -60,9 +60,9 @@ describe("Content governance & seed truth guardrails", () => {
       expect(entry.officialSourceLabel.length).toBeGreaterThan(2);
     }
 
-    // No unverified contact placeholders in default site config
+    // Official client-authorized admin WhatsApp is active; unverified channels remain null
     expect(DEFAULT_PUBLIC_SITE_CONFIG.verifiedPhone).toBeNull();
-    expect(DEFAULT_PUBLIC_SITE_CONFIG.verifiedWhatsapp).toBeNull();
+    expect(DEFAULT_PUBLIC_SITE_CONFIG.verifiedWhatsapp).toBe("+880 1521-537864");
     expect(DEFAULT_PUBLIC_SITE_CONFIG.verifiedEmail).toBeNull();
     expect(DEFAULT_PUBLIC_SITE_CONFIG.verifiedAddressBn).toBeNull();
     expect(DEFAULT_PUBLIC_SITE_CONFIG.facebookUrl).toBeNull();

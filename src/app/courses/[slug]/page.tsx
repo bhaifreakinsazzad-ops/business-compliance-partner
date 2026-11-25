@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, CheckCircle2, Users } from "lucide-react";
 import { getCanonicalBaseUrl, getPublicSiteConfig } from "@/lib/config/site";
+import { buildWhatsAppCourseMessage } from "@/lib/contact/whatsapp";
 import {
   getPublishedCourseBySlug,
   listRelatedCourses,
@@ -49,6 +50,7 @@ export default async function CourseDetailPage({
   }
 
   const canonicalBaseUrl = getCanonicalBaseUrl();
+  const coursePath = `/courses/${course.slug}`;
   const relatedCourses = await listRelatedCourses(
     course.categorySlug,
     course.slug,
@@ -57,6 +59,11 @@ export default async function CourseDetailPage({
   const enquiryHref = `/consultancy?pillar=COURSES&slug=${encodeURIComponent(
     course.slug,
   )}&topic=${encodeURIComponent(course.titleBn)}`;
+  const courseWhatsAppMessage = buildWhatsAppCourseMessage({
+    courseName: course.titleBn,
+    coursePath,
+    canonicalBaseUrl,
+  });
 
   return (
     <>
@@ -131,7 +138,7 @@ export default async function CourseDetailPage({
                 </ul>
               </div>
 
-              {/* Syllabus Modules */}
+              {/* Interactive Syllabus Modules */}
               <SyllabusExplorer modules={course.syllabus} />
             </div>
 
@@ -181,23 +188,24 @@ export default async function CourseDetailPage({
                   ) : null}
                 </dl>
 
-                {siteConfig.verifiedWhatsapp ? (
+                <div className="space-y-2.5">
                   <WhatsAppEnquiryButton
                     verifiedWhatsapp={siteConfig.verifiedWhatsapp}
                     serviceName={course.titleBn}
-                    servicePath={`/courses/${course.slug}`}
+                    servicePath={coursePath}
                     canonicalBaseUrl={canonicalBaseUrl}
+                    customMessage={courseWhatsAppMessage}
                     fallbackHref={enquiryHref}
                     labelBn="WhatsApp-এ কোর্স সম্পর্কে জানুন"
                     fallbackLabelBn="কোর্স সম্পর্কে জানতে চাই"
+                    size="lg"
                     fullWidth
                   />
-                ) : null}
-
-                <Link href={enquiryHref} className="ps-primary-button w-full">
-                  <span>কোর্স সম্পর্কে জানতে চাই</span>
-                  <ArrowRight className="w-4 h-4" aria-hidden="true" />
-                </Link>
+                  <Link href={enquiryHref} className="ps-secondary-button w-full">
+                    <span>অনলাইন ফর্মে আগ্রহ জানান</span>
+                    <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                  </Link>
+                </div>
               </div>
             </aside>
           </div>
@@ -219,7 +227,12 @@ export default async function CourseDetailPage({
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {relatedCourses.map((item) => (
-                  <CourseCard key={item.slug} course={item} />
+                  <CourseCard
+                    key={item.slug}
+                    course={item}
+                    verifiedWhatsapp={siteConfig.verifiedWhatsapp}
+                    canonicalBaseUrl={canonicalBaseUrl}
+                  />
                 ))}
               </div>
             </div>

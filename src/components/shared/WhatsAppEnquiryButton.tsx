@@ -13,6 +13,7 @@ export interface WhatsAppEnquiryButtonProps {
   serviceName: string;
   servicePath?: string;
   canonicalBaseUrl?: string | null;
+  customMessage?: string;
   fallbackHref: string;
   labelBn?: string;
   fallbackLabelBn?: string;
@@ -27,8 +28,8 @@ const VARIANT_CLASSES: Record<
   string
 > = {
   emerald:
-    "bg-ps-success text-ps-white hover:bg-[#006d49] border border-transparent shadow-sm",
-  navy: "bg-ps-navy text-ps-white hover:bg-ps-midnight border border-transparent shadow-sm",
+    "bg-gradient-to-r from-[#00865a] to-[#009c68] text-ps-white hover:from-[#006d49] hover:to-[#00865a] border border-[#006443]/60 shadow-[0_4px_14px_rgba(0,134,90,0.22)] hover:shadow-[0_6px_18px_rgba(0,134,90,0.3)] hover:-translate-y-0.5",
+  navy: "bg-ps-navy text-ps-white hover:bg-ps-midnight border border-transparent shadow-sm hover:-translate-y-0.5",
   outline:
     "bg-ps-white text-ps-success border border-ps-success hover:bg-ps-success/10",
 };
@@ -37,7 +38,7 @@ const SIZE_CLASSES: Record<
   NonNullable<WhatsAppEnquiryButtonProps["size"]>,
   string
 > = {
-  sm: "min-h-11 px-4 py-2 text-xs sm:text-sm rounded-[10px]",
+  sm: "min-h-11 px-4 py-2 text-xs sm:text-sm rounded-[11px]",
   md: "min-h-12 px-5 py-2.5 text-sm rounded-[12px]",
   lg: "min-h-12 px-6 py-3 text-base rounded-[12px]",
 };
@@ -47,6 +48,7 @@ export function WhatsAppEnquiryButton({
   serviceName,
   servicePath,
   canonicalBaseUrl,
+  customMessage,
   fallbackHref,
   labelBn = "WhatsApp-এ সেবা নিন",
   fallbackLabelBn = "সেবার অনুরোধ করুন",
@@ -55,15 +57,17 @@ export function WhatsAppEnquiryButton({
   fullWidth = false,
   className,
 }: WhatsAppEnquiryButtonProps) {
-  const message = buildWhatsAppServiceMessage({
-    serviceName,
-    servicePath,
-    canonicalBaseUrl,
-  });
+  const message =
+    customMessage?.trim() ||
+    buildWhatsAppServiceMessage({
+      serviceName,
+      servicePath,
+      canonicalBaseUrl,
+    });
   const waUrl = buildWhatsAppUrl(verifiedWhatsapp, message);
 
   const sharedClasses = cn(
-    "inline-flex items-center justify-center gap-2 font-semibold leading-tight transition-colors focus-visible:outline-3 focus-visible:outline-ps-gold focus-visible:outline-offset-2",
+    "inline-flex items-center justify-center gap-2 font-bold leading-tight whitespace-nowrap transition-[transform,box-shadow,background-color] duration-200 focus-visible:outline-3 focus-visible:outline-ps-gold focus-visible:outline-offset-2",
     VARIANT_CLASSES[variant],
     SIZE_CLASSES[size],
     fullWidth && "w-full",
@@ -102,7 +106,7 @@ export function WhatsAppEnquiryButton({
       href={fallbackHref}
       data-whatsapp-fallback="true"
       className={cn(
-        "inline-flex items-center justify-center gap-2 font-semibold leading-tight transition-colors bg-ps-navy text-ps-white hover:bg-ps-midnight border border-transparent shadow-sm focus-visible:outline-3 focus-visible:outline-ps-gold focus-visible:outline-offset-2",
+        "inline-flex items-center justify-center gap-2 font-bold leading-tight whitespace-nowrap transition-[transform,box-shadow,background-color] duration-200 bg-ps-navy text-ps-white hover:bg-ps-midnight hover:-translate-y-0.5 border border-transparent shadow-sm focus-visible:outline-3 focus-visible:outline-ps-gold focus-visible:outline-offset-2",
         SIZE_CLASSES[size],
         fullWidth && "w-full",
         className,

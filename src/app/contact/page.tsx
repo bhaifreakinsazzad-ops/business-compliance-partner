@@ -5,6 +5,7 @@ import { getPublicSiteConfig } from "@/lib/config/site";
 import {
   buildWhatsAppGeneralMessage,
   buildWhatsAppUrl,
+  formatWhatsAppDisplay,
 } from "@/lib/contact/whatsapp";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
@@ -24,6 +25,7 @@ export default async function ContactPage() {
     siteConfig.verifiedWhatsapp,
     buildWhatsAppGeneralMessage(),
   );
+  const whatsappDisplay = formatWhatsAppDisplay(siteConfig.verifiedWhatsapp);
 
   const hasVerifiedContacts = Boolean(
     siteConfig.verifiedPhone ||
@@ -78,15 +80,36 @@ export default async function ContactPage() {
                       </li>
                     ) : null}
                     {whatsappHref ? (
-                      <li className="flex items-center gap-3">
-                        <MessageCircle className="w-4 h-4 text-ps-navy shrink-0" aria-hidden="true" />
+                      <li className="space-y-3">
+                        <div className="flex items-center gap-3">
+                          <MessageCircle className="w-4 h-4 text-ps-success shrink-0" aria-hidden="true" />
+                          <a
+                            href={whatsappHref}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            data-whatsapp-cta="true"
+                            className="font-semibold text-ps-navy hover:underline"
+                          >
+                            WhatsApp অ্যাডমিন সহায়তা
+                            {whatsappDisplay ? (
+                              <span className="ms-1.5 font-en text-ps-success" dir="ltr">
+                                ({whatsappDisplay})
+                              </span>
+                            ) : null}
+                          </a>
+                        </div>
                         <a
                           href={whatsappHref}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="font-medium hover:underline"
+                          data-whatsapp-cta="true"
+                          className="inline-flex w-full items-center justify-center gap-2 min-h-12 px-5 py-2.5 rounded-[12px] bg-gradient-to-r from-[#00865a] to-[#009c68] text-ps-white text-sm font-bold shadow-[0_4px_14px_rgba(0,134,90,0.22)] hover:from-[#006d49] hover:to-[#00865a] hover:-translate-y-0.5 transition-[transform,box-shadow,background-color] duration-200"
                         >
-                          WhatsApp-এ বার্তা পাঠান
+                          <MessageCircle className="w-4 h-4 shrink-0" aria-hidden="true" />
+                          <span>
+                            WhatsApp-এ সরাসরি বার্তা পাঠান
+                            {whatsappDisplay ? ` (${whatsappDisplay})` : ""}
+                          </span>
                         </a>
                       </li>
                     ) : null}
@@ -134,6 +157,7 @@ export default async function ContactPage() {
               <ConsultancyForm
                 defaultPillar="CONSULTANCY"
                 sourcePage="/contact"
+                verifiedWhatsapp={siteConfig.verifiedWhatsapp}
               />
             </div>
           </div>

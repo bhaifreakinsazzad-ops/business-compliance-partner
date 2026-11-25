@@ -83,7 +83,7 @@ test.describe("BCP V4.0 Client Acceptance Criteria", () => {
     ]);
   });
 
-  test("services page renders category cards, licensing/consultancy gateway, and resolves legacy slugs", async ({
+  test("services page renders category cards, licensing/consultancy gateway, WhatsApp CTAs, and resolves legacy slugs", async ({
     page,
   }) => {
     await page.goto("/services?category=business-formation-and-rjsc");
@@ -100,6 +100,10 @@ test.describe("BCP V4.0 Client Acceptance Criteria", () => {
     const serviceCards = page.locator("main article");
     await expect(serviceCards.first()).toBeVisible();
 
+    // Official client-authorized admin WhatsApp (+880 1521-537864) is active by default:
+    // every ServiceCard renders a valid wa.me/8801521537864?text=... link with zero broken wa.me links.
+    const waLinks = page.locator('a[href^="https://wa.me/8801521537864?text="]');
+    await expect(waLinks.first()).toBeVisible();
     const brokenWaLinks = await page
       .locator('a[href^="https://wa.me/"]')
       .evaluateAll((els) =>

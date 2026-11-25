@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Lock, MessageSquareText, ShieldCheck } from "lucide-react";
 import type { Pillar } from "@/types/domain";
 import { getCanonicalBaseUrl, getPublicSiteConfig } from "@/lib/config/site";
+import { formatWhatsAppDisplay } from "@/lib/contact/whatsapp";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { Footer } from "@/components/layout/Footer";
@@ -36,6 +37,7 @@ export default async function ConsultancyPage({
   const { pillar, slug, topic } = await searchParams;
   const siteConfig = await getPublicSiteConfig();
   const canonicalBaseUrl = getCanonicalBaseUrl();
+  const whatsappDisplay = formatWhatsAppDisplay(siteConfig.verifiedWhatsapp);
 
   const resolvedPillar: Pillar =
     pillar && VALID_PILLARS.has(pillar as Pillar)
@@ -80,6 +82,7 @@ export default async function ConsultancyPage({
                 targetSlug={slug ?? null}
                 targetTitle={topic ?? null}
                 sourcePage="/consultancy"
+                verifiedWhatsapp={siteConfig.verifiedWhatsapp}
               />
             </div>
 
@@ -90,7 +93,13 @@ export default async function ConsultancyPage({
                     সরাসরি WhatsApp-এ কথা বলুন
                   </h2>
                   <p className="text-xs sm:text-sm text-ps-muted leading-relaxed">
-                    ফর্ম পূরণের পাশাপাশি চাইলে সরাসরি WhatsApp-এ আপনার প্রয়োজনের কথা জানাতে পারেন।
+                    ফর্ম পূরণের পাশাপাশি চাইলে সরাসরি আমাদের অফিশিয়াল WhatsApp নম্বরে{" "}
+                    {whatsappDisplay ? (
+                      <span className="font-en font-semibold text-ps-navy" dir="ltr">
+                        ({whatsappDisplay})
+                      </span>
+                    ) : null}{" "}
+                    আপনার প্রয়োজনের কথা জানাতে পারেন।
                   </p>
                   <WhatsAppEnquiryButton
                     verifiedWhatsapp={siteConfig.verifiedWhatsapp}
@@ -98,6 +107,7 @@ export default async function ConsultancyPage({
                     servicePath="/consultancy"
                     canonicalBaseUrl={canonicalBaseUrl}
                     fallbackHref="/consultancy"
+                    labelBn="WhatsApp-এ অ্যাডমিনের সাথে কথা বলুন"
                     fullWidth
                   />
                 </div>

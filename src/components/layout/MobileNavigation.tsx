@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { Menu, MessageCircle, X } from "lucide-react";
 import { QuickSearchDialog } from "@/components/layout/QuickSearchDialog";
 
 export interface NavLinkItem {
@@ -17,6 +17,8 @@ interface MobileNavigationProps {
   secondaryLinks?: NavLinkItem[];
   ctaHref: string;
   ctaLabelBn: string;
+  whatsappHref?: string | null;
+  whatsappDisplay?: string | null;
 }
 
 export function MobileNavigation({
@@ -26,6 +28,8 @@ export function MobileNavigation({
   secondaryLinks = [],
   ctaHref,
   ctaLabelBn,
+  whatsappHref = null,
+  whatsappDisplay = null,
 }: MobileNavigationProps) {
   const dialogRef = useRef<HTMLDialogElement | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
@@ -144,7 +148,23 @@ export function MobileNavigation({
             ) : null}
           </nav>
 
-          <div className="p-5 border-t border-ps-border bg-ps-ivory/60">
+          <div className="p-5 border-t border-ps-border bg-ps-ivory/60 space-y-2.5">
+            {whatsappHref ? (
+              <a
+                href={whatsappHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={closeMenu}
+                data-whatsapp-cta="true"
+                className="inline-flex w-full items-center justify-center gap-2 min-h-12 px-4 py-2.5 rounded-[12px] bg-gradient-to-r from-[#00865a] to-[#009c68] text-ps-white text-sm font-bold shadow-sm hover:from-[#006d49] hover:to-[#00865a]"
+              >
+                <MessageCircle className="w-4 h-4 shrink-0" aria-hidden="true" />
+                <span>
+                  WhatsApp সহায়তা
+                  {whatsappDisplay ? ` (${whatsappDisplay})` : ""}
+                </span>
+              </a>
+            ) : null}
             <Link
               href={ctaHref}
               onClick={closeMenu}
