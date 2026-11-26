@@ -10,11 +10,11 @@ interface BadgeProps {
 }
 
 const VARIANT_CLASSES: Record<NonNullable<BadgeProps["variant"]>, string> = {
-  navy: "bg-ps-navy text-ps-white border-ps-navy",
-  cool: "bg-ps-cool text-ps-navy border-ps-border",
-  success: "bg-ps-success/10 text-ps-success border-ps-success/30",
-  warning: "bg-ps-ivory text-ps-warning border-ps-gold/50",
-  outline: "bg-ps-white text-ps-navy border-ps-navy/20",
+  navy: "bg-[#51406F] text-white border-[#51406F]",
+  cool: "bg-[#F2EFF8] text-[#51406F] border-[#D4CCE3]",
+  success: "bg-[#00865A]/10 text-[#00865A] border-[#00865A]/30",
+  warning: "bg-[#F5F1E8] text-[#8A5800] border-[#C59028]/50",
+  outline: "bg-white text-[#081838] border-[#D4CCE3]",
 };
 
 export function Badge({
@@ -25,7 +25,7 @@ export function Badge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold leading-none",
+        "inline-flex items-center gap-1.5 rounded-[8px] border px-2.5 py-1 text-xs font-semibold leading-none",
         VARIANT_CLASSES[variant],
         className,
       )}

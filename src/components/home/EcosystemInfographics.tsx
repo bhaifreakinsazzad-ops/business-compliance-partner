@@ -23,9 +23,9 @@ const INFOGRAPHICS: InfographicTab[] = [
     pillar: "ALL",
     titleBn: "এক প্ল্যাটফর্মে ব্যবসার সম্পূর্ণ সমাধান",
     subtitleBn: "শিখুন, সার্ভিস নিন, লাইসেন্স করুন, বিশেষজ্ঞ পরামর্শ নিন",
-    badgeBn: "৪টি মূল স্তম্ভ • ৪৩৭টি এন্ট্রি",
+    badgeBn: "৪টি মূল স্তম্ভ · ৪৩৭টি এন্ট্রি",
     src: "/brand/infographics/bcp-infographic-01-overview.jpg",
-    ctaHref: "#solution-finder",
+    ctaHref: "/#solution-finder",
     ctaTextBn: "ব্যবসার সমাধান খুঁজুন",
   },
   {
@@ -33,7 +33,7 @@ const INFOGRAPHICS: InfographicTab[] = [
     pillar: "COURSES",
     titleBn: "Learn — কোর্স ও প্রফেশনাল ট্রেনিং",
     subtitleBn: "দক্ষতা অর্জন করুন ও পেশাগতভাবে উন্নত হন",
-    badgeBn: "১০৫টি কোর্স • ১০টি ট্র্যাক",
+    badgeBn: "১০৫টি কোর্স · ১০টি ট্র্যাক",
     src: "/brand/infographics/bcp-infographic-02-learn.jpg",
     ctaHref: "/courses",
     ctaTextBn: "সব কোর্স এক্সপ্লোর করুন",
@@ -43,7 +43,7 @@ const INFOGRAPHICS: InfographicTab[] = [
     pillar: "SERVICES",
     titleBn: "Our Services — প্রফেশনাল ও ব্যবসায়িক সেবা",
     subtitleBn: "প্রয়োজনীয় কাজ বিশেষজ্ঞদের মাধ্যমে সম্পন্ন করুন",
-    badgeBn: "২৪৭টি সার্ভিস • ১১টি বিভাগ",
+    badgeBn: "২৪৭টি সার্ভিস · ১১টি বিভাগ",
     src: "/brand/infographics/bcp-infographic-03-services.jpg",
     ctaHref: "/services",
     ctaTextBn: "সকল সেবা দেখুন",
@@ -95,28 +95,28 @@ export function EcosystemInfographics() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [isFullscreen]);
 
-  const activeItem = INFOGRAPHICS.find((i) => i.id === activeId) ?? INFOGRAPHICS[0]!;
+  const activeItem =
+    INFOGRAPHICS.find((i) => i.id === activeId) ?? INFOGRAPHICS[0]!;
 
   return (
     <section
       aria-label="অফিসিয়াল মাস্টার ইনফোগ্রাফিক গ্যালারি"
-      className="py-14 sm:py-20 bg-ps-pearl border-b border-ps-border"
+      className="py-14 sm:py-16 bg-[#F2EFF8]/65 border-b border-[#D4CCE3]"
     >
       <div className="ps-container space-y-10">
         <div className="text-center max-w-3xl mx-auto space-y-3">
-          <div className="inline-flex items-center gap-1.5 rounded-full border border-ps-gold/60 bg-ps-navy/5 px-3 py-1 text-xs font-semibold text-ps-navy">
-            <ShieldCheck className="w-3.5 h-3.5 text-ps-gold" aria-hidden="true" />
+          <p className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#51406F]">
+            <ShieldCheck className="w-4 h-4 text-[#51406F]" aria-hidden="true" />
             <span>অফিসিয়াল মাস্টার ইনফোগ্রাফিক ও সমাধান চিত্র</span>
-          </div>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-ps-midnight">
+          </p>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#081838]">
             এক নজরে সম্পূর্ণ প্ল্যাটফর্মের ইকোসিস্টেম
           </h2>
-          <p className="text-sm sm:text-base text-ps-slate leading-relaxed">
-            বাংলাদেশের ৪৩৭টি ব্যবসায়িক ও কমপ্লায়েন্স সেবাকে ৪টি সমন্বিত স্তম্ভ ও ২৭টি সুনির্দিষ্ট বিভাগে সহজবোধ্যভাবে উপস্থাপন করা হয়েছে।
+          <p className="text-sm sm:text-base text-[#596775] leading-relaxed">
+            বাংলাদেশের ৪৩৭টি ব্যবসায়িক ও কমপ্লায়েন্স সেবাকে সুনির্দিষ্ট বিভাগ ও স্তম্ভে সহজবোধ্যভাবে উপস্থাপন করা হয়েছে।
           </p>
         </div>
 
-        {/* Tab Selector */}
         <div className="flex flex-wrap items-center justify-center gap-2">
           {INFOGRAPHICS.map((tab) => {
             const isSelected = tab.id === activeId;
@@ -126,10 +126,10 @@ export function EcosystemInfographics() {
                 type="button"
                 onClick={() => setActiveId(tab.id)}
                 className={cn(
-                  "min-h-11 px-4 py-2 rounded-[12px] text-xs sm:text-sm font-semibold transition-all border",
+                  "min-h-11 px-4 py-2 rounded-[10px] text-xs sm:text-sm font-semibold transition-all border cursor-pointer",
                   isSelected
-                    ? "bg-ps-midnight text-ps-ivory border-ps-midnight shadow-md"
-                    : "bg-white text-ps-navy border-ps-border hover:border-ps-gold hover:bg-ps-ivory/40"
+                    ? "bg-[#51406F] text-white border-[#51406F] shadow-sm"
+                    : "bg-white text-[#081838] border-[#D4CCE3] hover:border-[#51406F] hover:bg-[#F2EFF8]",
                 )}
               >
                 <span>{tab.badgeBn}</span>
@@ -138,17 +138,16 @@ export function EcosystemInfographics() {
           })}
         </div>
 
-        {/* Active Infographic Showcase */}
-        <div className="rounded-[18px] bg-white border border-ps-border p-4 sm:p-6 shadow-xl max-w-4xl mx-auto space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-ps-border">
+        <div className="rounded-[18px] bg-white border border-[#D4CCE3] p-4 sm:p-6 shadow-sm max-w-4xl mx-auto space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#D4CCE3]">
             <div>
-              <span className="text-xs font-bold uppercase tracking-wider text-ps-gold">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#51406F]">
                 {activeItem.badgeBn}
               </span>
-              <h3 className="text-lg sm:text-xl font-bold text-ps-midnight">
+              <h3 className="text-lg sm:text-xl font-bold text-[#081838]">
                 {activeItem.titleBn}
               </h3>
-              <p className="text-xs sm:text-sm text-ps-slate">
+              <p className="text-xs sm:text-sm text-[#596775]">
                 {activeItem.subtitleBn}
               </p>
             </div>
@@ -156,7 +155,7 @@ export function EcosystemInfographics() {
               <button
                 type="button"
                 onClick={() => setIsFullscreen(true)}
-                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold bg-ps-pearl hover:bg-ps-border text-ps-navy transition-colors border border-ps-border"
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-[8px] text-xs font-semibold bg-[#F2EFF8] hover:bg-[#DDD6EB] text-[#51406F] transition-colors border border-[#D4CCE3] cursor-pointer"
                 title="পূর্ণ পর্দায় দেখুন"
               >
                 <Expand className="w-3.5 h-3.5" aria-hidden="true" />
@@ -164,7 +163,7 @@ export function EcosystemInfographics() {
               </button>
               <Link
                 href={activeItem.ctaHref}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold bg-ps-midnight text-ps-ivory hover:bg-ps-navy transition-colors"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[8px] text-xs font-semibold bg-[#51406F] text-white hover:bg-[#3F315A] transition-colors"
               >
                 <span>{activeItem.ctaTextBn}</span>
                 <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
@@ -172,11 +171,12 @@ export function EcosystemInfographics() {
             </div>
           </div>
 
-          <div className="relative w-full aspect-[4/5] sm:aspect-[1/1] max-h-[750px] rounded-xl overflow-hidden bg-ps-pearl/50 border border-ps-border/50 flex items-center justify-center">
+          <div className="relative w-full aspect-[4/5] sm:aspect-[1/1] max-h-[750px] rounded-xl overflow-hidden bg-[#F2EFF8]/40 border border-[#D4CCE3]/60 flex items-center justify-center">
             <Image
               src={activeItem.src}
               alt={activeItem.titleBn}
               fill
+              referrerPolicy="no-referrer"
               className="object-contain"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 900px"
               priority={activeId === "overview"}
@@ -185,7 +185,6 @@ export function EcosystemInfographics() {
         </div>
       </div>
 
-      {/* Fullscreen Lightbox Modal */}
       {isFullscreen ? (
         <div
           role="dialog"
@@ -200,7 +199,7 @@ export function EcosystemInfographics() {
             <button
               type="button"
               onClick={() => setIsFullscreen(false)}
-              className="px-4 py-2 rounded-lg bg-ps-gold text-ps-midnight font-bold text-xs hover:bg-ps-ivory"
+              className="px-4 py-2 rounded-lg bg-[#51406F] text-white font-bold text-xs hover:bg-[#3F315A] cursor-pointer"
             >
               বন্ধ করুন (Close)
             </button>
@@ -213,6 +212,7 @@ export function EcosystemInfographics() {
               src={activeItem.src}
               alt={activeItem.titleBn}
               fill
+              referrerPolicy="no-referrer"
               className="object-contain"
               sizes="100vw"
             />

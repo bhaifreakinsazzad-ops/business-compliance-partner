@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, ShieldCheck } from "lucide-react";
 import { getCanonicalBaseUrl, getPublicSiteConfig } from "@/lib/config/site";
+import { listBookCatalog } from "@/lib/books/catalog";
 import {
   listPublishedCourses,
   listPublishedFaqs,
@@ -16,6 +17,7 @@ import { CategoryGrid } from "@/components/shared/CategoryGrid";
 import { CourseCard } from "@/components/shared/CourseCard";
 import { ServiceCard } from "@/components/shared/ServiceCard";
 import { LicensingCard } from "@/components/shared/LicensingCard";
+import { BookCard } from "@/components/books/BookCard";
 import { AuthorityNote } from "@/components/shared/AuthorityNote";
 import { FAQAccordion } from "@/components/shared/FAQAccordion";
 import { CTASection } from "@/components/shared/CTASection";
@@ -34,13 +36,13 @@ const CLIENT_JOURNEY_STEPS = [
     stepNumber: 1,
     titleBn: "প্রয়োজন নির্বাচন",
     descriptionBn:
-      "কোর্স শিখতে চান নাকি ট্যাক্স, ভ্যাট বা লাইসেন্সিং সেবা প্রয়োজন—তা বেছে নিন।",
+      "কোর্স শিখতে চান, ট্যাক্স-ভ্যাট সেবা নিতে চান নাকি বইয়ের প্রিভিউ দেখতে চান—তা বেছে নিন।",
   },
   {
     stepNumber: 2,
     titleBn: "বিস্তারিত ও নথি যাচাই",
     descriptionBn:
-      "সিলেবাস বা সেবার পরিধি ও প্রাথমিক নথির চেকলিস্ট সহজেই দেখে নিন।",
+      "সিলেবাস, সেবার পরিধি, বইয়ের বিষয়সূচি ও প্রাথমিক নথির চেকলিস্ট সহজেই দেখে নিন।",
   },
   {
     stepNumber: 3,
@@ -73,6 +75,9 @@ export default async function HomePage() {
   const topServiceCategories = servicesData.categories.slice(0, 6);
   const featuredCourses = coursesData.items.slice(0, 6);
   const featuredServices = servicesData.items.slice(0, 6);
+  const featuredBooks = listBookCatalog()
+    .items.filter((b) => b.featured)
+    .slice(0, 6);
   const featuredLicensing = licensingData.items.slice(0, 4);
 
   return (
@@ -80,17 +85,17 @@ export default async function HomePage() {
       <AppHeader siteConfig={siteConfig} />
 
       <main id="main-content" tabIndex={-1} className="flex-1">
-        {/* 2. Compact Promotional Hero Slider */}
+        {/* 1. Compact Executive Lavender Hero Slider + 3D Knowledge Studio */}
         <PromotionalHeroSlider
           logoAssetPath={siteConfig.logoAssetPath}
           brandName={siteConfig.brandName}
         />
 
-        {/* 3. Two Flagship Navigation Buttons */}
+        {/* 2. Three Unified Flagship Navigation Buttons (Courses -> Services -> Books) */}
         <PrimaryBusinessActions />
 
-        {/* 4. Popular Course Categories (Tax, VAT, e-GP, E-commerce, RJSC prioritized) */}
-        <section className="py-10 sm:py-14 bg-ps-ivory border-b border-ps-border">
+        {/* 3. Popular Course Categories (Tax, VAT, e-GP, E-commerce, RJSC) */}
+        <section className="py-10 sm:py-14 bg-[#F2EFF8]/65 border-b border-[#D4CCE3]">
           <div className="ps-container space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
               <SectionHeading
@@ -109,7 +114,7 @@ export default async function HomePage() {
                 categories={prioritizedCourseCategories}
                 basePath="/courses"
                 ariaLabel="জনপ্রিয় কোর্স ক্যাটাগরি"
-                accent="gold"
+                accent="lavender"
                 columns={5}
                 highlightCount={5}
                 luminousPriority
@@ -118,39 +123,8 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* 5. Popular Service Categories */}
-        <section className="py-10 sm:py-14 bg-ps-white border-b border-ps-border">
-          <div className="ps-container space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-              <SectionHeading
-                eyebrowEn="Professional Services"
-                titleBn="ব্যবসায়িক ও কমপ্লায়েন্স সেবা বিভাগ"
-                descriptionBn="ক্যাটাগরি নির্বাচন করে প্রাসঙ্গিক সেবা ও সরাসরি WhatsApp সহায়তা পান।"
-              />
-              <div className="flex flex-wrap gap-2.5 shrink-0">
-                <Link href="/services" className="ps-secondary-button">
-                  সকল সেবা বিভাগ
-                </Link>
-                <Link href="/licensing" className="ps-secondary-button">
-                  লাইসেন্সিং
-                </Link>
-              </div>
-            </div>
-
-            <MotionReveal>
-              <CategoryGrid
-                categories={topServiceCategories}
-                basePath="/services"
-                ariaLabel="জনপ্রিয় সেবা বিভাগ"
-                accent="emerald"
-                columns={3}
-              />
-            </MotionReveal>
-          </div>
-        </section>
-
-        {/* 6. Featured Courses */}
-        <section className="py-10 sm:py-14 bg-ps-ivory border-b border-ps-border">
+        {/* 4. Featured Courses */}
+        <section className="py-10 sm:py-14 bg-white border-b border-[#D4CCE3]">
           <div className="ps-container space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
               <SectionHeading
@@ -176,8 +150,39 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* 7. Featured Services with Direct WhatsApp */}
-        <section className="py-10 sm:py-14 bg-ps-white border-b border-ps-border">
+        {/* 5. Service Categories */}
+        <section className="py-10 sm:py-14 bg-[#F2EFF8]/65 border-b border-[#D4CCE3]">
+          <div className="ps-container space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+              <SectionHeading
+                eyebrowEn="Professional Services"
+                titleBn="ব্যবসায়িক ও কমপ্লায়েন্স সেবা বিভাগ"
+                descriptionBn="ক্যাটাগরি নির্বাচন করে প্রাসঙ্গিক সেবা ও সরাসরি WhatsApp সহায়তা পান।"
+              />
+              <div className="flex flex-wrap gap-2.5 shrink-0">
+                <Link href="/services" className="ps-secondary-button">
+                  সকল সেবা বিভাগ
+                </Link>
+                <Link href="/licensing" className="ps-secondary-button">
+                  লাইসেন্সিং
+                </Link>
+              </div>
+            </div>
+
+            <MotionReveal>
+              <CategoryGrid
+                categories={topServiceCategories}
+                basePath="/services"
+                ariaLabel="জনপ্রিয় সেবা বিভাগ"
+                accent="lavender"
+                columns={3}
+              />
+            </MotionReveal>
+          </div>
+        </section>
+
+        {/* 6. Featured Services with Direct Emerald WhatsApp CTAs */}
+        <section className="py-10 sm:py-14 bg-white border-b border-[#D4CCE3]">
           <div className="ps-container space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
               <SectionHeading
@@ -203,73 +208,95 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* 4-Step Client Journey */}
-        <section className="py-10 sm:py-12 bg-ps-ivory border-b border-ps-border">
+        {/* 7. Featured Upcoming Books Storefront Preview */}
+        <section
+          aria-label="প্রকাশনা ও বইসমূহ"
+          className="py-10 sm:py-14 bg-[#F2EFF8]/65 border-b border-[#D4CCE3]"
+        >
           <div className="ps-container space-y-6">
-            <SectionHeading
-              eyebrowEn="How BCP Works"
-              titleBn="চারটি সহজ ধাপে আপনার ব্যবসার সমাধান"
-              descriptionBn="অযথা জটিলতা ছাড়াই সঠিক কোর্স বা পেশাদার সেবায় পৌঁছানোর সুশৃঙ্খল প্রক্রিয়া।"
-            />
-            <ProcessSteps steps={CLIENT_JOURNEY_STEPS} columns={4} />
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+              <SectionHeading
+                eyebrowEn="Our Books Preview"
+                titleBn="প্রস্তাবিত কমপ্লায়েন্স ও ব্যবসায়িক বইসমূহ"
+                descriptionBn="কোর্স ও সেবার সাথে সামঞ্জস্যপূর্ণ আসন্ন প্রকাশনা প্রিভিউ — মূল্য ও প্রকাশের তারিখ অনুমোদন সাপেক্ষে প্রকাশিত হবে।"
+              />
+              <Link href="/books" className="ps-primary-button shrink-0">
+                <span>সব বই ও প্রিভিউ দেখুন</span>
+                <ArrowRight className="w-4 h-4" aria-hidden="true" />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {featuredBooks.map((book) => (
+                <BookCard
+                  key={book.slug}
+                  book={book}
+                  verifiedWhatsapp={siteConfig.verifiedWhatsapp}
+                  canonicalBaseUrl={canonicalBaseUrl}
+                />
+              ))}
+            </div>
           </div>
         </section>
 
-        {/* 8. About BCP (StatCounters + 3D Ecosystem Showcase + Independent Disclaimer) */}
-        <section className="bg-ps-midnight text-ps-white border-b border-ps-gold/30">
+        {/* 8. Why BCP + Interactive 3D Ecosystem + Counters */}
+        <section className="bg-white border-b border-[#D4CCE3]">
           <StatCounters />
-          <div className="ps-container py-12 sm:py-14 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            <div className="lg:col-span-6 space-y-5">
-              <span className="inline-flex items-center gap-2 rounded-full border border-ps-gold/40 bg-ps-navy px-3 py-1 text-xs font-medium text-ps-ivory">
-                <ShieldCheck className="w-3.5 h-3.5 text-ps-gold" aria-hidden="true" />
-                <span lang="en">About Business Compliance Partner</span>
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-bold leading-snug">
-                স্বচ্ছ প্রক্রিয়া, সঠিক তথ্যসূত্র ও বাস্তবভিত্তিক সহায়তা
-              </h2>
-              <p className="text-sm sm:text-base text-white/85 leading-relaxed">
-                Business Compliance Partner (BCP) বাংলাদেশের উদ্যোক্তা, এসএমই ও
-                পেশাজীবীদের জন্য একটি স্বাধীন ব্যবসায়িক শিক্ষা ও কমপ্লায়েন্স সহায়তা
-                প্ল্যাটফর্ম।
-              </p>
-              <ul className="space-y-2.5 text-sm text-white/90">
-                {[
-                  "Smart RJSC, NBR, BPPA (e-GP), DIFE LIMA ও ফায়ার সার্ভিসের সঠিক রেফারেন্স",
-                  "কাল্পনিক অফার বা অবাস্তব সরকারি অনুমোদনের নিশ্চয়তা ছাড়াই স্বচ্ছ তথ্য",
-                  "কোর্স, পেশাদার সেবা, লাইসেন্সিং ও কনসালটেন্সি—চারটি সুসংগঠিত স্তম্ভ",
-                ].map((point, idx) => (
-                  <li key={idx} className="flex items-start gap-2.5">
-                    <CheckCircle2
-                      className="w-4 h-4 text-ps-gold shrink-0 mt-1"
-                      aria-hidden="true"
-                    />
-                    <span>{point}</span>
-                  </li>
-                ))}
-              </ul>
-              <div className="pt-1">
-                <Link
-                  href="/about"
-                  className="inline-flex items-center gap-2 text-sm font-semibold text-ps-gold hover:text-ps-ivory hover:underline underline-offset-4"
-                >
-                  <span>আমাদের সম্পর্কে বিস্তারিত জানুন</span>
-                  <ArrowRight className="w-4 h-4" aria-hidden="true" />
-                </Link>
+
+          <div className="bg-gradient-to-b from-[#F2EFF8]/80 to-white">
+            <div className="ps-container py-12 sm:py-14 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+              <div className="lg:col-span-6 space-y-5">
+                <p className="inline-flex items-center gap-2 text-xs font-en font-semibold uppercase tracking-[0.16em] text-[#51406F]">
+                  <ShieldCheck className="w-4 h-4 text-[#51406F]" aria-hidden="true" />
+                  <span>About Business Compliance Partner</span>
+                </p>
+                <h2 className="text-2xl sm:text-3xl font-bold leading-snug text-[#081838]">
+                  স্বচ্ছ প্রক্রিয়া, সঠিক তথ্যসূত্র ও বাস্তবভিত্তিক সহায়তা
+                </h2>
+                <p className="text-sm sm:text-base text-[#181D26]/85 leading-relaxed">
+                  Business Compliance Partner (BCP) বাংলাদেশের উদ্যোক্তা, এসএমই ও
+                  পেশাজীবীদের জন্য একটি স্বাধীন ব্যবসায়িক শিক্ষা, কমপ্লায়েন্স সেবা এবং
+                  প্রকাশনা সহায়তা প্ল্যাটফর্ম।
+                </p>
+                <ul className="space-y-2.5 text-sm text-[#181D26]/90">
+                  {[
+                    "Smart RJSC, NBR, BPPA (e-GP), DIFE LIMA ও ফায়ার সার্ভিসের সঠিক রেফারেন্স",
+                    "কাল্পনিক অফার বা অবাস্তব সরকারি অনুমোদনের নিশ্চয়তা ছাড়াই স্বচ্ছ তথ্য",
+                    "কোর্স, পেশাদার সেবা, বই, লাইসেন্সিং ও কনসালটেন্সি—সমন্বিত সমাধান কাঠামো",
+                  ].map((point, idx) => (
+                    <li key={idx} className="flex items-start gap-2.5">
+                      <CheckCircle2
+                        className="w-4 h-4 text-[#00865A] shrink-0 mt-1"
+                        aria-hidden="true"
+                      />
+                      <span>{point}</span>
+                    </li>
+                  ))}
+                </ul>
+                <div className="pt-1">
+                  <Link
+                    href="/about"
+                    className="inline-flex items-center gap-2 text-sm font-semibold text-[#51406F] hover:text-[#3F315A] hover:underline underline-offset-4"
+                  >
+                    <span>আমাদের সম্পর্কে বিস্তারিত জানুন</span>
+                    <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                  </Link>
+                </div>
+              </div>
+
+              <div className="lg:col-span-6">
+                <LazyCompliance3D />
               </div>
             </div>
 
-            <div className="lg:col-span-6">
-              <LazyCompliance3D />
+            <div className="ps-container pb-10">
+              <AuthorityNote limitationsBn={siteConfig.legalDisclaimerBn} />
             </div>
-          </div>
-
-          <div className="ps-container pb-10">
-            <AuthorityNote limitationsBn={siteConfig.legalDisclaimerBn} />
           </div>
         </section>
 
-        {/* 9. Secondary Tools, Licensing Spotlight & Consultancy */}
-        <section className="py-10 sm:py-14 bg-ps-ivory border-b border-ps-border">
+        {/* 9. Unified Search, Guided Discovery & Licensing Spotlight */}
+        <section className="py-10 sm:py-14 bg-[#F2EFF8]/55 border-b border-[#D4CCE3]">
           <div className="ps-container space-y-12">
             <UnifiedSearchSection />
 
@@ -302,12 +329,23 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* Consultancy Split Block */}
-        <section className="py-12 sm:py-14 bg-ps-navy text-ps-white border-b border-ps-gold/30">
+        {/* 10. 4-Step Client Journey */}
+        <section className="py-10 sm:py-12 bg-white border-b border-[#D4CCE3]">
+          <div className="ps-container space-y-6">
+            <SectionHeading
+              eyebrowEn="How BCP Works"
+              titleBn="চারটি সহজ ধাপে আপনার ব্যবসার সমাধান"
+              descriptionBn="অযথা জটিলতা ছাড়াই সঠিক কোর্স, পেশাদার সেবা বা বইয়ের প্রিভিউয়ে পৌঁছানোর সুশৃঙ্খল প্রক্রিয়া।"
+            />
+            <ProcessSteps steps={CLIENT_JOURNEY_STEPS} columns={4} />
+          </div>
+        </section>
+
+        {/* 11. Consultancy Split Block */}
+        <section className="py-12 sm:py-14 bg-[#F2EFF8] border-b border-[#D4CCE3]">
           <div className="ps-container grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             <div className="lg:col-span-5 space-y-5">
               <SectionHeading
-                dark
                 eyebrowEn="Consultancy & Advisory"
                 titleBn="আপনার ব্যবসার সমস্যাটি জানান"
                 descriptionBn="সংক্ষেপে আপনার প্রয়োজন লিখে পাঠান অথবা সরাসরি WhatsApp-এ যোগাযোগ করুন।"
@@ -333,13 +371,13 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* 10. FAQ Section */}
-        <section className="py-10 sm:py-14 bg-ps-white border-b border-ps-border">
+        {/* 12. FAQ Section */}
+        <section className="py-10 sm:py-14 bg-white">
           <div className="ps-container space-y-6 max-w-4xl">
             <SectionHeading
               eyebrowEn="Frequently Asked Questions"
               titleBn="সচরাচর জিজ্ঞাসা"
-              descriptionBn="কোর্স, সেবা, লাইসেন্সিং ও কনসালটেন্সি প্রক্রিয়া সম্পর্কে সাধারণ প্রশ্নোত্তর।"
+              descriptionBn="কোর্স, সেবা, বই, লাইসেন্সিং ও কনসালটেন্সি প্রক্রিয়া সম্পর্কে সাধারণ প্রশ্নোত্তর।"
             />
             <FAQAccordion items={faqs} />
             <div>
@@ -352,7 +390,7 @@ export default async function HomePage() {
 
         <CTASection
           titleBn="আপনার ব্যবসা বা পেশাদার দক্ষতার পরবর্তী ধাপ শুরু করুন"
-          descriptionBn="প্রয়োজনীয় কোর্স বা সেবা খুঁজে নিন অথবা সরাসরি আপনার প্রশ্নটি পাঠান।"
+          descriptionBn="প্রয়োজনীয় কোর্স, পেশাদার সেবা বা বইয়ের প্রিভিউ দেখে নিন অথবা সরাসরি আপনার প্রশ্নটি পাঠান।"
           primaryHref="/courses"
           primaryLabelBn="সকল কোর্স দেখুন"
           secondaryHref="/services"

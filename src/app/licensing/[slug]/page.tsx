@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { getCanonicalBaseUrl, getPublicSiteConfig } from "@/lib/config/site";
+import { listRelatedBooksForLicensingCategory } from "@/lib/books/catalog";
 import {
   getPublishedLicensingBySlug,
   listRelatedLicensing,
@@ -16,6 +17,7 @@ import { VerificationMeta } from "@/components/shared/VerificationMeta";
 import { WhatsAppEnquiryButton } from "@/components/shared/WhatsAppEnquiryButton";
 import { DocumentReadinessWidget } from "@/components/shared/DocumentReadinessWidget";
 import { LicensingCard } from "@/components/shared/LicensingCard";
+import { BookCard } from "@/components/books/BookCard";
 
 interface LicensingDetailProps {
   params: Promise<{ slug: string }>;
@@ -55,6 +57,7 @@ export default async function LicensingDetailPage({
     entry.slug,
     2,
   );
+  const relatedBooks = listRelatedBooksForLicensingCategory(entry.categorySlug, 2);
   const enquiryHref = `/consultancy?pillar=LICENSING&slug=${encodeURIComponent(
     entry.slug,
   )}&topic=${encodeURIComponent(entry.titleBn)}`;
@@ -64,30 +67,29 @@ export default async function LicensingDetailPage({
       <AppHeader siteConfig={siteConfig} />
 
       <main id="main-content" tabIndex={-1} className="flex-1">
-        <section className="bg-ps-midnight text-ps-white py-12 sm:py-14 border-b border-ps-gold/30">
+        <section className="bg-gradient-to-br from-[#F2EFF8] via-[#ECE7F5] to-[#E5DDF2] text-[#081838] py-10 sm:py-12 border-b border-[#D4CCE3]">
           <div className="ps-container space-y-5">
             <Breadcrumbs
-              dark
               items={[
                 { labelBn: "হোম", href: "/" },
                 { labelBn: "লাইসেন্সিং", href: "/licensing" },
                 { labelBn: entry.titleBn },
               ]}
             />
-            <div className="max-w-3xl space-y-4">
+            <div className="max-w-3xl space-y-3.5">
               <div className="flex flex-wrap items-center gap-2.5">
-                <Badge variant="outline">{entry.categoryNameBn}</Badge>
+                <Badge variant="cool">{entry.categoryNameBn}</Badge>
                 <StatusBadge status={entry.availabilityStatus} />
               </div>
-              <h1 className="text-2xl sm:text-4xl font-bold leading-snug">
+              <h1 className="text-2xl sm:text-4xl font-extrabold leading-snug text-[#081838]">
                 {entry.titleBn}
               </h1>
               {entry.titleEn ? (
-                <p className="font-en text-sm text-ps-gold" lang="en">
+                <p className="font-en text-sm font-semibold text-[#51406F]" lang="en">
                   {entry.titleEn}
                 </p>
               ) : null}
-              <p className="text-sm sm:text-base text-white/85 leading-relaxed">
+              <p className="text-sm sm:text-base text-[#181D26]/85 leading-relaxed">
                 {entry.summaryBn}
               </p>
             </div>
@@ -109,11 +111,11 @@ export default async function LicensingDetailPage({
                 limitationsBn={entry.limitationsBn}
               />
 
-              <div className="rounded-[16px] border border-ps-border bg-ps-white p-6 space-y-3">
-                <h2 className="text-xl font-bold text-ps-navy">
+              <div className="rounded-[16px] border border-[#D4CCE3] bg-white p-6 space-y-3">
+                <h2 className="text-xl font-bold text-[#081838]">
                   ডকুমেন্টেশন ও সহায়তার পরিধি
                 </h2>
-                <p className="text-sm sm:text-base text-ps-ink/90 leading-relaxed">
+                <p className="text-sm sm:text-base text-[#181D26]/90 leading-relaxed">
                   {entry.serviceScopeBn}
                 </p>
               </div>
@@ -123,22 +125,22 @@ export default async function LicensingDetailPage({
                 headingBn="প্রাথমিক নথিপত্র (পেশাদার পর্যালোচনা সাপেক্ষ)"
               />
 
-              <div className="rounded-[16px] border border-ps-border bg-ps-white p-6 space-y-3">
-                <h2 className="text-xl font-bold text-ps-navy">
+              <div className="rounded-[16px] border border-[#D4CCE3] bg-white p-6 space-y-3">
+                <h2 className="text-xl font-bold text-[#081838]">
                   প্রক্রিয়ার সংক্ষিপ্ত ধাপ
                 </h2>
-                <p className="text-sm sm:text-base text-ps-ink/90 leading-relaxed">
+                <p className="text-sm sm:text-base text-[#181D26]/90 leading-relaxed">
                   {entry.processSummaryBn}
                 </p>
               </div>
             </div>
 
             <aside className="lg:col-span-4 space-y-5 lg:sticky lg:top-24">
-              <div className="rounded-[16px] border-2 border-ps-navy/15 bg-ps-white p-6 space-y-5 shadow-sm">
-                <h2 className="text-lg font-bold text-ps-navy">
+              <div className="rounded-[16px] border border-[#D4CCE3] bg-white p-6 space-y-5 shadow-sm">
+                <h2 className="text-lg font-bold text-[#081838]">
                   এই লাইসেন্সিং বিষয়ে সহায়তা নিন
                 </h2>
-                <p className="text-xs sm:text-sm text-ps-muted leading-relaxed">
+                <p className="text-xs sm:text-sm text-[#596775] leading-relaxed">
                   আপনার প্রতিষ্ঠানের ধরন ও বর্তমান অবস্থা জানিয়ে অনুরোধ পাঠান—আমাদের টিম
                   তথ্য যাচাই করে যোগাযোগ করবে।
                 </p>
@@ -162,16 +164,45 @@ export default async function LicensingDetailPage({
           </div>
         </section>
 
-        {relatedLicensing.length > 0 ? (
-          <section className="py-10 sm:py-12 bg-ps-white border-t border-ps-border">
+        {/* Cross-Division Books Discovery */}
+        {relatedBooks.length > 0 ? (
+          <section className="py-10 sm:py-12 bg-[#F2EFF8]/65 border-t border-[#D4CCE3]">
             <div className="ps-container space-y-6">
               <div className="flex items-center justify-between gap-3">
-                <h2 className="text-xl sm:text-2xl font-bold text-ps-navy">
+                <h2 className="text-xl sm:text-2xl font-bold text-[#081838]">
+                  লাইসেন্সিং সহায়ক প্রস্তাবিত বইসমূহ
+                </h2>
+                <Link
+                  href="/books"
+                  className="text-sm font-semibold text-[#51406F] hover:underline underline-offset-4"
+                >
+                  সব বই প্রিভিউ →
+                </Link>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {relatedBooks.map((book) => (
+                  <BookCard
+                    key={book.slug}
+                    book={book}
+                    verifiedWhatsapp={siteConfig.verifiedWhatsapp}
+                    canonicalBaseUrl={canonicalBaseUrl}
+                  />
+                ))}
+              </div>
+            </div>
+          </section>
+        ) : null}
+
+        {relatedLicensing.length > 0 ? (
+          <section className="py-10 sm:py-12 bg-white border-t border-[#D4CCE3]">
+            <div className="ps-container space-y-6">
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="text-xl sm:text-2xl font-bold text-[#081838]">
                   সম্পর্কিত অন্যান্য লাইসেন্সিং
                 </h2>
                 <Link
                   href={`/licensing?category=${encodeURIComponent(entry.categorySlug)}`}
-                  className="text-sm font-semibold text-ps-navy hover:underline underline-offset-4"
+                  className="text-sm font-semibold text-[#51406F] hover:underline underline-offset-4"
                 >
                   এই বিভাগের সব লাইসেন্সিং →
                 </Link>

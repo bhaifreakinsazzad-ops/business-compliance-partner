@@ -158,6 +158,43 @@ export interface PublicFaqItem {
   lastVerifiedAt: string | null;
 }
 
+export interface PublicBookCategoryDTO {
+  slug: string;
+  nameBn: string;
+  nameEn: string;
+  shortDescBn: string;
+  sortOrder: number;
+  previewCount: number;
+}
+
+export interface PublicBookCoverPalette {
+  spineHex: string;
+  coverHex: string;
+  accentHex: string;
+  textHex: string;
+}
+
+export interface PublicBookPreview {
+  id: string;
+  slug: string;
+  titleBn: string;
+  titleEn: string;
+  subtitleBn: string;
+  categorySlug: string;
+  categoryNameBn: string;
+  categoryNameEn: string;
+  summaryBn: string;
+  audienceBn: string;
+  topicsBn: string[];
+  editionNoteBn: string;
+  availabilityState: "UPCOMING_PREVIEW";
+  featured: boolean;
+  coverPalette: PublicBookCoverPalette;
+  relatedCourseCategorySlug: string;
+  relatedServiceCategorySlug: string;
+  relatedLicensingCategorySlug?: string;
+}
+
 export interface PublicSiteConfig {
   brandName: string;
   brandDisplayName: string;

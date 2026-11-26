@@ -3,6 +3,7 @@ import type {
   CourseModuleDTO,
   Pillar,
   ProcessStepDTO,
+  PublicBookPreview,
   PublicCategoryDTO,
   PublicCourseCard,
   PublicCourseDetail,
@@ -12,6 +13,7 @@ import type {
   PublicServiceCard,
   PublicServiceDetail,
 } from "@/types/domain";
+import { BOOK_PREVIEW_CATALOG, searchBookPreviews } from "@/lib/books/catalog";
 import { isPubliclyVisible, matchesSearchQuery } from "@/lib/content/helpers";
 import { isDatabaseConfigured, prisma } from "@/lib/db/prisma";
 import { SEED_CATEGORIES } from "../../../prisma/seed-data/categories";
@@ -833,10 +835,11 @@ export async function searchPublishedCatalogue(query: string): Promise<{
   courses: PublicCourseCard[];
   services: PublicServiceCard[];
   licensing: PublicLicensingCard[];
+  books: PublicBookPreview[];
 }> {
   const trimmed = query.trim();
   if (!trimmed) {
-    return { courses: [], services: [], licensing: [] };
+    return { courses: [], services: [], licensing: [], books: [] };
   }
 
   const [coursesRes, servicesRes, licensingRes] = await Promise.all([
@@ -844,11 +847,13 @@ export async function searchPublishedCatalogue(query: string): Promise<{
     listPublishedServices({ q: trimmed }),
     listPublishedLicensing({ q: trimmed }),
   ]);
+  const books = searchBookPreviews(trimmed);
 
   return {
     courses: coursesRes.items.slice(0, 6),
     services: servicesRes.items.slice(0, 6),
     licensing: licensingRes.items.slice(0, 6),
+    books,
   };
 }
 
@@ -856,6 +861,7 @@ export async function getPublishedSlugManifest(): Promise<{
   courses: string[];
   services: string[];
   licensing: string[];
+  books: string[];
 }> {
   const [coursesRes, servicesRes, licensingRes] = await Promise.all([
     listPublishedCourses(),
@@ -867,6 +873,7 @@ export async function getPublishedSlugManifest(): Promise<{
     courses: coursesRes.items.map((c) => c.slug),
     services: servicesRes.items.map((s) => s.slug),
     licensing: licensingRes.items.map((l) => l.slug),
+    books: BOOK_PREVIEW_CATALOG.map((b) => b.slug),
   };
 }
 

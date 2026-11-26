@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Mail, MessageCircle, Phone, ShieldCheck } from "lucide-react";
+import { LogIn, MessageCircle, ShieldCheck } from "lucide-react";
 import type { PublicSiteConfig } from "@/types/domain";
 import {
   buildWhatsAppGeneralMessage,
@@ -18,6 +18,7 @@ const PRIMARY_NAV_LINKS: NavLinkItem[] = [
   { href: "/", labelBn: "হোম" },
   { href: "/courses", labelBn: "সকল কোর্স" },
   { href: "/services", labelBn: "সকল সেবা" },
+  { href: "/books", labelBn: "আমাদের বইসমূহ" },
   { href: "/about", labelBn: "আমাদের সম্পর্কে" },
   { href: "/contact", labelBn: "যোগাযোগ" },
 ];
@@ -26,6 +27,7 @@ const SECONDARY_NAV_LINKS: NavLinkItem[] = [
   { href: "/licensing", labelBn: "লাইসেন্সিং" },
   { href: "/consultancy", labelBn: "কনসালটেন্সি" },
   { href: "/tools", labelBn: "বিজনেস টুলস" },
+  { href: "/faq", labelBn: "সচরাচর জিজ্ঞাসা" },
   { href: "/portal", labelBn: "কাস্টমার পোর্টাল" },
 ];
 
@@ -42,13 +44,19 @@ export function AppHeader({ siteConfig }: AppHeaderProps) {
 
   return (
     <>
-      {/* Utility Bar — Verified contacts + secondary ecosystem links */}
-      <div className="bg-ps-midnight text-ps-cool border-b border-white/10 text-xs sm:text-sm">
-        <div className="ps-container py-2 flex flex-wrap items-center justify-between gap-2">
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-white/85">
+      {/* Slim Corporate Announcement & Verified Contact Bar */}
+      <div className="bg-[#081838] text-white border-b border-[#C59028]/30 text-xs">
+        <div className="ps-container py-1.5 flex flex-wrap items-center justify-between gap-2">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-white/85">
             <span className="inline-flex items-center gap-1.5">
-              <ShieldCheck className="w-3.5 h-3.5 text-ps-gold shrink-0" aria-hidden="true" />
-              <span>বাংলাদেশে স্বাধীন ব্যবসায়িক শিক্ষা ও কমপ্লায়েন্স সহায়তা</span>
+              <ShieldCheck
+                className="w-3.5 h-3.5 text-[#DFB15B] shrink-0"
+                aria-hidden="true"
+              />
+              <span className="hidden sm:inline">
+                বাংলাদেশে স্বাধীন ব্যবসায়িক শিক্ষা, কমপ্লায়েন্স ও প্রকাশনা প্ল্যাটফর্ম
+              </span>
+              <span className="sm:hidden">BCP · বাংলাদেশ</span>
             </span>
             {whatsappHref && whatsappDisplay ? (
               <a
@@ -56,7 +64,7 @@ export function AppHeader({ siteConfig }: AppHeaderProps) {
                 target="_blank"
                 rel="noopener noreferrer"
                 data-whatsapp-cta="true"
-                className="inline-flex items-center gap-1.5 font-semibold text-[#5de2a5] hover:text-ps-gold transition-colors"
+                className="inline-flex items-center gap-1.5 font-semibold text-[#5de2a5] hover:text-[#DFB15B] transition-colors"
               >
                 <MessageCircle className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
                 <span>WhatsApp:</span>
@@ -65,73 +73,56 @@ export function AppHeader({ siteConfig }: AppHeaderProps) {
                 </span>
               </a>
             ) : null}
-            {siteConfig.verifiedPhone ? (
-              <a
-                href={`tel:${siteConfig.verifiedPhone.replace(/\s+/g, "")}`}
-                className="inline-flex items-center gap-1.5 hover:text-ps-gold transition-colors"
-              >
-                <Phone className="w-3.5 h-3.5 text-ps-gold" aria-hidden="true" />
-                <span dir="ltr">{siteConfig.verifiedPhone}</span>
-              </a>
-            ) : null}
-            {siteConfig.verifiedEmail ? (
-              <a
-                href={`mailto:${siteConfig.verifiedEmail}`}
-                className="hidden sm:inline-flex items-center gap-1.5 hover:text-ps-gold transition-colors"
-              >
-                <Mail className="w-3.5 h-3.5 text-ps-gold" aria-hidden="true" />
-                <span dir="ltr">{siteConfig.verifiedEmail}</span>
-              </a>
-            ) : null}
           </div>
 
-          <div className="flex items-center gap-4">
-            <nav aria-label="সেকেন্ডারি নেভিগেশন" className="hidden lg:flex items-center gap-4 text-xs text-white/80">
-              {SECONDARY_NAV_LINKS.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="hover:text-ps-gold transition-colors whitespace-nowrap"
-                >
-                  {item.labelBn}
-                </Link>
-              ))}
-            </nav>
-
-            {siteConfig.stagingNoticeBn ? (
-              <span className="inline-flex items-center rounded-full border border-ps-gold/50 bg-ps-navy px-2.5 py-0.5 text-[11px] font-medium text-ps-ivory">
-                স্টেজিং প্রিভিউ
-              </span>
-            ) : null}
+          <div className="hidden md:flex items-center gap-4 text-white/80">
+            <Link
+              href="/licensing"
+              className="hover:text-[#DFB15B] transition-colors whitespace-nowrap"
+            >
+              লাইসেন্সিং
+            </Link>
+            <Link
+              href="/tools"
+              className="hover:text-[#DFB15B] transition-colors whitespace-nowrap"
+            >
+              বিজনেস টুলস
+            </Link>
+            <Link
+              href="/portal"
+              className="hover:text-[#DFB15B] transition-colors whitespace-nowrap"
+            >
+              কাস্টমার পোর্টাল
+            </Link>
           </div>
         </div>
       </div>
 
-      {/* Main Sticky Header */}
-      <header className="sticky top-0 z-40 bg-ps-white/95 backdrop-blur border-b border-ps-border shadow-[0_1px_12px_rgba(11,23,38,0.04)]">
-        <div className="ps-container py-3 flex items-center justify-between gap-4">
+      {/* Main Executive Lavender Sticky Header */}
+      <header className="sticky top-0 z-40 bg-white/96 backdrop-blur-md border-b border-[#D4CCE3] shadow-[0_2px_14px_rgba(81,64,111,0.06)]">
+        <div className="ps-container py-2.5 flex items-center justify-between gap-3">
           <Link
             href="/"
-            className="flex items-center gap-2.5 sm:gap-3 rounded-lg min-w-0 flex-1 lg:flex-initial"
+            className="flex items-center gap-2.5 sm:gap-3 rounded-lg min-w-0 shrink-0"
           >
             {siteConfig.logoAssetPath ? (
               <Image
                 src={siteConfig.logoAssetPath}
                 alt={`${siteConfig.brandName} official brand mark`}
-                width={48}
-                height={48}
+                width={44}
+                height={44}
                 priority
-                className="rounded-full border border-ps-gold/45 object-contain shrink-0"
+                className="rounded-full border border-[#C59028]/55 object-contain shrink-0 bg-white"
               />
             ) : null}
             <div className="min-w-0">
               <span
-                className="block font-editorial text-lg sm:text-xl font-semibold tracking-wide text-ps-navy leading-tight truncate"
+                className="block font-editorial text-base sm:text-lg font-bold tracking-wide text-[#081838] leading-tight truncate"
                 lang="en"
               >
                 {siteConfig.brandDisplayName}
               </span>
-              <span className="block text-xs text-ps-muted truncate">
+              <span className="block text-[11px] sm:text-xs text-[#51406F] font-medium truncate">
                 {siteConfig.brandNameBn}
               </span>
             </div>
@@ -139,19 +130,29 @@ export function AppHeader({ siteConfig }: AppHeaderProps) {
 
           <nav
             aria-label="প্রধান নেভিগেশন"
-            className="hidden lg:flex items-center gap-5 xl:gap-6 text-sm font-semibold text-ps-navy"
+            className="hidden lg:flex items-center gap-4 xl:gap-5"
           >
             <NavLinksClient links={PRIMARY_NAV_LINKS} />
+          </nav>
 
+          <div className="hidden lg:flex items-center gap-2.5 shrink-0">
             <QuickSearchDialog variant="desktop" />
 
             <Link
-              href="/consultancy"
-              className="ps-primary-button text-sm px-5 py-2.5 whitespace-nowrap"
+              href="/portal"
+              className="inline-flex items-center gap-1.5 h-10 px-3.5 rounded-[10px] border border-[#D4CCE3] bg-[#F2EFF8] text-xs font-semibold text-[#51406F] hover:bg-[#DDD6EB] transition-colors whitespace-nowrap"
             >
-              পরামর্শের অনুরোধ
+              <LogIn className="w-3.5 h-3.5" aria-hidden="true" />
+              <span>পোর্টাল</span>
             </Link>
-          </nav>
+
+            <Link
+              href="/consultancy"
+              className="inline-flex items-center justify-center h-10 px-4 rounded-[10px] bg-[#51406F] hover:bg-[#3F315A] text-white text-xs xl:text-sm font-semibold whitespace-nowrap shadow-xs transition-colors"
+            >
+              পরামর্শ নিন
+            </Link>
+          </div>
 
           <MobileNavigation
             brandDisplayName={siteConfig.brandDisplayName}

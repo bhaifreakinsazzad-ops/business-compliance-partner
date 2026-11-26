@@ -49,24 +49,23 @@ export default async function ConsultancyPage({
       <AppHeader siteConfig={siteConfig} />
 
       <main id="main-content" tabIndex={-1} className="flex-1">
-        <section className="bg-ps-midnight text-ps-white py-12 sm:py-14 border-b border-ps-gold/30">
+        <section className="bg-gradient-to-br from-[#F2EFF8] via-[#ECE7F5] to-[#E5DDF2] text-[#081838] py-10 sm:py-12 border-b border-[#D4CCE3]">
           <div className="ps-container space-y-5">
             <Breadcrumbs
-              dark
               items={[
                 { labelBn: "হোম", href: "/" },
                 { labelBn: "কনসালটেন্সি ও পরামর্শ" },
               ]}
             />
             <div className="max-w-3xl space-y-3">
-              <span className="inline-flex items-center gap-2 rounded-full border border-ps-gold/40 bg-ps-navy px-3 py-1 text-xs font-medium text-ps-ivory">
-                <MessageSquareText className="w-3.5 h-3.5 text-ps-gold" aria-hidden="true" />
-                <span lang="en">Consultancy &amp; Business Advisory</span>
-              </span>
-              <h1 className="text-3xl sm:text-4xl font-bold leading-snug">
+              <p className="inline-flex items-center gap-2 text-xs font-en font-semibold uppercase tracking-[0.14em] text-[#51406F]">
+                <MessageSquareText className="w-4 h-4 text-[#51406F]" aria-hidden="true" />
+                <span>Consultancy &amp; Business Advisory</span>
+              </p>
+              <h1 className="text-3xl sm:text-4xl font-extrabold leading-snug text-[#081838]">
                 আপনার ব্যবসার সমস্যাটি জানান
               </h1>
-              <p className="text-sm sm:text-base text-white/85 leading-relaxed">
+              <p className="text-sm sm:text-base text-[#181D26]/85 leading-relaxed">
                 আপনার প্রয়োজন সংক্ষেপে লিখুন। আমাদের টিম তথ্য পর্যালোচনা করে উপযুক্ত
                 সময়ে আপনার সঙ্গে যোগাযোগ করবে।
               </p>
@@ -88,14 +87,14 @@ export default async function ConsultancyPage({
 
             <aside className="lg:col-span-4 space-y-5">
               {siteConfig.verifiedWhatsapp ? (
-                <div className="rounded-[16px] border-2 border-ps-success/35 bg-ps-white p-6 space-y-3 shadow-sm">
-                  <h2 className="text-lg font-bold text-ps-navy">
+                <div className="rounded-[16px] border border-[#00865A]/40 bg-white p-6 space-y-3 shadow-sm">
+                  <h2 className="text-lg font-bold text-[#081838]">
                     সরাসরি WhatsApp-এ কথা বলুন
                   </h2>
-                  <p className="text-xs sm:text-sm text-ps-muted leading-relaxed">
+                  <p className="text-xs sm:text-sm text-[#596775] leading-relaxed">
                     ফর্ম পূরণের পাশাপাশি চাইলে সরাসরি আমাদের অফিশিয়াল WhatsApp নম্বরে{" "}
                     {whatsappDisplay ? (
-                      <span className="font-en font-semibold text-ps-navy" dir="ltr">
+                      <span className="font-en font-semibold text-[#081838]" dir="ltr">
                         ({whatsappDisplay})
                       </span>
                     ) : null}{" "}
@@ -113,11 +112,11 @@ export default async function ConsultancyPage({
                 </div>
               ) : null}
 
-              <div className="rounded-[16px] border border-ps-border bg-ps-white p-6 space-y-4">
-                <h2 className="text-lg font-bold text-ps-navy">
+              <div className="rounded-[16px] border border-[#D4CCE3] bg-white p-6 space-y-4">
+                <h2 className="text-lg font-bold text-[#081838]">
                   জমা দেওয়ার পরবর্তী ধাপ
                 </h2>
-                <ol className="space-y-3 text-sm text-ps-ink/90 list-decimal list-inside">
+                <ol className="space-y-3 text-sm text-[#181D26]/90 list-decimal list-inside">
                   <li>
                     অনুরোধ জমা হলে সার্ভার থেকে একটি স্থায়ী রেফারেন্স নম্বর (
                     <span lang="en">BCP-YYYY-XXXXXXXX</span>) পাবেন।
@@ -127,24 +126,24 @@ export default async function ConsultancyPage({
                 </ol>
               </div>
 
-              <div className="rounded-[16px] border border-ps-gold/50 bg-ps-ivory p-6 space-y-3">
-                <div className="flex items-center gap-2 text-ps-navy font-bold text-sm">
-                  <Lock className="w-4 h-4 shrink-0" aria-hidden="true" />
+              <div className="rounded-[16px] border border-[#D4CCE3] bg-[#F2EFF8] p-6 space-y-3">
+                <div className="flex items-center gap-2 text-[#081838] font-bold text-sm">
+                  <Lock className="w-4 h-4 text-[#51406F] shrink-0" aria-hidden="true" />
                   <span>সংবেদনশীল নথি আপলোড নিষেধ</span>
                 </div>
-                <p className="text-xs sm:text-sm text-ps-ink/85 leading-relaxed">
+                <p className="text-xs sm:text-sm text-[#181D26]/85 leading-relaxed">
                   প্রাথমিক অনুরোধে জাতীয় পরিচয়পত্র (NID), পাসপোর্ট, আয়কর নথি বা ব্যাংক
                   স্টেটমেন্ট পাঠাবেন না। প্রয়োজনীয় ডকুমেন্ট যাচাই পরবর্তী ধাপে টিমের
                   মাধ্যমে সমন্বয় করা হবে।
                 </p>
               </div>
 
-              <div className="rounded-[16px] border border-ps-border bg-ps-cool p-6 space-y-2">
-                <div className="flex items-center gap-2 text-ps-navy font-bold text-sm">
-                  <ShieldCheck className="w-4 h-4 shrink-0" aria-hidden="true" />
+              <div className="rounded-[16px] border border-[#D4CCE3] bg-white p-6 space-y-2">
+                <div className="flex items-center gap-2 text-[#081838] font-bold text-sm">
+                  <ShieldCheck className="w-4 h-4 text-[#51406F] shrink-0" aria-hidden="true" />
                   <span>স্বাধীন পরামর্শ প্ল্যাটফর্ম</span>
                 </div>
-                <p className="text-xs text-ps-ink/85 leading-relaxed">
+                <p className="text-xs text-[#596775] leading-relaxed">
                   {siteConfig.legalDisclaimerBn}
                 </p>
               </div>

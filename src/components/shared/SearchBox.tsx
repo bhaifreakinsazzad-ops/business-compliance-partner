@@ -30,7 +30,7 @@ export function SearchBox({
         </label>
         <div className="relative flex-1">
           <Search
-            className="w-4 h-4 text-ps-muted absolute start-4 top-1/2 -translate-y-1/2 pointer-events-none"
+            className="w-4 h-4 text-[#51406F] absolute start-4 top-1/2 -translate-y-1/2 pointer-events-none"
             aria-hidden="true"
           />
           <input
@@ -43,7 +43,7 @@ export function SearchBox({
             autoCapitalize="none"
             spellCheck={false}
             enterKeyHint="search"
-            className="w-full min-h-12 ps-11 pe-4 py-2.5 rounded-[12px] border border-ps-navy/20 bg-ps-white text-ps-ink text-base placeholder:text-ps-muted/75"
+            className="w-full min-h-12 ps-11 pe-4 py-2.5 rounded-[12px] border border-[#D4CCE3] bg-white text-[#181D26] text-base placeholder:text-[#596775]/75 focus:border-[#51406F]"
           />
         </div>
         <button type="submit" className="ps-primary-button shrink-0">
