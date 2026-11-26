@@ -5,13 +5,15 @@ import Link from "next/link";
 import {
   ArrowRight,
   BookOpen,
-  BookText,
   BriefcaseBusiness,
   FileCheck2,
+  GraduationCap,
   Loader2,
   Search,
   X,
 } from "lucide-react";
+import { trackEvent } from "@/lib/analytics/events";
+import { cn } from "@/lib/utils";
 import type {
   ApiResponse,
   PublicBookPreview,
@@ -26,6 +28,8 @@ interface SearchResultPayload {
   licensing: PublicLicensingCard[];
   books?: PublicBookPreview[];
 }
+
+type SearchPillarFilter = "all" | "courses" | "services" | "books";
 
 const QUICK_CHIPS = [
   "Income Tax",
@@ -50,6 +54,7 @@ export function QuickSearchDialog({
 
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [activeFilter, setActiveFilter] = useState<SearchPillarFilter>("all");
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<SearchResultPayload | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -121,6 +126,15 @@ export function QuickSearchDialog({
           return;
         }
         setResults(json.data);
+        const total =
+          json.data.courses.length +
+          json.data.services.length +
+          json.data.licensing.length +
+          (json.data.books?.length ?? 0);
+        trackEvent("search_catalogue", {
+          resultCount: total,
+          sourcePage: "quick_search_dialog",
+        });
       } catch (err) {
         if ((err as Error).name !== "AbortError") {
           setErrorMsg("সার্ভারের সাথে সংযোগে সমস্যা হয়েছে।");
@@ -144,6 +158,38 @@ export function QuickSearchDialog({
       booksResults.length
     : 0;
 
+  const filterTabs: Array<{
+    id: SearchPillarFilter;
+    labelEn: string;
+    labelBn: string;
+    count?: number;
+  }> = [
+    { id: "all", labelEn: "All", labelBn: "সব", count: totalCount },
+    {
+      id: "courses",
+      labelEn: "Courses",
+      labelBn: "কোর্স",
+      count: results?.courses.length,
+    },
+    {
+      id: "services",
+      labelEn: "Services",
+      labelBn: "সেবা",
+      count: results?.services.length,
+    },
+    {
+      id: "books",
+      labelEn: "Books",
+      labelBn: "বই",
+      count: results ? booksResults.length : undefined,
+    },
+  ];
+
+  const showCourses = activeFilter === "all" || activeFilter === "courses";
+  const showServices = activeFilter === "all" || activeFilter === "services";
+  const showBooks = activeFilter === "all" || activeFilter === "books";
+  const showLicensing = activeFilter === "all";
+
   return (
     <>
       {variant === "desktop" ? (
@@ -153,10 +199,10 @@ export function QuickSearchDialog({
           onClick={openDialog}
           data-quick-search-trigger="desktop"
           title="দ্রুত ক্যাটালগ অনুসন্ধান (Ctrl+K)"
-          className="inline-flex items-center gap-2 h-10 px-3 rounded-[10px] border border-[#D4CCE3] bg-[#F2EFF8] text-[#51406F] hover:bg-[#DDD6EB] transition-colors cursor-pointer"
+          className="inline-flex items-center gap-2 h-10 px-3 rounded-[10px] border border-border-subtle bg-surface-lavender text-text-accent hover:bg-surface-lavender-muted transition-colors cursor-pointer"
         >
           <Search className="w-4 h-4 shrink-0" aria-hidden="true" />
-          <span className="sr-only xl:not-sr-only text-xs font-semibold text-[#51406F]">
+          <span className="sr-only xl:not-sr-only text-xs font-semibold text-text-accent">
             খুঁজুন
           </span>
         </button>
@@ -167,7 +213,7 @@ export function QuickSearchDialog({
           onClick={openDialog}
           data-quick-search-trigger="mobile"
           aria-label="ক্যাটালগ অনুসন্ধান"
-          className="inline-flex items-center justify-center w-11 h-11 rounded-[12px] border border-[#D4CCE3] bg-[#F2EFF8] text-[#51406F] hover:bg-[#DDD6EB] cursor-pointer"
+          className="inline-flex items-center justify-center w-11 h-11 rounded-[12px] border border-border-subtle bg-surface-lavender text-text-accent hover:bg-surface-lavender-muted transition-colors cursor-pointer"
         >
           <Search className="w-5 h-5" aria-hidden="true" />
         </button>
@@ -177,35 +223,35 @@ export function QuickSearchDialog({
         ref={dialogRef}
         aria-labelledby={`quick-search-title-${variant}`}
         closedby="any"
-        className="m-auto w-[min(94vw,720px)] max-h-[85dvh] rounded-[18px] border border-[#D4CCE3] bg-white p-0 text-[#181D26] shadow-2xl backdrop:bg-[#081838]/70 backdrop:backdrop-blur-xs"
+        className="m-auto w-[min(94vw,720px)] max-h-[85dvh] rounded-[18px] border border-border-subtle bg-surface-card p-0 text-text-body shadow-2xl backdrop:bg-surface-navy/70 backdrop:backdrop-blur-xs"
       >
         <div className="flex flex-col max-h-[85dvh]">
-          <div className="flex items-center justify-between gap-3 px-5 py-4 border-b border-[#D4CCE3] bg-[#F2EFF8]">
+          <div className="flex items-center justify-between gap-3 px-5 py-4 border-b border-border-subtle bg-surface-lavender">
             <div>
               <h2
                 id={`quick-search-title-${variant}`}
-                className="text-base sm:text-lg font-bold text-[#081838]"
+                className="text-base sm:text-lg font-bold text-text-primary"
               >
                 দ্রুত ক্যাটালগ অনুসন্ধান
               </h2>
-              <p className="text-xs text-[#596775]">
-                কোর্স, পেশাদার সেবা, বই ও লাইসেন্সিং একসাথে খুঁজুন
+              <p className="text-xs text-text-muted">
+                Courses, Services, Books ও লাইসেন্সিং একসাথে খুঁজুন
               </p>
             </div>
             <button
               type="button"
               onClick={closeDialog}
               aria-label="অনুসন্ধান বন্ধ করুন"
-              className="inline-flex items-center justify-center w-10 h-10 rounded-[10px] border border-[#D4CCE3] bg-white text-[#51406F] hover:bg-[#DDD6EB] cursor-pointer"
+              className="inline-flex items-center justify-center w-10 h-10 rounded-[10px] border border-border-subtle bg-surface-card text-text-accent hover:bg-surface-lavender-muted cursor-pointer transition-colors"
             >
               <X className="w-4 h-4" aria-hidden="true" />
             </button>
           </div>
 
-          <div className="p-5 space-y-3 border-b border-[#D4CCE3]">
+          <div className="p-5 space-y-3 border-b border-border-subtle">
             <div className="relative">
               <Search
-                className="w-4 h-4 text-[#596775] absolute start-4 top-1/2 -translate-y-1/2 pointer-events-none"
+                className="w-4 h-4 text-text-muted absolute start-4 top-1/2 -translate-y-1/2 pointer-events-none"
                 aria-hidden="true"
               />
               <input
@@ -218,22 +264,57 @@ export function QuickSearchDialog({
                 autoCorrect="off"
                 autoCapitalize="none"
                 spellCheck={false}
-                className="w-full min-h-12 ps-11 pe-4 py-2.5 rounded-[12px] border border-[#D4CCE3] bg-[#F8F7FB] text-[#181D26] text-base placeholder:text-[#596775]/75"
+                className="w-full min-h-12 ps-11 pe-4 py-2.5 rounded-[12px] border border-border-subtle bg-[#F8F7FB] text-text-body text-base placeholder:text-text-muted/75"
               />
             </div>
 
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs text-[#596775] font-medium">জনপ্রিয়:</span>
-              {QUICK_CHIPS.map((chip) => (
-                <button
-                  key={chip}
-                  type="button"
-                  onClick={() => setQuery(chip)}
-                  className="inline-flex items-center min-h-9 px-3 rounded-[8px] border border-[#D4CCE3] bg-[#F2EFF8] text-xs font-semibold text-[#51406F] hover:bg-[#DDD6EB] transition-colors cursor-pointer"
-                >
-                  {chip}
-                </button>
-              ))}
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div
+                role="tablist"
+                aria-label="দ্রুত অনুসন্ধান বিভাগ ফিল্টার"
+                className="flex flex-wrap items-center gap-1.5"
+              >
+                {filterTabs.map((tab) => {
+                  const isSelected = activeFilter === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      role="tab"
+                      aria-selected={isSelected}
+                      onClick={() => setActiveFilter(tab.id)}
+                      className={cn(
+                        "inline-flex items-center gap-1 min-h-8 px-2.5 rounded-[7px] text-xs font-semibold border transition-colors cursor-pointer",
+                        isSelected
+                          ? "bg-[#51406F] text-white border-[#51406F]"
+                          : "bg-surface-lavender text-text-primary border-border-subtle hover:bg-surface-lavender-muted",
+                      )}
+                    >
+                      <span className="font-en" lang="en">
+                        {tab.labelEn}
+                      </span>
+                      {results && typeof tab.count === "number" ? (
+                        <span className="tabular-nums opacity-85">
+                          ({tab.count})
+                        </span>
+                      ) : null}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="flex flex-wrap items-center gap-1.5">
+                {QUICK_CHIPS.map((chip) => (
+                  <button
+                    key={chip}
+                    type="button"
+                    onClick={() => setQuery(chip)}
+                    className="inline-flex items-center min-h-8 px-2.5 rounded-[8px] border border-border-subtle bg-white text-xs font-semibold text-text-accent hover:bg-surface-lavender transition-colors cursor-pointer"
+                  >
+                    {chip}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -255,31 +336,46 @@ export function QuickSearchDialog({
                 <Link
                   href="/courses"
                   onClick={closeDialog}
-                  className="rounded-[12px] border border-[#D4CCE3] bg-[#F2EFF8]/70 p-4 hover:bg-[#DDD6EB]/70 transition-colors space-y-1"
+                  className="rounded-[12px] border border-[#D4CCE3] bg-[#DDD6EB]/55 p-4 hover:bg-[#DDD6EB] transition-colors space-y-1"
                 >
-                  <BookOpen className="w-4 h-4 text-[#51406F]" aria-hidden="true" />
-                  <p className="font-bold text-[#081838]">সকল কোর্সসমূহ</p>
+                  <GraduationCap
+                    className="w-4 h-4 text-[#51406F]"
+                    aria-hidden="true"
+                  />
+                  <p className="font-en text-xs font-bold uppercase text-[#51406F]">
+                    01 · Courses
+                  </p>
+                  <p className="font-bold text-[#081838]">আমাদের সকল কোর্সসমূহ</p>
                   <p className="text-xs text-[#596775]">১০টি প্রশিক্ষণ ট্র্যাক</p>
                 </Link>
                 <Link
                   href="/services"
                   onClick={closeDialog}
-                  className="rounded-[12px] border border-[#D4CCE3] bg-[#F2EFF8]/70 p-4 hover:bg-[#DDD6EB]/70 transition-colors space-y-1"
+                  className="rounded-[12px] border border-[#D4CCE3] bg-[#DDD6EB]/55 p-4 hover:bg-[#DDD6EB] transition-colors space-y-1"
                 >
                   <BriefcaseBusiness
                     className="w-4 h-4 text-[#51406F]"
                     aria-hidden="true"
                   />
-                  <p className="font-bold text-[#081838]">সকল সেবাসমূহ</p>
+                  <p className="font-en text-xs font-bold uppercase text-[#51406F]">
+                    02 · Services
+                  </p>
+                  <p className="font-bold text-[#081838]">আমাদের সকল সেবাসমূহ</p>
                   <p className="text-xs text-[#596775]">১১টি পেশাদার বিভাগ</p>
                 </Link>
                 <Link
                   href="/books"
                   onClick={closeDialog}
-                  className="rounded-[12px] border border-[#D4CCE3] bg-[#F2EFF8]/70 p-4 hover:bg-[#DDD6EB]/70 transition-colors space-y-1"
+                  className="rounded-[12px] border border-[#D4CCE3] bg-[#DDD6EB]/55 p-4 hover:bg-[#DDD6EB] transition-colors space-y-1"
                 >
-                  <BookText className="w-4 h-4 text-[#51406F]" aria-hidden="true" />
-                  <p className="font-bold text-[#081838]">আমাদের বইসমূহ</p>
+                  <BookOpen
+                    className="w-4 h-4 text-[#51406F]"
+                    aria-hidden="true"
+                  />
+                  <p className="font-en text-xs font-bold uppercase text-[#51406F]">
+                    03 · Books
+                  </p>
+                  <p className="font-bold text-[#081838]">আমাদের সকল বইসমূহ</p>
                   <p className="text-xs text-[#596775]">আসন্ন প্রকাশনা প্রিভিউ</p>
                 </Link>
                 <Link
@@ -291,6 +387,9 @@ export function QuickSearchDialog({
                     className="w-4 h-4 text-[#51406F]"
                     aria-hidden="true"
                   />
+                  <p className="font-en text-xs font-bold uppercase text-[#51406F]">
+                    Services · Licensing
+                  </p>
                   <p className="font-bold text-[#081838]">লাইসেন্সিং</p>
                   <p className="text-xs text-[#596775]">নিবন্ধন ও অনুমোদন</p>
                 </Link>
@@ -311,10 +410,10 @@ export function QuickSearchDialog({
               </div>
             ) : results ? (
               <div className="space-y-4">
-                {results.courses.length > 0 ? (
+                {showCourses && results.courses.length > 0 ? (
                   <div className="space-y-2">
                     <p className="text-xs font-bold uppercase tracking-wider text-[#51406F]">
-                      কোর্স ({results.courses.length})
+                      Courses · কোর্স ({results.courses.length})
                     </p>
                     <ul className="space-y-1.5">
                       {results.courses.map((item) => (
@@ -337,10 +436,10 @@ export function QuickSearchDialog({
                   </div>
                 ) : null}
 
-                {results.services.length > 0 ? (
+                {showServices && results.services.length > 0 ? (
                   <div className="space-y-2">
                     <p className="text-xs font-bold uppercase tracking-wider text-[#51406F]">
-                      পেশাদার সেবা ({results.services.length})
+                      Services · পেশাদার সেবা ({results.services.length})
                     </p>
                     <ul className="space-y-1.5">
                       {results.services.map((item) => (
@@ -363,10 +462,10 @@ export function QuickSearchDialog({
                   </div>
                 ) : null}
 
-                {booksResults.length > 0 ? (
+                {showBooks && booksResults.length > 0 ? (
                   <div className="space-y-2">
                     <p className="text-xs font-bold uppercase tracking-wider text-[#51406F]">
-                      আমাদের বইসমূহ ({booksResults.length})
+                      Books · আমাদের বইসমূহ ({booksResults.length})
                     </p>
                     <ul className="space-y-1.5">
                       {booksResults.map((item) => (
@@ -389,7 +488,7 @@ export function QuickSearchDialog({
                   </div>
                 ) : null}
 
-                {results.licensing.length > 0 ? (
+                {showLicensing && results.licensing.length > 0 ? (
                   <div className="space-y-2">
                     <p className="text-xs font-bold uppercase tracking-wider text-[#51406F]">
                       লাইসেন্সিং ({results.licensing.length})

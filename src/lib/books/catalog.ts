@@ -1,8 +1,13 @@
 import type {
   PublicBookCategoryDTO,
+  PublicBookCoverPalette,
   PublicBookPreview,
 } from "@/types/domain";
+import { fromPaisa } from "@/lib/commerce/payments";
 import { matchesSearchQuery } from "@/lib/content/helpers";
+import { isDatabaseConfigured, prisma } from "@/lib/db/prisma";
+import { isBooksSchemaReady } from "@/lib/db/schema-ready";
+import { canUseCatalogueFixtures } from "@/lib/config/catalogue-policy";
 
 export const BOOK_AVAILABILITY_BADGE_BN = "প্রকাশনা আসন্ন";
 export const BOOK_PRICING_NOTICE_BN =
@@ -80,6 +85,22 @@ const RAW_BOOK_CATEGORIES: Omit<PublicBookCategoryDTO, "previewCount">[] = [
     shortDescBn:
       "ট্রেড লাইসেন্স থেকে ব্যবসা সম্প্রসারণ পর্যন্ত পূর্ণাঙ্গ উদ্যোক্তা হ্যান্ডবুক।",
     sortOrder: 9,
+  },
+  {
+    slug: "corporate-tax-audit",
+    nameBn: "কর্পোরেট ট্যাক্স অডিট",
+    nameEn: "Corporate Tax Audit",
+    shortDescBn:
+      "কর্পোরেট কর অডিট নোটিশ, শুনানির প্রস্তুতি, আপিল ও আইনি অ্যাসেসমেন্ট সহায়িকা।",
+    sortOrder: 10,
+  },
+  {
+    slug: "internal-compliance-procedures",
+    nameBn: "অভ্যন্তরীণ কমপ্লায়েন্স ও এসওপি",
+    nameEn: "Internal Compliance Procedures",
+    shortDescBn:
+      "প্রতিষ্ঠানিক এসওপি (SOP), ইন্টারনাল কন্ট্রোল, অডিট ট্রেইল ও ঝুঁকি ব্যবস্থাপনা ম্যানুয়াল।",
+    sortOrder: 11,
   },
 ];
 
@@ -379,6 +400,72 @@ export const BOOK_PREVIEW_CATALOG: PublicBookPreview[] = [
     relatedServiceCategorySlug: "business-startup-advisory",
     relatedLicensingCategorySlug: "general-business-registration",
   },
+  {
+    id: "book-preview-corporate-tax-audit",
+    slug: "corporate-tax-audit-dispute-resolution-handbook",
+    titleBn: "কর্পোরেট ট্যাক্স অডিট ও শুনানি প্রস্তুতি: ব্যবহারিক নির্দেশিকা",
+    titleEn: "Corporate Tax Audit & Hearing Preparation: Practical Field Guide",
+    subtitleBn:
+      "কর আইনের ধারা অনুযায়ী অডিট নোটিশ ব্যবস্থাপনা, শুনানির কার্যবিবরণী, আপিল ও নথিপত্র সমন্বয়ের কৌশল",
+    categorySlug: "corporate-tax-audit",
+    categoryNameBn: "কর্পোরেট ট্যাক্স অডিট",
+    categoryNameEn: "Corporate Tax Audit",
+    summaryBn:
+      "কর্পোরেট করদাতা ও উপদেষ্টাদের জন্য আয়কর অডিট, বিরোধ নিষ্পত্তি ও কর শুনানি মোকাবিলার প্রস্তাবিত প্র্যাকটিক্যাল হ্যান্ডবুক।",
+    audienceBn:
+      "সিএফও, ফাইন্যান্স ডিরেক্টর, হেড অব ট্যাক্স, চার্টার্ড অ্যাকাউন্ট্যান্ট ও কর্পোরেট ট্যাক্স পরামর্শক।",
+    topicsBn: [
+      "কর্পোরেট ট্যাক্স অডিট নোটিশ বিশ্লেষণ ও প্রাথমিক জবাব",
+      "শুনানিতে নথিপত্র ও প্রমাণাদি উপস্থাপন কৌশল",
+      "ট্যাক্স অ্যাসেসমেন্ট অর্ডার পর্যালোচনা ও রিওপেনিং প্রতিকার",
+      "ট্যাক্সেস আপিল ট্রাইব্যুনাল ও রেফারেন্স আবেদনের পূর্বপ্রস্তুতি",
+    ],
+    editionNoteBn: BOOK_PRICING_NOTICE_BN,
+    availabilityState: "UPCOMING_PREVIEW",
+    featured: false,
+    coverPalette: {
+      spineHex: "#081838",
+      coverHex: "#182c50",
+      accentHex: "#dfb15b",
+      textHex: "#ffffff",
+    },
+    relatedCourseCategorySlug: "income-tax",
+    relatedServiceCategorySlug: "income-tax-solutions",
+    relatedLicensingCategorySlug: "general-business-registration",
+  },
+  {
+    id: "book-preview-internal-compliance-procedures",
+    slug: "internal-compliance-sop-corporate-governance-manual",
+    titleBn: "অভ্যন্তরীণ কমপ্লায়েন্স ও এসওপি (SOP): কর্পোরেট গভর্নেন্স ম্যানুয়াল",
+    titleEn: "Internal Compliance & SOP: Corporate Governance Field Manual",
+    subtitleBn:
+      "কোম্পানির অভ্যন্তরীণ নিয়ন্ত্রণ, কমপ্লায়েন্স ট্র্যাকিং, পলিসি ফ্রেমওয়ার্ক ও ঝুঁকি ব্যবস্থাপনা রূপরেখা",
+    categorySlug: "internal-compliance-procedures",
+    categoryNameBn: "অভ্যন্তরীণ কমপ্লায়েন্স ও এসওপি",
+    categoryNameEn: "Internal Compliance Procedures",
+    summaryBn:
+      "প্রতিষ্ঠানিক সুশাসন ও রেগুলেটরি ঝুঁকি এড়াতে কার্যকর স্ট্যান্ডার্ড অপারেটিং প্রসিডিউর (SOP) এবং অডিট ট্রেইল প্রণয়নের প্রস্তাবিত সংকলন।",
+    audienceBn:
+      "ম্যানেজিং ডিরেক্টর, চিফ কমপ্লায়েন্স অফিসার, ইন্টারনাল অডিটর ও অপারেশনস ম্যানেজার।",
+    topicsBn: [
+      "ব্যবসার মূল বিভাগসমূহের স্ট্যান্ডার্ড অপারেটিং প্রসিডিউর (SOP) প্রণয়ন",
+      "অভ্যন্তরীণ অডিট চেকলিস্ট ও ডকুমেন্টেড কন্ট্রোল পলিসি",
+      "রেগুলেটরি নন-কমপ্লায়েন্স ঝুঁকি শনাক্তকরণ ও মনিটরিং",
+      "বোর্ড কমিটি রিপোর্টিং ও তথ্য সংরক্ষণ নীতিমালা",
+    ],
+    editionNoteBn: BOOK_PRICING_NOTICE_BN,
+    availabilityState: "UPCOMING_PREVIEW",
+    featured: false,
+    coverPalette: {
+      spineHex: "#3f315a",
+      coverHex: "#4e3c6d",
+      accentHex: "#c59028",
+      textHex: "#ffffff",
+    },
+    relatedCourseCategorySlug: "company-secretarial",
+    relatedServiceCategorySlug: "company-secretarial-compliance",
+    relatedLicensingCategorySlug: "general-business-registration",
+  },
 ];
 
 export function listBookCategories(): PublicBookCategoryDTO[] {
@@ -395,12 +482,13 @@ export function listBookCategories(): PublicBookCategoryDTO[] {
 export function listBookCatalog(filter?: {
   categorySlug?: string;
   q?: string;
+  limit?: number;
 }): { categories: PublicBookCategoryDTO[]; items: PublicBookPreview[] } {
   const categories = listBookCategories();
   const catSlug = filter?.categorySlug?.trim() || "";
   const query = filter?.q?.trim() || "";
 
-  const items = BOOK_PREVIEW_CATALOG.filter((book) =>
+  let items = BOOK_PREVIEW_CATALOG.filter((book) =>
     catSlug ? book.categorySlug === catSlug : true,
   ).filter((book) =>
     query
@@ -415,6 +503,10 @@ export function listBookCatalog(filter?: {
         ])
       : true,
   );
+
+  if (typeof filter?.limit === "number" && filter.limit > 0) {
+    items = items.slice(0, filter.limit);
+  }
 
   return { categories, items };
 }
@@ -466,4 +558,240 @@ export function listRelatedBooksForLicensingCategory(
   const seen = new Set(direct.map((b) => b.slug));
   const extras = BOOK_PREVIEW_CATALOG.filter((b) => !seen.has(b.slug));
   return [...direct, ...extras].slice(0, limit);
+}
+
+const DEFAULT_BOOK_PALETTE: PublicBookCoverPalette = {
+  spineHex: "#081838",
+  coverHex: "#152b54",
+  accentHex: "#c59028",
+  textHex: "#f8f8f8",
+};
+
+function parseCoverPalette(raw: unknown): PublicBookCoverPalette {
+  if (!raw || typeof raw !== "object") return DEFAULT_BOOK_PALETTE;
+  const record = raw as Record<string, unknown>;
+  return {
+    spineHex:
+      typeof record.spineHex === "string"
+        ? record.spineHex
+        : DEFAULT_BOOK_PALETTE.spineHex,
+    coverHex:
+      typeof record.coverHex === "string"
+        ? record.coverHex
+        : DEFAULT_BOOK_PALETTE.coverHex,
+    accentHex:
+      typeof record.accentHex === "string"
+        ? record.accentHex
+        : DEFAULT_BOOK_PALETTE.accentHex,
+    textHex:
+      typeof record.textHex === "string"
+        ? record.textHex
+        : DEFAULT_BOOK_PALETTE.textHex,
+  };
+}
+
+export function mapDbBookToPublicPreview(dbBook: {
+  id: string;
+  slug: string;
+  sku: string | null;
+  isbn: string | null;
+  titleBn: string;
+  titleEn: string;
+  subtitleBn: string;
+  summaryBn: string;
+  audienceBn: string;
+  topicsBn: string[];
+  editionLabel: string | null;
+  editionNoteBn: string;
+  pagesCount: number | null;
+  languageBnEn: string | null;
+  deliveryMode: string | null;
+  pricePaisa: number | null;
+  stockQuantity: number;
+  contentStatus: string;
+  availabilityStatus: string;
+  featured: boolean;
+  coverPalette: unknown;
+  relatedCourseCategorySlug: string | null;
+  relatedServiceCategorySlug: string | null;
+  relatedLicensingCategorySlug: string | null;
+  lastVerifiedAt: Date | null;
+  verifiedBy: string | null;
+  category: {
+    slug: string;
+    nameBn: string;
+    nameEn: string;
+  };
+}): PublicBookPreview {
+  const isPublishedPriced =
+    dbBook.contentStatus === "PUBLISHED" &&
+    (dbBook.availabilityStatus === "ACTIVE" ||
+      dbBook.availabilityStatus === "AVAILABLE") &&
+    typeof dbBook.pricePaisa === "number" &&
+    dbBook.pricePaisa > 0;
+
+  return {
+    id: dbBook.id,
+    slug: dbBook.slug,
+    sku: dbBook.sku,
+    isbn: dbBook.isbn,
+    titleBn: dbBook.titleBn,
+    titleEn: dbBook.titleEn,
+    subtitleBn: dbBook.subtitleBn,
+    categorySlug: dbBook.category.slug,
+    categoryNameBn: dbBook.category.nameBn,
+    categoryNameEn: dbBook.category.nameEn,
+    summaryBn: dbBook.summaryBn,
+    audienceBn: dbBook.audienceBn,
+    topicsBn: dbBook.topicsBn,
+    editionLabel: dbBook.editionLabel,
+    editionNoteBn: dbBook.editionNoteBn,
+    pagesCount: dbBook.pagesCount,
+    languageBnEn: dbBook.languageBnEn,
+    deliveryMode: dbBook.deliveryMode,
+    pricePaisa: isPublishedPriced ? dbBook.pricePaisa : null,
+    priceBdt:
+      isPublishedPriced && typeof dbBook.pricePaisa === "number"
+        ? fromPaisa(dbBook.pricePaisa)
+        : null,
+    inStock: isPublishedPriced ? dbBook.stockQuantity > 0 : false,
+    stockQuantity: isPublishedPriced ? dbBook.stockQuantity : undefined,
+    availabilityState: isPublishedPriced
+      ? "PUBLISHED_PRICED"
+      : "UPCOMING_PREVIEW",
+    featured: dbBook.featured,
+    coverPalette: parseCoverPalette(dbBook.coverPalette),
+    relatedCourseCategorySlug: dbBook.relatedCourseCategorySlug ?? "",
+    relatedServiceCategorySlug: dbBook.relatedServiceCategorySlug ?? "",
+    relatedLicensingCategorySlug: dbBook.relatedLicensingCategorySlug ?? undefined,
+    lastVerifiedAt: dbBook.lastVerifiedAt
+      ? dbBook.lastVerifiedAt.toISOString()
+      : null,
+    verifiedBy: dbBook.verifiedBy,
+  };
+}
+
+/**
+ * Loads governed published books from PostgreSQL when migrated & populated,
+ * gracefully falling back to verified pre-launch previews when unseeded.
+ */
+export async function loadBookCatalog(filter?: {
+  categorySlug?: string;
+  q?: string;
+  limit?: number;
+}): Promise<{ categories: PublicBookCategoryDTO[]; items: PublicBookPreview[] }> {
+  if (isDatabaseConfigured() && (await isBooksSchemaReady())) {
+    try {
+      const [dbCategories, dbBooks] = await Promise.all([
+        prisma.bookCategory.findMany({
+          where: { isActive: true },
+          orderBy: { sortOrder: "asc" },
+          include: {
+            books: {
+              where: { contentStatus: "PUBLISHED", availabilityStatus: { not: "INACTIVE" } },
+              select: { id: true },
+            },
+          },
+        }),
+        prisma.book.findMany({
+          where: { contentStatus: "PUBLISHED", availabilityStatus: { not: "INACTIVE" }, category: { isActive: true } },
+          orderBy: [{ featured: "desc" }, { sortOrder: "asc" }],
+          include: {
+            category: {
+              select: { slug: true, nameBn: true, nameEn: true },
+            },
+          },
+        }),
+      ]);
+
+      {
+        const mapped = dbBooks.map(mapDbBookToPublicPreview);
+        const catSlug = filter?.categorySlug?.trim() || "";
+        const query = filter?.q?.trim() || "";
+
+        let items = mapped
+          .filter((book) => (catSlug ? book.categorySlug === catSlug : true))
+          .filter((book) =>
+            query
+              ? matchesSearchQuery(query, [
+                  book.titleBn,
+                  book.titleEn,
+                  book.subtitleBn,
+                  book.summaryBn,
+                  book.categoryNameBn,
+                  book.categoryNameEn,
+                  ...book.topicsBn,
+                ])
+              : true,
+          );
+
+        if (typeof filter?.limit === "number" && filter.limit > 0) {
+          items = items.slice(0, filter.limit);
+        }
+
+        const categories: PublicBookCategoryDTO[] = dbCategories.map((cat) => ({
+          slug: cat.slug,
+          nameBn: cat.nameBn,
+          nameEn: cat.nameEn,
+          shortDescBn: cat.shortDescBn,
+          sortOrder: cat.sortOrder,
+          previewCount: cat.books.length,
+        }));
+
+        return { categories, items };
+      }
+    } catch {
+      // Fallback to verified preview catalog below
+    }
+  }
+
+  if (!canUseCatalogueFixtures()) {
+    return { categories: [], items: [] };
+  }
+  return listBookCatalog(filter);
+}
+
+export async function getGovernedBookBySlug(
+  slug: string,
+): Promise<PublicBookPreview | null> {
+  if (isDatabaseConfigured() && (await isBooksSchemaReady())) {
+    try {
+      const dbBook = await prisma.book.findUnique({
+        where: { slug },
+        include: {
+          category: {
+            select: { slug: true, nameBn: true, nameEn: true, isActive: true },
+          },
+        },
+      });
+      if (dbBook) {
+        if (
+          dbBook.contentStatus !== "PUBLISHED" ||
+          dbBook.availabilityStatus === "INACTIVE" || dbBook.category.isActive === false
+        ) {
+          return null;
+        }
+        return mapDbBookToPublicPreview(dbBook);
+      }
+
+      return null;
+    } catch {
+      if (process.env.NODE_ENV === "production") {
+        return null;
+      }
+    }
+  }
+  if (!canUseCatalogueFixtures()) {
+    return null;
+  }
+  return getBookPreviewBySlug(slug);
+}
+
+export async function searchGovernedBooks(
+  query: string,
+): Promise<PublicBookPreview[]> {
+  const trimmed = query.trim();
+  if (!trimmed) return [];
+  const { items } = await loadBookCatalog({ q: trimmed });
+  return items.slice(0, 6);
 }

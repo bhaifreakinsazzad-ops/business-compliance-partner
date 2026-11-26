@@ -4,7 +4,9 @@ const isProduction = process.env.NEXT_PUBLIC_APP_ENV === "production";
 
 const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
-  { key: "X-Frame-Options", value: "DENY" },
+  ...(isProduction || process.env.VERCEL_ENV === "production"
+    ? [{ key: "Content-Security-Policy", value: "frame-ancestors 'self'" }]
+    : []),
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   {
     key: "Permissions-Policy",

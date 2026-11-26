@@ -10,7 +10,7 @@ interface MotionRevealProps {
 
 /**
  * Progressive-enhancement scroll reveal powered by centralized Anime.js v4 tokens.
- * Respects `prefers-reduced-motion: reduce` and never hides content permanently.
+ * Cancels active animations cleanly on unmount and never hides content permanently.
  */
 export function MotionReveal({ children, className }: MotionRevealProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -24,23 +24,28 @@ export function MotionReveal({ children, className }: MotionRevealProps) {
     }
 
     const targets = Array.from(
-      el.querySelectorAll<HTMLElement>("[data-motion-item]"),
+      el.querySelectorAll<HTMLElement>("[data-motion-item], [data-category-card]"),
     );
     if (targets.length === 0) return;
 
     let played = false;
+    let activeAnim: ReturnType<typeof animateRevealItems> = null;
+
     const observer = new IntersectionObserver(
       (entries) => {
         if (played || !entries.some((entry) => entry.isIntersecting)) return;
         played = true;
         observer.disconnect();
-        animateRevealItems(targets);
+        activeAnim = animateRevealItems(targets);
       },
       { threshold: 0.12 },
     );
 
     observer.observe(el);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      activeAnim?.cancel();
+    };
   }, []);
 
   return (

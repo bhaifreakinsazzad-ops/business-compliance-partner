@@ -82,7 +82,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
             <div className="max-w-3xl space-y-2.5">
               <p className="inline-flex items-center gap-2 text-xs font-en font-semibold uppercase tracking-[0.14em] text-[#51406F]">
                 <BriefcaseBusiness className="w-4 h-4 text-[#51406F]" aria-hidden="true" />
-                <span>Professional Business Services · 11 Categories</span>
+                <span>02 · Services · Professional Assistance · 11 Categories</span>
               </p>
               <h1 className="text-3xl sm:text-4xl font-extrabold leading-snug text-[#081838]">
                 পেশাদার ব্যবসায়িক ও কমপ্লায়েন্স সেবাসমূহ
@@ -241,10 +241,15 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
         </section>
 
         <CTASection
+          eyebrowEn="Courses · Services · Books"
           titleBn="আপনার ব্যবসার প্রয়োজনীয় সেবাটি তালিকায় খুঁজে পাচ্ছেন না?"
           descriptionBn="সংক্ষেপে আপনার সমস্যাটি লিখে পাঠালে আমাদের টিম পর্যালোচনা করে উপযুক্ত সময়ে যোগাযোগ করবে।"
           primaryHref="/consultancy?pillar=SERVICES"
           primaryLabelBn="পরামর্শের অনুরোধ করুন"
+          secondaryHref="/courses"
+          secondaryLabelBn="Explore Courses · কোর্সসমূহ"
+          tertiaryHref="/books"
+          tertiaryLabelBn="Explore Books · বইসমূহ"
         />
       </main>
 

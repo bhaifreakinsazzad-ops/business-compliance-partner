@@ -75,7 +75,7 @@ export default async function CoursesPage({ searchParams }: CoursesPageProps) {
             <div className="max-w-3xl space-y-2.5">
               <p className="inline-flex items-center gap-2 text-xs font-en font-semibold uppercase tracking-[0.14em] text-[#51406F]">
                 <BookOpen className="w-4 h-4 text-[#51406F]" aria-hidden="true" />
-                <span>Course Discovery Hub · 10 Tracks</span>
+                <span>01 · Courses · I Want To Learn · 10 Tracks</span>
               </p>
               <h1 className="text-3xl sm:text-4xl font-extrabold leading-snug text-[#081838]">
                 পেশাদার কোর্স ও ব্যবসায়িক প্রশিক্ষণ
@@ -213,10 +213,15 @@ export default async function CoursesPage({ searchParams }: CoursesPageProps) {
         </section>
 
         <CTASection
+          eyebrowEn="Courses · Services · Books"
           titleBn="আপনার প্রতিষ্ঠানের জন্য কাস্টম বা নির্দিষ্ট বিষয়ে প্রশিক্ষণ প্রয়োজন?"
           descriptionBn="আপনার আগ্রহ ও প্রয়োজনের বিষয়টি লিখে পাঠান—নতুন ব্যাচ বা কারিকুলাম চূড়ান্ত হলে আমাদের টিম যোগাযোগ করবে।"
           primaryHref="/consultancy?pillar=COURSES"
           primaryLabelBn="কোর্স সম্পর্কে জানতে চাই"
+          secondaryHref="/services"
+          secondaryLabelBn="Explore Services · সেবাসমূহ"
+          tertiaryHref="/books"
+          tertiaryLabelBn="Explore Books · বইসমূহ"
         />
       </main>
 

@@ -3,7 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { getCanonicalBaseUrl, getPublicSiteConfig } from "@/lib/config/site";
-import { listRelatedBooksForLicensingCategory } from "@/lib/books/catalog";
+import { loadBookCatalog } from "@/lib/books/catalog";
+import { rankRelatedBooks } from "@/lib/recommendations/cross-division";
 import {
   getPublishedLicensingBySlug,
   listRelatedLicensing,
@@ -42,9 +43,10 @@ export default async function LicensingDetailPage({
   params,
 }: LicensingDetailProps) {
   const { slug } = await params;
-  const [siteConfig, entry] = await Promise.all([
+  const [siteConfig, entry, allBooksRes] = await Promise.all([
     getPublicSiteConfig(),
     getPublishedLicensingBySlug(slug),
+    loadBookCatalog({ limit: 12 }),
   ]);
 
   if (!entry) {
@@ -57,7 +59,20 @@ export default async function LicensingDetailPage({
     entry.slug,
     2,
   );
-  const relatedBooks = listRelatedBooksForLicensingCategory(entry.categorySlug, 2);
+  const relatedBooks = rankRelatedBooks(
+    allBooksRes.items,
+    {
+      titleBn: entry.titleBn,
+      titleEn: entry.titleEn,
+      categorySlug: entry.categorySlug,
+      categoryNameBn: entry.categoryNameBn,
+      summaryBn: entry.summaryBn,
+      topics: entry.documentsSummary,
+      relatedLicensingCategorySlug: entry.categorySlug,
+    },
+    undefined,
+    2,
+  );
   const enquiryHref = `/consultancy?pillar=LICENSING&slug=${encodeURIComponent(
     entry.slug,
   )}&topic=${encodeURIComponent(entry.titleBn)}`;

@@ -13,9 +13,14 @@ import type {
   PublicServiceCard,
   PublicServiceDetail,
 } from "@/types/domain";
-import { BOOK_PREVIEW_CATALOG, searchBookPreviews } from "@/lib/books/catalog";
+import {
+  loadBookCatalog,
+  searchGovernedBooks,
+} from "@/lib/books/catalog";
 import { isPubliclyVisible, matchesSearchQuery } from "@/lib/content/helpers";
-import { isDatabaseConfigured, prisma } from "@/lib/db/prisma";
+import { prisma } from "@/lib/db/prisma";
+import { canUseCatalogueFixtures } from "@/lib/config/catalogue-policy";
+import { isPublicSchemaReady } from "@/lib/db/schema-ready";
 import { SEED_CATEGORIES } from "../../../prisma/seed-data/categories";
 import { SEED_COURSES } from "../../../prisma/seed-data/courses";
 import { SEED_FAQS } from "../../../prisma/seed-data/faqs";
@@ -68,9 +73,7 @@ export function sortCourseCategoriesByClientPriority(
 }
 
 function canUseSeedFallback(): boolean {
-  // Always permit seed fallback when database is not configured or in transition,
-  // guaranteeing high availability and zero blank pages for general usage and advertising.
-  return !isDatabaseConfigured() || process.env.NEXT_PUBLIC_APP_ENV !== "production";
+  return canUseCatalogueFixtures();
 }
 
 function getSeedCategoriesByPillar(pillar: Pillar): PublicCategoryDTO[] {
@@ -100,7 +103,7 @@ export async function listPublishedCourses(filter?: {
   q?: string;
   availability?: AvailabilityStatusValue;
 }): Promise<{ categories: PublicCategoryDTO[]; items: PublicCourseCard[] }> {
-  if (isDatabaseConfigured()) {
+  if (await isPublicSchemaReady()) {
     try {
       const [categories, courses, categoryCounts] = await Promise.all([
         prisma.category.findMany({
@@ -110,12 +113,8 @@ export async function listPublishedCourses(filter?: {
         prisma.course.findMany({
           where: {
             contentStatus: "PUBLISHED",
-            availabilityStatus: filter?.availability
-              ? filter.availability
-              : { not: "INACTIVE" },
-            ...(filter?.categorySlug
-              ? { category: { slug: filter.categorySlug } }
-              : {}),
+            availabilityStatus: { not: "INACTIVE", ...(filter?.availability ? { equals: filter.availability } : {}) },
+            category: { isActive: true, ...(filter?.categorySlug ? { slug: filter.categorySlug } : {}) },
           },
           include: { category: true },
           orderBy: [{ featured: "desc" }, { sortOrder: "asc" }],
@@ -125,6 +124,7 @@ export async function listPublishedCourses(filter?: {
           where: {
             contentStatus: "PUBLISHED",
             availabilityStatus: { not: "INACTIVE" },
+            category: { isActive: true },
           },
           _count: { _all: true },
         }),
@@ -247,18 +247,20 @@ export async function listPublishedCourses(filter?: {
 export async function getPublishedCourseBySlug(
   slug: string,
 ): Promise<PublicCourseDetail | null> {
-  if (isDatabaseConfigured()) {
+  if (await isPublicSchemaReady()) {
     try {
-      const c = await prisma.course.findFirst({
-        where: {
-          slug,
-          contentStatus: "PUBLISHED",
-          availabilityStatus: { not: "INACTIVE" },
-        },
+      const c = await prisma.course.findUnique({
+        where: { slug },
         include: { category: true, instructor: true },
       });
 
       if (c) {
+        if (
+          c.contentStatus !== "PUBLISHED" ||
+          c.availabilityStatus === "INACTIVE" || c.category.isActive === false
+        ) {
+          return null;
+        }
         return {
           id: c.id,
           slug: c.slug,
@@ -293,6 +295,11 @@ export async function getPublishedCourseBySlug(
           seoTitle: c.seoTitle,
           seoDescription: c.seoDescription,
         };
+      }
+
+      const existingCount = await prisma.course.count({ take: 1 });
+      if (existingCount > 0) {
+        return null;
       }
     } catch {
       // Fallback below
@@ -342,7 +349,7 @@ export async function listPublishedServices(filter?: {
 }): Promise<{ categories: PublicCategoryDTO[]; items: PublicServiceCard[] }> {
   const resolvedCategorySlug = resolveServiceCategorySlug(filter?.categorySlug);
 
-  if (isDatabaseConfigured()) {
+  if (await isPublicSchemaReady()) {
     try {
       const [categories, services, categoryCounts] = await Promise.all([
         prisma.category.findMany({
@@ -353,9 +360,7 @@ export async function listPublishedServices(filter?: {
           where: {
             contentStatus: "PUBLISHED",
             availabilityStatus: { not: "INACTIVE" },
-            ...(resolvedCategorySlug
-              ? { category: { slug: resolvedCategorySlug } }
-              : {}),
+            category: { isActive: true, ...(resolvedCategorySlug ? { slug: resolvedCategorySlug } : {}) },
           },
           include: { category: true },
           orderBy: [{ featured: "desc" }, { sortOrder: "asc" }],
@@ -365,6 +370,7 @@ export async function listPublishedServices(filter?: {
           where: {
             contentStatus: "PUBLISHED",
             availabilityStatus: { not: "INACTIVE" },
+            category: { isActive: true },
           },
           _count: { _all: true },
         }),
@@ -484,18 +490,20 @@ export async function listPublishedServices(filter?: {
 export async function getPublishedServiceBySlug(
   slug: string,
 ): Promise<PublicServiceDetail | null> {
-  if (isDatabaseConfigured()) {
+  if (await isPublicSchemaReady()) {
     try {
-      const s = await prisma.service.findFirst({
-        where: {
-          slug,
-          contentStatus: "PUBLISHED",
-          availabilityStatus: { not: "INACTIVE" },
-        },
+      const s = await prisma.service.findUnique({
+        where: { slug },
         include: { category: true },
       });
 
       if (s) {
+        if (
+          s.contentStatus !== "PUBLISHED" ||
+          s.availabilityStatus === "INACTIVE" || s.category.isActive === false
+        ) {
+          return null;
+        }
         return {
           id: s.id,
           slug: s.slug,
@@ -524,6 +532,11 @@ export async function getPublishedServiceBySlug(
           seoTitle: s.seoTitle,
           seoDescription: s.seoDescription,
         };
+      }
+
+      const existingCount = await prisma.service.count({ take: 1 });
+      if (existingCount > 0) {
+        return null;
       }
     } catch {
       // Fallback below
@@ -575,7 +588,7 @@ export async function listPublishedLicensing(filter?: {
   categorySlug?: string;
   q?: string;
 }): Promise<{ categories: PublicCategoryDTO[]; items: PublicLicensingCard[] }> {
-  if (isDatabaseConfigured()) {
+  if (await isPublicSchemaReady()) {
     try {
       const [categories, entries, categoryCounts] = await Promise.all([
         prisma.category.findMany({
@@ -586,9 +599,7 @@ export async function listPublishedLicensing(filter?: {
           where: {
             contentStatus: "PUBLISHED",
             availabilityStatus: { not: "INACTIVE" },
-            ...(filter?.categorySlug
-              ? { category: { slug: filter.categorySlug } }
-              : {}),
+            category: { isActive: true, ...(filter?.categorySlug ? { slug: filter.categorySlug } : {}) },
           },
           include: { category: true },
           orderBy: [{ featured: "desc" }, { sortOrder: "asc" }],
@@ -598,6 +609,7 @@ export async function listPublishedLicensing(filter?: {
           where: {
             contentStatus: "PUBLISHED",
             availabilityStatus: { not: "INACTIVE" },
+            category: { isActive: true },
           },
           _count: { _all: true },
         }),
@@ -713,17 +725,19 @@ export async function listPublishedLicensing(filter?: {
 export async function getPublishedLicensingBySlug(
   slug: string,
 ): Promise<PublicLicensingDetail | null> {
-  if (isDatabaseConfigured()) {
+  if (await isPublicSchemaReady()) {
     try {
-      const l = await prisma.licensingEntry.findFirst({
-        where: {
-          slug,
-          contentStatus: "PUBLISHED",
-          availabilityStatus: { not: "INACTIVE" },
-        },
+      const l = await prisma.licensingEntry.findUnique({
+        where: { slug },
         include: { category: true },
       });
       if (l) {
+        if (
+          l.contentStatus !== "PUBLISHED" ||
+          l.availabilityStatus === "INACTIVE" || l.category.isActive === false
+        ) {
+          return null;
+        }
         return {
           id: l.id,
           slug: l.slug,
@@ -748,6 +762,11 @@ export async function getPublishedLicensingBySlug(
           seoTitle: l.seoTitle,
           seoDescription: l.seoDescription,
         };
+      }
+
+      const existingCount = await prisma.licensingEntry.count({ take: 1 });
+      if (existingCount > 0) {
+        return null;
       }
     } catch {
       // Fallback below
@@ -794,7 +813,7 @@ export async function getPublishedLicensingBySlug(
 export async function listPublishedFaqs(
   pillar?: Pillar,
 ): Promise<PublicFaqItem[]> {
-  if (isDatabaseConfigured()) {
+  if (await isPublicSchemaReady()) {
     try {
       const rows = await prisma.faq.findMany({
         where: {
@@ -842,12 +861,12 @@ export async function searchPublishedCatalogue(query: string): Promise<{
     return { courses: [], services: [], licensing: [], books: [] };
   }
 
-  const [coursesRes, servicesRes, licensingRes] = await Promise.all([
+  const [coursesRes, servicesRes, licensingRes, books] = await Promise.all([
     listPublishedCourses({ q: trimmed }),
     listPublishedServices({ q: trimmed }),
     listPublishedLicensing({ q: trimmed }),
+    searchGovernedBooks(trimmed),
   ]);
-  const books = searchBookPreviews(trimmed);
 
   return {
     courses: coursesRes.items.slice(0, 6),
@@ -863,17 +882,18 @@ export async function getPublishedSlugManifest(): Promise<{
   licensing: string[];
   books: string[];
 }> {
-  const [coursesRes, servicesRes, licensingRes] = await Promise.all([
+  const [coursesRes, servicesRes, licensingRes, booksRes] = await Promise.all([
     listPublishedCourses(),
     listPublishedServices(),
     listPublishedLicensing(),
+    loadBookCatalog(),
   ]);
 
   return {
     courses: coursesRes.items.map((c) => c.slug),
     services: servicesRes.items.map((s) => s.slug),
     licensing: licensingRes.items.map((l) => l.slug),
-    books: BOOK_PREVIEW_CATALOG.map((b) => b.slug),
+    books: booksRes.items.map((b) => b.slug),
   };
 }
 

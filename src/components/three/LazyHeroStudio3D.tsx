@@ -50,7 +50,7 @@ function StaticHeroStudioPreview({
         ].map((spine) => (
           <div
             key={spine.label}
-            className="px-3 py-1.5 rounded-[6px] text-[10px] font-semibold text-white border-s-2 border-[#C59028] truncate shadow-xs"
+            className="px-3 py-1.5 rounded-[6px] text-[10px] font-semibold text-white border border-[#C59028]/50 truncate shadow-xs"
             style={{ backgroundColor: spine.bg }}
           >
             {spine.label}

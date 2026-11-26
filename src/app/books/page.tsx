@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { BookOpen, Info, X } from "lucide-react";
 import { getCanonicalBaseUrl, getPublicSiteConfig } from "@/lib/config/site";
-import { BOOK_PRICING_NOTICE_BN, listBookCatalog } from "@/lib/books/catalog";
+import { BOOK_PRICING_NOTICE_BN, loadBookCatalog } from "@/lib/books/catalog";
 import type { PublicCategoryDTO } from "@/types/domain";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
@@ -14,7 +14,7 @@ import { SearchBox } from "@/components/shared/SearchBox";
 import { CTASection } from "@/components/shared/CTASection";
 
 export const metadata: Metadata = {
-  title: "আমাদের সকল বইসমূহ | প্রকাশনা প্রিভিউ",
+  title: "আমাদের সকল বইসমূহ | পেশাদার প্রকাশনা",
   description:
     "বাংলাদেশে আয়কর, ভ্যাট ও মূসক, e-GP, Smart RJSC, অ্যাকাউন্টিং, ই-কমার্স, কাস্টমস ও শ্রম আইন বিষয়ক আসন্ন কমপ্লায়েন্স বইয়ের প্রিভিউ ও আগ্রহ নিবন্ধন।",
   alternates: { canonical: "/books" },
@@ -29,12 +29,13 @@ export default async function BooksPage({ searchParams }: BooksPageProps) {
   const siteConfig = await getPublicSiteConfig();
   const canonicalBaseUrl = getCanonicalBaseUrl();
 
-  const { categories, items } = listBookCatalog({
+  const { categories, items } = await loadBookCatalog({
     categorySlug: category || undefined,
     q: q || undefined,
   });
 
   const activeCategory = categories.find((c) => c.slug === category);
+  const hasUpcomingBooks = items.some((book) => book.availabilityState === "UPCOMING_PREVIEW");
 
   const categoryCards: PublicCategoryDTO[] = categories.map((cat) => ({
     id: cat.slug,
@@ -66,10 +67,10 @@ export default async function BooksPage({ searchParams }: BooksPageProps) {
             <div className="max-w-3xl space-y-2.5">
               <p className="inline-flex items-center gap-2 text-xs font-en font-semibold uppercase tracking-[0.14em] text-[#51406F]">
                 <BookOpen className="w-4 h-4 text-[#51406F]" aria-hidden="true" />
-                <span>Our Books Storefront · Upcoming Preview Editions</span>
+                <span>03 · Books · Practical Knowledge & Publications</span>
               </p>
               <h1 className="text-3xl sm:text-4xl font-extrabold leading-snug text-[#081838]">
-                আমাদের সকল বইসমূহ ও প্রকাশনা প্রিভিউ
+                আমাদের সকল বইসমূহ ও প্রকাশনা
               </h1>
               <p className="text-sm sm:text-base text-[#181D26]/85 leading-relaxed">
                 আমাদের কোর্স ও কমপ্লায়েন্স সেবাসমূহের সাথে সামঞ্জস্যপূর্ণ প্র্যাকটিক্যাল
@@ -81,7 +82,7 @@ export default async function BooksPage({ searchParams }: BooksPageProps) {
             {/* Honest Pre-Launch Notice */}
             <div className="rounded-[12px] border border-[#D4CCE3] bg-white/85 px-4 py-3 flex items-start gap-2.5 text-xs sm:text-sm text-[#181D26] max-w-3xl">
               <Info className="w-4 h-4 text-[#51406F] shrink-0 mt-0.5" aria-hidden="true" />
-              <span>{BOOK_PRICING_NOTICE_BN}</span>
+              <span>{hasUpcomingBooks ? BOOK_PRICING_NOTICE_BN : "প্রকাশিত বইয়ের মূল্য ও প্রাপ্যতা সংশ্লিষ্ট বইয়ের বিস্তারিত পাতায় দেখুন।"}</span>
             </div>
           </div>
         </section>
@@ -101,7 +102,7 @@ export default async function BooksPage({ searchParams }: BooksPageProps) {
               {category || q ? (
                 <div className="flex flex-wrap items-center justify-between gap-3 pt-1 text-xs sm:text-sm">
                   <p className="text-[#181D26]/85">
-                    মোট <strong>{items.length}</strong>টি প্রস্তাবিত বই পাওয়া গেছে
+                    মোট <strong>{items.length}</strong>টি বই পাওয়া গেছে
                     {activeCategory ? (
                       <>
                         {" "}
@@ -126,7 +127,7 @@ export default async function BooksPage({ searchParams }: BooksPageProps) {
                   বইয়ের বিভাগ নির্বাচন করুন
                 </h2>
                 <p className="text-xs sm:text-sm text-[#596775]">
-                  আয়কর, ভ্যাট, ই-জিপি, কোম্পানি আইন, অ্যাকাউন্টিং, ই-কমার্স, কাস্টমস ও শ্রম আইন ভিত্তিক ৯টি প্রকাশনা বিভাগ।
+                  বিষয়ভিত্তিক {categories.length}টি প্রকাশনা বিভাগ থেকে আপনার প্রয়োজনীয় বই খুঁজুন।
                 </p>
               </div>
 
@@ -148,11 +149,11 @@ export default async function BooksPage({ searchParams }: BooksPageProps) {
                 <div className="flex items-center justify-between gap-3 border-b border-[#D4CCE3] pb-3">
                   <h2 className="text-lg sm:text-xl font-bold text-[#081838]">
                     {activeCategory
-                      ? `${activeCategory.nameBn} — আসন্ন প্রকাশনা প্রিভিউ`
-                      : "সকল প্রস্তাবিত বই ও হ্যান্ডবুক"}
+                      ? `${activeCategory.nameBn} — বই ও প্রকাশনা`
+                      : "সকল বই ও হ্যান্ডবুক"}
                   </h2>
                   <span className="text-xs sm:text-sm font-medium text-[#596775] tabular-nums">
-                    মোট {items.length}টি বই প্রিভিউ
+                    মোট {items.length}টি বই
                   </span>
                 </div>
 
@@ -179,12 +180,15 @@ export default async function BooksPage({ searchParams }: BooksPageProps) {
         </section>
 
         <CTASection
+          eyebrowEn="Courses · Services · Books"
           titleBn="প্রকাশনার আগে থেকেই বই বা কর্পোরেট কপির বিষয়ে আগ্রহ জানাতে চান?"
-          descriptionBn="কোনো বই প্রকাশিত হলেই অগ্রাধিকার ভিত্তিতে তথ্য পেতে আপনার আগ্রহ নিবন্ধন করুন অথবা WhatsApp-এ বার্তা পাঠান।"
+          descriptionBn="কোনো বই প্রকাশিত হলেই অগ্রাধিকার ভিত্তিতে তথ্য পেতে আপনার আগ্রহ নিবন্ধন করুন অথবা সংশ্লিষ্ট কোর্স ও সেবা দেখুন।"
           primaryHref="/consultancy?pillar=CONSULTANCY&topic=%E0%A6%AC%E0%A6%87+%E0%A6%AA%E0%A7%8D%E0%A6%B0%E0%A6%95%E0%A6%BE%E0%A6%B6%E0%A6%A8%E0%A6%BE+%E0%A6%86%E0%A6%97%E0%A7%8D%E0%A6%B0%E0%A6%B9"
           primaryLabelBn="প্রকাশনা আগ্রহ জানান"
           secondaryHref="/courses"
-          secondaryLabelBn="সংশ্লিষ্ট কোর্স দেখুন"
+          secondaryLabelBn="Explore Courses · কোর্সসমূহ"
+          tertiaryHref="/services"
+          tertiaryLabelBn="Explore Services · সেবাসমূহ"
         />
       </main>
 

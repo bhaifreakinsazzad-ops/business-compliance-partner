@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
+import { MASTER_THREE_PILLARS } from "@/lib/config/pillars";
 import {
   buildWhatsAppGeneralMessage,
   buildWhatsAppUrl,
@@ -28,7 +29,7 @@ export function Footer({ siteConfig }: FooterProps) {
 
   return (
     <>
-      <footer className="bg-[#081838] text-white/85 border-t border-[#A599C2]/30 pt-14 pb-20 sm:pb-12 text-sm">
+      <footer className="bg-surface-navy text-white/85 border-t border-bcp-dusty/30 pt-14 pb-24 sm:pb-12 text-sm">
         <div className="ps-container space-y-10">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10">
             {/* Column 1: Brand Identity */}
@@ -56,9 +57,11 @@ export function Footer({ siteConfig }: FooterProps) {
                 </div>
               </div>
               <p className="text-xs text-white/75 leading-relaxed">
-                বাংলাদেশের উদ্যোক্তা, ব্যবসায়ী ও পেশাজীবীদের জন্য কোর্স, ব্যবসায়িক সেবা,
-                প্রকাশনা, লাইসেন্সিং নির্দেশিকা এবং কনসালটেন্সি সহায়তার একটি সুসংগঠিত
-                প্ল্যাটফর্ম।
+                বাংলাদেশের উদ্যোক্তা, ব্যবসায়ী ও পেশাজীবীদের জন্য{" "}
+                <span className="font-en font-semibold text-white" lang="en">
+                  Courses · Services · Books
+                </span>{" "}
+                ভিত্তিক সুসংগঠিত শিক্ষা, কমপ্লায়েন্স সেবা ও প্রকাশনা প্ল্যাটফর্ম।
               </p>
               {siteConfig.isIdentityProvisional ? (
                 <p className="text-[11px] text-white/60">
@@ -68,61 +71,67 @@ export function Footer({ siteConfig }: FooterProps) {
               ) : null}
             </div>
 
-            {/* Column 2: Commercial & Compliance Pillars */}
+            {/* Column 2: Primary Commercial Pillars strictly ordered: Courses -> Services -> Books */}
             <div className="lg:col-span-3 space-y-3">
               <h2 className="text-sm font-bold text-white tracking-wide">
-                মূল বিভাগসমূহ
+                মূল ৩টি বিভাগ ·{" "}
+                <span className="font-en text-[#DFB15B]" lang="en">
+                  Courses · Services · Books
+                </span>
               </h2>
-              <ul className="space-y-2 text-white/80">
-                <li>
-                  <Link
-                    href="/courses"
-                    className="hover:text-[#DDD6EB] hover:underline underline-offset-4"
-                  >
-                    আমাদের সকল কোর্সসমূহ
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/services"
-                    className="hover:text-[#DDD6EB] hover:underline underline-offset-4"
-                  >
-                    আমাদের সকল সেবাসমূহ
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/books"
-                    className="hover:text-[#DDD6EB] hover:underline underline-offset-4"
-                  >
-                    আমাদের সকল বইসমূহ
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/licensing"
-                    className="hover:text-[#DDD6EB] hover:underline underline-offset-4"
-                  >
-                    লাইসেন্সিং ও নিবন্ধন
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/tools"
-                    className="hover:text-[#DDD6EB] hover:underline underline-offset-4"
-                  >
-                    প্রস্তুতি ও রোডম্যাপ টুলস
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/consultancy"
-                    className="hover:text-[#DDD6EB] hover:underline underline-offset-4"
-                  >
-                    কনসালটেন্সি ও পরামর্শ
-                  </Link>
-                </li>
+              <ul className="space-y-2.5 text-white/85">
+                {MASTER_THREE_PILLARS.map((pillar) => (
+                  <li key={pillar.id}>
+                    <Link
+                      href={pillar.href}
+                      data-footer-pillar={pillar.id}
+                      className="group block hover:text-surface-lavender-muted"
+                    >
+                      <span
+                        className="font-en font-bold text-white group-hover:text-[#DFB15B] group-hover:underline underline-offset-4"
+                        lang="en"
+                      >
+                        {pillar.orderLabel}. {pillar.labelEn}
+                      </span>{" "}
+                      <span className="text-xs text-white/75">
+                        — {pillar.labelBn}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
               </ul>
+
+              <div className="pt-3 border-t border-white/10 space-y-2">
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-white/60">
+                  সহায়ক সমাধান
+                </p>
+                <ul className="space-y-1 text-xs text-white/75">
+                  <li>
+                    <Link
+                      href="/licensing"
+                      className="inline-flex items-center min-h-6 py-0.5 hover:text-surface-lavender-muted hover:underline underline-offset-4"
+                    >
+                      লাইসেন্সিং ও নিবন্ধন (Services)
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/consultancy"
+                      className="inline-flex items-center min-h-6 py-0.5 hover:text-surface-lavender-muted hover:underline underline-offset-4"
+                    >
+                      বিশেষজ্ঞ কনসালটেন্সি (Services)
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/tools"
+                      className="inline-flex items-center min-h-6 py-0.5 hover:text-surface-lavender-muted hover:underline underline-offset-4"
+                    >
+                      প্রস্তুতি ও রোডম্যাপ টুলস
+                    </Link>
+                  </li>
+                </ul>
+              </div>
             </div>
 
             {/* Column 3: Company & Legal */}
@@ -153,6 +162,14 @@ export function Footer({ siteConfig }: FooterProps) {
                     className="hover:text-[#DDD6EB] hover:underline underline-offset-4"
                   >
                     যোগাযোগ
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/portal"
+                    className="hover:text-[#DDD6EB] hover:underline underline-offset-4"
+                  >
+                    কাস্টমার পোর্টাল
                   </Link>
                 </li>
                 <li>

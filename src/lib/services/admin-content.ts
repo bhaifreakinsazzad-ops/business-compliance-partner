@@ -17,7 +17,7 @@ import {
   findForbiddenContentMatch,
 } from "@/lib/validation/content";
 
-export type ContentEntityType = "Course" | "Service" | "LicensingEntry";
+export type ContentEntityType = "Course" | "Service" | "LicensingEntry" | "Book";
 export type AuditableEntityType = ContentEntityType | "Faq" | "SiteSetting";
 export type RevisionAction = "CREATE" | "UPDATE" | "PUBLISH" | "DELETE";
 
@@ -281,6 +281,19 @@ export async function assertValidCategoryForPillar(
   }
 }
 
+export async function assertValidBookCategory(categoryId: string): Promise<void> {
+  const category = await prisma.bookCategory.findUnique({
+    where: { id: categoryId },
+    select: { id: true },
+  });
+  if (!category) {
+    throw new BadRequestError(
+      "নির্বাচিত বইয়ের ক্যাটাগরি সঠিক নয়।",
+      "INVALID_REFERENCE",
+    );
+  }
+}
+
 export interface RecordRevisionAndAuditParams {
   admin: AuthenticatedAdmin;
   entityType: AuditableEntityType;
@@ -338,6 +351,7 @@ const ENTITY_BASE_PATH: Record<ContentEntityType, string> = {
   Course: "/courses",
   Service: "/services",
   LicensingEntry: "/licensing",
+  Book: "/books",
 };
 
 export function revalidateContentPaths(

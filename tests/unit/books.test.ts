@@ -23,9 +23,9 @@ import {
 } from "@/lib/contact/whatsapp";
 
 describe("Our Books upcoming preview catalog & integrity", () => {
-  it("exposes 9 ordered categories with positive preview counts", () => {
+  it("exposes 11 ordered categories with positive preview counts", () => {
     const categories = listBookCategories();
-    expect(categories).toHaveLength(9);
+    expect(categories).toHaveLength(11);
     for (const cat of categories) {
       expect(cat.previewCount).toBeGreaterThanOrEqual(1);
     }
@@ -39,11 +39,13 @@ describe("Our Books upcoming preview catalog & integrity", () => {
       "customs",
       "labour-law",
       "business-management",
+      "corporate-tax-audit",
+      "internal-compliance-procedures",
     ]);
   });
 
   it("marks every preview book as UPCOMING_PREVIEW without fabricated prices", () => {
-    expect(BOOK_PREVIEW_CATALOG.length).toBe(9);
+    expect(BOOK_PREVIEW_CATALOG.length).toBe(11);
     const fabricatedPricePattern = /(?:৳\s*\d+|BDT\s*\d+|\d+\s*টাকা)/i;
 
     for (const book of BOOK_PREVIEW_CATALOG) {

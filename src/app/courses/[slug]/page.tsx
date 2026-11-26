@@ -4,9 +4,14 @@ import { notFound } from "next/navigation";
 import { ArrowRight, CheckCircle2, Users } from "lucide-react";
 import { getCanonicalBaseUrl, getPublicSiteConfig } from "@/lib/config/site";
 import { buildWhatsAppCourseMessage } from "@/lib/contact/whatsapp";
-import { listRelatedBooksForCourseCategory } from "@/lib/books/catalog";
+import { loadBookCatalog } from "@/lib/books/catalog";
+import {
+  rankRelatedBooks,
+  rankRelatedServices,
+} from "@/lib/recommendations/cross-division";
 import {
   getPublishedCourseBySlug,
+  listPublishedServices,
   listRelatedCourses,
 } from "@/lib/services/catalogue";
 import { AppHeader } from "@/components/layout/AppHeader";
@@ -17,6 +22,7 @@ import { VerificationMeta } from "@/components/shared/VerificationMeta";
 import { SyllabusExplorer } from "@/components/shared/SyllabusExplorer";
 import { WhatsAppEnquiryButton } from "@/components/shared/WhatsAppEnquiryButton";
 import { CourseCard } from "@/components/shared/CourseCard";
+import { ServiceCard } from "@/components/shared/ServiceCard";
 import { BookCard } from "@/components/books/BookCard";
 
 interface CourseDetailPageProps {
@@ -42,9 +48,11 @@ export default async function CourseDetailPage({
   params,
 }: CourseDetailPageProps) {
   const { slug } = await params;
-  const [siteConfig, course] = await Promise.all([
+  const [siteConfig, course, allBooksRes, allServicesRes] = await Promise.all([
     getPublicSiteConfig(),
     getPublishedCourseBySlug(slug),
+    loadBookCatalog(),
+    listPublishedServices(),
   ]);
 
   if (!course) {
@@ -58,7 +66,27 @@ export default async function CourseDetailPage({
     course.slug,
     3,
   );
-  const relatedBooks = listRelatedBooksForCourseCategory(course.categorySlug, 2);
+  const crossContext = {
+    titleBn: course.titleBn,
+    titleEn: course.titleEn,
+    categorySlug: course.categorySlug,
+    categoryNameBn: course.categoryNameBn,
+    summaryBn: course.summaryBn,
+    topics: course.outcomes,
+    relatedCourseCategorySlug: course.categorySlug,
+  };
+  const relatedServices = rankRelatedServices(
+    allServicesRes.items,
+    crossContext,
+    undefined,
+    2,
+  );
+  const relatedBooks = rankRelatedBooks(
+    allBooksRes.items,
+    crossContext,
+    undefined,
+    2,
+  );
   const enquiryHref = `/consultancy?pillar=COURSES&slug=${encodeURIComponent(
     course.slug,
   )}&topic=${encodeURIComponent(course.titleBn)}`;
@@ -219,9 +247,38 @@ export default async function CourseDetailPage({
           </div>
         </section>
 
+        {/* Cross-Division Professional Services Discovery */}
+        {relatedServices.length > 0 ? (
+          <section className="py-10 sm:py-12 bg-[#F2EFF8]/65 border-t border-[#D4CCE3]">
+            <div className="ps-container space-y-6">
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="text-xl sm:text-2xl font-bold text-[#081838]">
+                  এই বিষয়ে পেশাদার সহায়তা ও সেবাসমূহ
+                </h2>
+                <Link
+                  href="/services"
+                  className="text-sm font-semibold text-[#51406F] hover:underline underline-offset-4 whitespace-nowrap"
+                >
+                  Explore Services · সকল সেবা →
+                </Link>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {relatedServices.map((svc) => (
+                  <ServiceCard
+                    key={svc.slug}
+                    service={svc}
+                    verifiedWhatsapp={siteConfig.verifiedWhatsapp}
+                    canonicalBaseUrl={canonicalBaseUrl}
+                  />
+                ))}
+              </div>
+            </div>
+          </section>
+        ) : null}
+
         {/* Cross-Division Books Discovery */}
         {relatedBooks.length > 0 ? (
-          <section className="py-10 sm:py-12 bg-[#F2EFF8]/65 border-t border-[#D4CCE3]">
+          <section className="py-10 sm:py-12 bg-white border-t border-[#D4CCE3]">
             <div className="ps-container space-y-6">
               <div className="flex items-center justify-between gap-3">
                 <h2 className="text-xl sm:text-2xl font-bold text-[#081838]">
@@ -229,9 +286,9 @@ export default async function CourseDetailPage({
                 </h2>
                 <Link
                   href="/books"
-                  className="text-sm font-semibold text-[#51406F] hover:underline underline-offset-4"
+                  className="text-sm font-semibold text-[#51406F] hover:underline underline-offset-4 whitespace-nowrap"
                 >
-                  সব বই প্রিভিউ →
+                  Explore Books · সব বই প্রিভিউ →
                 </Link>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -249,7 +306,7 @@ export default async function CourseDetailPage({
         ) : null}
 
         {relatedCourses.length > 0 ? (
-          <section className="py-10 sm:py-12 bg-white border-t border-[#D4CCE3]">
+          <section className="py-10 sm:py-12 bg-[#F2EFF8]/45 border-t border-[#D4CCE3]">
             <div className="ps-container space-y-6">
               <div className="flex items-center justify-between gap-3">
                 <h2 className="text-xl sm:text-2xl font-bold text-[#081838]">
@@ -257,7 +314,7 @@ export default async function CourseDetailPage({
                 </h2>
                 <Link
                   href={`/courses?category=${encodeURIComponent(course.categorySlug)}`}
-                  className="text-sm font-semibold text-[#51406F] hover:underline underline-offset-4"
+                  className="text-sm font-semibold text-[#51406F] hover:underline underline-offset-4 whitespace-nowrap"
                 >
                   এই বিভাগের সব কোর্স →
                 </Link>

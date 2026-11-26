@@ -16,6 +16,14 @@ export const AVAILABILITY_STATUS_ENUM = z.enum([
   "INACTIVE",
 ]);
 
+export const COURSE_ENROLLMENT_MODEL_ENUM = z.enum([
+  "FREE",
+  "PAID",
+  "ENQUIRY_ONLY",
+  "INVITATION_ONLY",
+  "UNAVAILABLE",
+]);
+
 export const LEAD_STATUS_ENUM = z.enum([
   "NEW",
   "REVIEWED",
@@ -91,6 +99,8 @@ export const courseUpsertSchema = z.object({
   deliveryMode: z.string().trim().max(120).optional().nullable(),
   duration: z.string().trim().max(120).optional().nullable(),
   feeDisplay: z.string().trim().max(120).optional().nullable(),
+  enrollmentModel: COURSE_ENROLLMENT_MODEL_ENUM.default("ENQUIRY_ONLY"),
+  pricePaisa: z.number().int().min(0).max(50_000_000).optional().nullable(),
   instructorId: z.string().trim().optional().nullable(),
   contentStatus: CONTENT_STATUS_ENUM.default("DRAFT"),
   availabilityStatus: AVAILABILITY_STATUS_ENUM.default("INTEREST_ONLY"),
@@ -215,3 +225,62 @@ export const leadStatusUpdateSchema = z.object({
   assignedToId: z.string().trim().optional().nullable(),
   internalNotes: z.string().trim().max(4000).optional().nullable(),
 });
+
+const hexColorSchema = z
+  .string()
+  .trim()
+  .regex(/^#[0-9a-fA-F]{6}$/, "Valid 6-digit hex color required (e.g. #081838).");
+
+export const bookCoverPaletteSchema = z.object({
+  spineHex: hexColorSchema.default("#081838"),
+  coverHex: hexColorSchema.default("#152b54"),
+  accentHex: hexColorSchema.default("#c59028"),
+  textHex: hexColorSchema.default("#f8f8f8"),
+});
+
+export const bookUpsertSchema = z
+  .object({
+    slug: slugSchema,
+    sku: z.string().trim().max(80).optional().nullable(),
+    isbn: z.string().trim().max(40).optional().nullable(),
+    categoryId: z.string().trim().min(1),
+    titleBn: z.string().trim().min(3).max(220),
+    titleEn: z.string().trim().min(3).max(220),
+    subtitleBn: z.string().trim().min(5).max(400),
+    summaryBn: z.string().trim().min(10).max(1600),
+    audienceBn: z.string().trim().min(5).max(800),
+    topicsBn: z.array(z.string().trim().min(2).max(300)).min(1),
+    editionLabel: z.string().trim().max(120).optional().nullable(),
+    editionNoteBn: z.string().trim().min(5).max(500),
+    pagesCount: z.number().int().min(1).max(5000).optional().nullable(),
+    languageBnEn: z.string().trim().max(120).optional().nullable(),
+    deliveryMode: z.string().trim().max(80).optional().nullable(),
+    pricePaisa: z.number().int().min(0).max(50_000_000).optional().nullable(),
+    stockQuantity: z.number().int().min(0).max(100_000).default(0),
+    contentStatus: CONTENT_STATUS_ENUM.default("DRAFT"),
+    availabilityStatus: AVAILABILITY_STATUS_ENUM.default("UPCOMING"),
+    featured: z.boolean().default(false),
+    sortOrder: z.number().int().min(0).max(9999).default(0),
+    coverPalette: bookCoverPaletteSchema.optional(),
+    relatedCourseCategorySlug: z.string().trim().max(120).optional().nullable(),
+    relatedServiceCategorySlug: z.string().trim().max(120).optional().nullable(),
+    relatedLicensingCategorySlug: z.string().trim().max(120).optional().nullable(),
+    seoTitle: z.string().trim().max(160).optional().nullable(),
+    seoDescription: z.string().trim().max(320).optional().nullable(),
+    verifiedBy: z.string().trim().max(140).optional().nullable(),
+    lastVerifiedAt: z.string().datetime().optional().nullable(),
+  })
+  .superRefine((val, ctx) => {
+    if (
+      val.contentStatus === "PUBLISHED" &&
+      val.availabilityStatus === "ACTIVE" &&
+      (val.pricePaisa === null || val.pricePaisa === undefined || val.pricePaisa <= 0)
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["pricePaisa"],
+        message:
+          "Published ACTIVE books must specify an explicit positive price (in paisa).",
+      });
+    }
+  });
