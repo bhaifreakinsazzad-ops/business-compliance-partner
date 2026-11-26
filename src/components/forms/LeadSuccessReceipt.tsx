@@ -36,10 +36,10 @@ export function LeadSuccessReceipt({
         </div>
       </div>
 
-      <div className="rounded-[12px] bg-ps-cool border border-ps-border p-4 space-y-1">
-        <p className="text-xs font-medium text-ps-muted">আপনার রেফারেন্স নম্বর</p>
+      <div className="rounded-[12px] bg-[#F2EFF8] border border-[#D4CCE3] p-4 space-y-1">
+        <p className="text-xs font-medium text-[#596775]">আপনার রেফারেন্স নম্বর</p>
         <p
-          className="font-en text-xl sm:text-2xl font-bold tracking-wider text-ps-navy select-all"
+          className="font-en text-xl sm:text-2xl font-bold tracking-wider text-[#081838] select-all tabular-nums"
           lang="en"
         >
           {receipt.publicReference}

@@ -63,14 +63,14 @@ export function FloatingConversionDock({
     <div
       role="region"
       aria-label="দ্রুত সহায়তা ও নেভিগেশন"
-      className="fixed bottom-4 end-4 z-30 flex items-center gap-2 rounded-full border border-ps-gold/50 bg-ps-white/95 backdrop-blur p-1.5 shadow-xl"
+      className="fixed bottom-4 end-4 z-30 flex items-center gap-1.5 rounded-[14px] border border-[#D4CCE3] bg-white/95 backdrop-blur p-1.5 shadow-xl"
     >
       {waHref ? (
         <a
           href={waHref}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 min-h-11 px-4 rounded-full bg-ps-success text-ps-white text-xs sm:text-sm font-bold hover:bg-[#006d49] transition-colors"
+          className="inline-flex items-center gap-2 min-h-10 px-3.5 rounded-[10px] bg-[#00865A] text-white text-xs sm:text-sm font-bold hover:bg-[#006D49] transition-colors"
         >
           <MessageCircle className="w-4 h-4 shrink-0" aria-hidden="true" />
           <span>WhatsApp সহায়তা</span>
@@ -78,12 +78,9 @@ export function FloatingConversionDock({
       ) : (
         <Link
           href="/consultancy"
-          className="inline-flex items-center gap-2 min-h-11 px-4 rounded-full bg-ps-midnight text-ps-white text-xs sm:text-sm font-bold hover:bg-ps-navy transition-colors"
+          className="inline-flex items-center gap-2 min-h-10 px-3.5 rounded-[10px] bg-[#51406F] text-white text-xs sm:text-sm font-bold hover:bg-[#3F315A] transition-colors"
         >
-          <MessageSquareText
-            className="w-4 h-4 text-ps-gold shrink-0"
-            aria-hidden="true"
-          />
+          <MessageSquareText className="w-4 h-4 shrink-0" aria-hidden="true" />
           <span>দ্রুত পরামর্শ</span>
         </Link>
       )}
@@ -93,7 +90,7 @@ export function FloatingConversionDock({
         onClick={scrollToTop}
         aria-label="উপরে যান"
         title="উপরে যান"
-        className="inline-flex items-center justify-center w-11 h-11 rounded-full border border-ps-border bg-ps-cool text-ps-navy hover:bg-ps-ivory transition-colors cursor-pointer"
+        className="inline-flex items-center justify-center w-10 h-10 rounded-[10px] border border-[#D4CCE3] bg-[#F2EFF8] text-[#51406F] hover:bg-[#DDD6EB] transition-colors cursor-pointer"
       >
         <ArrowUp className="w-4 h-4" aria-hidden="true" />
       </button>

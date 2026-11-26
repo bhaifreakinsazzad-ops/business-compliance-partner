@@ -19,18 +19,18 @@ export function ProcessSteps({ steps, columns = 4 }: ProcessStepsProps) {
       {steps.map((step) => (
         <li
           key={step.stepNumber}
-          className="rounded-[16px] border border-ps-border bg-ps-white p-6 space-y-3 shadow-[0_2px_10px_rgba(11,23,38,0.03)]"
+          className="rounded-[16px] border border-[#D4CCE3] bg-white p-6 space-y-3 shadow-[0_2px_10px_rgba(81,64,111,0.04)]"
         >
           <div className="flex items-center justify-between">
-            <span className="inline-flex items-center justify-center w-9 h-9 rounded-[10px] bg-ps-navy text-ps-white font-en text-sm font-bold">
+            <span className="inline-flex items-center justify-center w-9 h-9 rounded-[10px] bg-[#51406F] text-white font-en text-sm font-bold tabular-nums">
               0{step.stepNumber}
             </span>
-            <span className="h-px flex-1 ms-3 bg-ps-gold/50" aria-hidden="true" />
+            <span className="h-px flex-1 ms-3 bg-[#D4CCE3]" aria-hidden="true" />
           </div>
-          <h3 className="text-base sm:text-lg font-bold text-ps-navy">
+          <h3 className="text-base sm:text-lg font-bold text-[#081838]">
             {step.titleBn}
           </h3>
-          <p className="text-sm text-ps-ink/85 leading-relaxed">
+          <p className="text-sm text-[#181D26]/85 leading-relaxed">
             {step.descriptionBn}
           </p>
         </li>

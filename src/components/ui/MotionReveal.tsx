@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, type ReactNode } from "react";
-import { animate, stagger } from "animejs";
+import { animateRevealItems, prefersReducedMotion } from "@/lib/motion/tokens";
 
 interface MotionRevealProps {
   children: ReactNode;
@@ -9,9 +9,8 @@ interface MotionRevealProps {
 }
 
 /**
- * Progressive-enhancement scroll reveal powered by Anime.js.
- * Respects `prefers-reduced-motion: reduce` and never leaves elements hidden
- * when JS is disabled or reduced motion is requested.
+ * Progressive-enhancement scroll reveal powered by centralized Anime.js v4 tokens.
+ * Respects `prefers-reduced-motion: reduce` and never hides content permanently.
  */
 export function MotionReveal({ children, className }: MotionRevealProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -20,10 +19,7 @@ export function MotionReveal({ children, className }: MotionRevealProps) {
     const el = containerRef.current;
     if (!el || typeof window === "undefined") return;
 
-    const prefersReducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-    if (prefersReducedMotion || typeof IntersectionObserver === "undefined") {
+    if (prefersReducedMotion() || typeof IntersectionObserver === "undefined") {
       return;
     }
 
@@ -38,14 +34,7 @@ export function MotionReveal({ children, className }: MotionRevealProps) {
         if (played || !entries.some((entry) => entry.isIntersecting)) return;
         played = true;
         observer.disconnect();
-
-        animate(targets, {
-          translateY: [14, 0],
-          opacity: [0.35, 1],
-          duration: 550,
-          delay: stagger(65),
-          ease: "outCubic",
-        });
+        animateRevealItems(targets);
       },
       { threshold: 0.12 },
     );

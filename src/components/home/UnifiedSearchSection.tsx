@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight, Loader2, Search } from "lucide-react";
 import type {
   ApiResponse,
+  PublicBookPreview,
   PublicCourseCard,
   PublicLicensingCard,
   PublicServiceCard,
@@ -15,6 +16,7 @@ interface SearchResultPayload {
   courses: PublicCourseCard[];
   services: PublicServiceCard[];
   licensing: PublicLicensingCard[];
+  books?: PublicBookPreview[];
 }
 
 export function UnifiedSearchSection() {
@@ -48,7 +50,8 @@ export function UnifiedSearchSection() {
       const total =
         json.data.courses.length +
         json.data.services.length +
-        json.data.licensing.length;
+        json.data.licensing.length +
+        (json.data.books?.length ?? 0);
       trackEvent("search_catalogue", { resultCount: total });
     } catch {
       setErrorMsg("সার্ভারের সাথে সংযোগে সমস্যা হয়েছে।");
@@ -62,19 +65,24 @@ export function UnifiedSearchSection() {
     void runSearch(query);
   };
 
+  const booksResults = results?.books ?? [];
   const totalCount = results
     ? results.courses.length +
       results.services.length +
-      results.licensing.length
+      results.licensing.length +
+      booksResults.length
     : 0;
 
   return (
-    <div id="unified-search" className="rounded-[16px] bg-ps-white border border-ps-border p-6 sm:p-8 shadow-sm space-y-6">
+    <div
+      id="unified-search"
+      className="rounded-[16px] bg-white border border-[#D4CCE3] p-6 sm:p-8 shadow-sm space-y-6"
+    >
       <div className="space-y-2 max-w-2xl">
-        <h2 className="text-xl sm:text-2xl font-bold text-ps-navy">
-          এক জায়গায় কোর্স, সেবা ও লাইসেন্সিং খুঁজুন
+        <h2 className="text-xl sm:text-2xl font-bold text-[#081838]">
+          এক জায়গায় কোর্স, সেবা, বই ও লাইসেন্সিং খুঁজুন
         </h2>
-        <p className="text-sm text-ps-ink/85">
+        <p className="text-sm text-[#596775]">
           বাংলা বা ইংরেজি কীওয়ার্ড লিখুন (যেমন: VAT, BIN, e-TIN, RJSC, e-GP, ট্রেড লাইসেন্স)।
         </p>
       </div>
@@ -85,11 +93,11 @@ export function UnifiedSearchSection() {
           className="flex flex-col sm:flex-row gap-3 items-stretch"
         >
           <label htmlFor="unified-search-input" className="visually-hidden">
-            কোর্স, সেবা বা লাইসেন্সিং অনুসন্ধান করুন
+            কোর্স, সেবা, বই বা লাইসেন্সিং অনুসন্ধান করুন
           </label>
           <div className="relative flex-1">
             <Search
-              className="w-4 h-4 text-ps-muted absolute start-4 top-1/2 -translate-y-1/2 pointer-events-none"
+              className="w-4 h-4 text-[#51406F] absolute start-4 top-1/2 -translate-y-1/2 pointer-events-none"
               aria-hidden="true"
             />
             <input
@@ -97,12 +105,12 @@ export function UnifiedSearchSection() {
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="বিষয় বা শব্দের নাম লিখুন (যেমন: Income Tax, BIN, Fire Licence)..."
+              placeholder="বিষয় বা শব্দের নাম লিখুন (যেমন: Income Tax, BIN, RJSC, Fire)..."
               autoCorrect="off"
               autoCapitalize="none"
               spellCheck={false}
               enterKeyHint="search"
-              className="w-full min-h-12 ps-11 pe-4 py-2.5 rounded-[12px] border border-ps-navy/25 bg-ps-ivory/50 text-ps-ink text-base placeholder:text-ps-muted/75"
+              className="w-full min-h-12 ps-11 pe-4 py-2.5 rounded-[12px] border border-[#D4CCE3] bg-[#F2EFF8]/60 text-[#181D26] text-base placeholder:text-[#596775]/80 focus:border-[#51406F]"
             />
           </div>
           <button type="submit" disabled={loading} className="ps-primary-button shrink-0">
@@ -118,9 +126,8 @@ export function UnifiedSearchSection() {
         </form>
       </search>
 
-      {/* Quick suggestion chips — min-h-9 (36px) for WCAG 2.2 AA target-size */}
       <div className="flex flex-wrap items-center gap-2 text-xs">
-        <span className="text-ps-muted font-medium">জনপ্রিয় অনুসন্ধান:</span>
+        <span className="text-[#596775] font-medium">জনপ্রিয় অনুসন্ধান:</span>
         {["Income Tax", "VAT", "e-GP", "RJSC", "Fire", "IRC"].map((tag) => (
           <button
             key={tag}
@@ -129,7 +136,7 @@ export function UnifiedSearchSection() {
               setQuery(tag);
               void runSearch(tag);
             }}
-            className="inline-flex items-center min-h-9 rounded-full border border-ps-border bg-ps-cool px-3.5 py-1.5 font-medium text-ps-navy hover:border-ps-navy/45 hover:bg-ps-ivory transition-colors cursor-pointer"
+            className="inline-flex items-center min-h-9 rounded-[8px] border border-[#D4CCE3] bg-[#F2EFF8] px-3 py-1.5 font-semibold text-[#51406F] hover:border-[#51406F] hover:bg-[#DDD6EB] transition-colors cursor-pointer"
           >
             {tag}
           </button>
@@ -142,7 +149,7 @@ export function UnifiedSearchSection() {
               setResults(null);
               setSearchedQuery(null);
             }}
-            className="inline-flex items-center min-h-9 rounded-full border border-ps-border bg-ps-white px-3 py-1.5 font-semibold text-ps-muted hover:text-ps-navy transition-colors cursor-pointer"
+            className="inline-flex items-center min-h-9 rounded-[8px] border border-[#D4CCE3] bg-white px-3 py-1.5 font-semibold text-[#596775] hover:text-[#081838] transition-colors cursor-pointer"
           >
             মুছুন
           </button>
@@ -156,21 +163,21 @@ export function UnifiedSearchSection() {
       ) : null}
 
       {results && searchedQuery ? (
-        <div className="pt-4 border-t border-ps-border space-y-5" aria-live="polite">
+        <div className="pt-4 border-t border-[#D4CCE3] space-y-5" aria-live="polite">
           {totalCount === 0 ? (
-            <div className="rounded-[12px] bg-ps-cool p-5 text-sm text-ps-ink flex flex-wrap items-center justify-between gap-3">
+            <div className="rounded-[12px] bg-[#F2EFF8] border border-[#D4CCE3] p-5 text-sm text-[#181D26] flex flex-wrap items-center justify-between gap-3">
               <span>
                 “{searchedQuery}” এর জন্য প্রকাশিত কোনো ফলাফল পাওয়া যায়নি। সরাসরি আপনার
                 প্রয়োজন লিখে পাঠাতে পারেন।
               </span>
-              <Link href="/consultancy" className="font-semibold text-ps-navy underline underline-offset-4">
+              <Link href="/consultancy" className="font-semibold text-[#51406F] underline underline-offset-4">
                 পরামর্শের অনুরোধ করুন →
               </Link>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
               <div className="space-y-2.5">
-                <h3 className="text-sm font-bold text-ps-navy">
+                <h3 className="text-sm font-bold text-[#081838]">
                   কোর্স ({results.courses.length})
                 </h3>
                 {results.courses.length > 0 ? (
@@ -179,21 +186,21 @@ export function UnifiedSearchSection() {
                       <li key={item.slug}>
                         <Link
                           href={`/courses/${item.slug}`}
-                          className="flex items-center justify-between gap-2 rounded-[10px] border border-ps-border p-3 text-sm text-ps-navy hover:bg-ps-cool"
+                          className="flex items-center justify-between gap-2 rounded-[10px] border border-[#D4CCE3] p-3 text-sm text-[#081838] hover:bg-[#F2EFF8]"
                         >
                           <span className="font-medium line-clamp-1">{item.titleBn}</span>
-                          <ArrowRight className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+                          <ArrowRight className="w-3.5 h-3.5 text-[#51406F] shrink-0" aria-hidden="true" />
                         </Link>
                       </li>
                     ))}
                   </ul>
                 ) : (
-                  <p className="text-xs text-ps-muted">কোনো মিল পাওয়া যায়নি।</p>
+                  <p className="text-xs text-[#596775]">কোনো মিল পাওয়া যায়নি।</p>
                 )}
               </div>
 
               <div className="space-y-2.5">
-                <h3 className="text-sm font-bold text-ps-navy">
+                <h3 className="text-sm font-bold text-[#081838]">
                   পেশাদার সেবা ({results.services.length})
                 </h3>
                 {results.services.length > 0 ? (
@@ -202,21 +209,44 @@ export function UnifiedSearchSection() {
                       <li key={item.slug}>
                         <Link
                           href={`/services/${item.slug}`}
-                          className="flex items-center justify-between gap-2 rounded-[10px] border border-ps-border p-3 text-sm text-ps-navy hover:bg-ps-cool"
+                          className="flex items-center justify-between gap-2 rounded-[10px] border border-[#D4CCE3] p-3 text-sm text-[#081838] hover:bg-[#F2EFF8]"
                         >
                           <span className="font-medium line-clamp-1">{item.titleBn}</span>
-                          <ArrowRight className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+                          <ArrowRight className="w-3.5 h-3.5 text-[#51406F] shrink-0" aria-hidden="true" />
                         </Link>
                       </li>
                     ))}
                   </ul>
                 ) : (
-                  <p className="text-xs text-ps-muted">কোনো মিল পাওয়া যায়নি।</p>
+                  <p className="text-xs text-[#596775]">কোনো মিল পাওয়া যায়নি।</p>
                 )}
               </div>
 
               <div className="space-y-2.5">
-                <h3 className="text-sm font-bold text-ps-navy">
+                <h3 className="text-sm font-bold text-[#081838]">
+                  আমাদের বইসমূহ ({booksResults.length})
+                </h3>
+                {booksResults.length > 0 ? (
+                  <ul className="space-y-2">
+                    {booksResults.map((item) => (
+                      <li key={item.slug}>
+                        <Link
+                          href={`/books/${item.slug}`}
+                          className="flex items-center justify-between gap-2 rounded-[10px] border border-[#D4CCE3] p-3 text-sm text-[#081838] hover:bg-[#F2EFF8]"
+                        >
+                          <span className="font-medium line-clamp-1">{item.titleBn}</span>
+                          <ArrowRight className="w-3.5 h-3.5 text-[#51406F] shrink-0" aria-hidden="true" />
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-xs text-[#596775]">কোনো মিল পাওয়া যায়নি।</p>
+                )}
+              </div>
+
+              <div className="space-y-2.5">
+                <h3 className="text-sm font-bold text-[#081838]">
                   লাইসেন্সিং ({results.licensing.length})
                 </h3>
                 {results.licensing.length > 0 ? (
@@ -225,16 +255,16 @@ export function UnifiedSearchSection() {
                       <li key={item.slug}>
                         <Link
                           href={`/licensing/${item.slug}`}
-                          className="flex items-center justify-between gap-2 rounded-[10px] border border-ps-border p-3 text-sm text-ps-navy hover:bg-ps-cool"
+                          className="flex items-center justify-between gap-2 rounded-[10px] border border-[#D4CCE3] p-3 text-sm text-[#081838] hover:bg-[#F2EFF8]"
                         >
                           <span className="font-medium line-clamp-1">{item.titleBn}</span>
-                          <ArrowRight className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+                          <ArrowRight className="w-3.5 h-3.5 text-[#51406F] shrink-0" aria-hidden="true" />
                         </Link>
                       </li>
                     ))}
                   </ul>
                 ) : (
-                  <p className="text-xs text-ps-muted">কোনো মিল পাওয়া যায়নি।</p>
+                  <p className="text-xs text-[#596775]">কোনো মিল পাওয়া যায়নি।</p>
                 )}
               </div>
             </div>

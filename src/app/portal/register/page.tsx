@@ -50,11 +50,11 @@ export default function CustomerRegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-ps-pearl flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#F2EFF8] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md mb-4">
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-ps-navy hover:underline underline-offset-4"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#51406F] hover:text-[#081838] hover:underline underline-offset-4"
         >
           <ArrowLeft className="w-3.5 h-3.5" aria-hidden="true" />
           <span>মূল ওয়েবসাইটে ফিরে যান</span>
@@ -67,19 +67,20 @@ export default function CustomerRegisterPage() {
             alt="Business Compliance Partner"
             width={52}
             height={52}
-            className="rounded-full border border-ps-gold/60 mx-auto"
+            referrerPolicy="no-referrer"
+            className="rounded-full border border-[#C59028]/60 mx-auto"
           />
         </Link>
-        <h1 className="text-2xl font-extrabold text-ps-midnight">
+        <h1 className="text-2xl font-extrabold text-[#081838]">
           নতুন কাস্টমার অ্যাকাউন্ট
         </h1>
-        <p className="text-xs sm:text-sm text-ps-slate">
+        <p className="text-xs sm:text-sm text-[#596775]">
           আপনার ব্যবসার লাইসেন্স, ট্যাক্স ও কোর্স এক প্ল্যাটফর্মে ট্র্যাক করুন
         </p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow-xl sm:rounded-[16px] sm:px-10 border border-ps-border space-y-6">
+        <div className="bg-white py-8 px-4 shadow-xl sm:rounded-[16px] sm:px-10 border border-[#D4CCE3] space-y-6">
           {error ? (
             <div
               role="alert"
@@ -93,13 +94,13 @@ export default function CustomerRegisterPage() {
             <div>
               <label
                 htmlFor="name"
-                className="block text-xs font-semibold text-ps-navy"
+                className="block text-xs font-semibold text-[#081838]"
               >
                 আপনার পুরো নাম *
               </label>
               <div className="mt-1 relative rounded-md shadow-sm">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <User className="h-4 w-4 text-ps-slate" aria-hidden="true" />
+                  <User className="h-4 w-4 text-[#596775]" aria-hidden="true" />
                 </div>
                 <input
                   id="name"
@@ -108,7 +109,7 @@ export default function CustomerRegisterPage() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="যেমন: মোঃ রফিকুল ইসলাম"
-                  className="block w-full pl-10 pr-3 py-2 border border-ps-border rounded-[10px] text-sm focus:ring-ps-gold focus:border-ps-gold"
+                  className="block w-full pl-10 pr-3 py-2 border border-[#D4CCE3] rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-[#51406F]/25 focus:border-[#51406F]"
                 />
               </div>
             </div>
@@ -116,13 +117,13 @@ export default function CustomerRegisterPage() {
             <div>
               <label
                 htmlFor="email"
-                className="block text-xs font-semibold text-ps-navy"
+                className="block text-xs font-semibold text-[#081838]"
               >
                 ইমেইল ঠিকানা *
               </label>
               <div className="mt-1 relative rounded-md shadow-sm">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-4 w-4 text-ps-slate" aria-hidden="true" />
+                  <Mail className="h-4 w-4 text-[#596775]" aria-hidden="true" />
                 </div>
                 <input
                   id="email"
@@ -131,7 +132,7 @@ export default function CustomerRegisterPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@company.com"
-                  className="block w-full pl-10 pr-3 py-2 border border-ps-border rounded-[10px] text-sm focus:ring-ps-gold focus:border-ps-gold"
+                  className="block w-full pl-10 pr-3 py-2 border border-[#D4CCE3] rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-[#51406F]/25 focus:border-[#51406F]"
                 />
               </div>
             </div>
@@ -139,13 +140,13 @@ export default function CustomerRegisterPage() {
             <div>
               <label
                 htmlFor="mobile"
-                className="block text-xs font-semibold text-ps-navy"
+                className="block text-xs font-semibold text-[#081838]"
               >
                 মোবাইল নম্বর
               </label>
               <div className="mt-1 relative rounded-md shadow-sm">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Phone className="h-4 w-4 text-ps-slate" aria-hidden="true" />
+                  <Phone className="h-4 w-4 text-[#596775]" aria-hidden="true" />
                 </div>
                 <input
                   id="mobile"
@@ -153,7 +154,7 @@ export default function CustomerRegisterPage() {
                   value={mobile}
                   onChange={(e) => setMobile(e.target.value)}
                   placeholder="০১৭xxxxxxxx"
-                  className="block w-full pl-10 pr-3 py-2 border border-ps-border rounded-[10px] text-sm focus:ring-ps-gold focus:border-ps-gold"
+                  className="block w-full pl-10 pr-3 py-2 border border-[#D4CCE3] rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-[#51406F]/25 focus:border-[#51406F]"
                 />
               </div>
             </div>
@@ -161,13 +162,13 @@ export default function CustomerRegisterPage() {
             <div>
               <label
                 htmlFor="org"
-                className="block text-xs font-semibold text-ps-navy"
+                className="block text-xs font-semibold text-[#081838]"
               >
                 প্রতিষ্ঠানের নাম (ঐচ্ছিক)
               </label>
               <div className="mt-1 relative rounded-md shadow-sm">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Building className="h-4 w-4 text-ps-slate" aria-hidden="true" />
+                  <Building className="h-4 w-4 text-[#596775]" aria-hidden="true" />
                 </div>
                 <input
                   id="org"
@@ -175,7 +176,7 @@ export default function CustomerRegisterPage() {
                   value={organizationName}
                   onChange={(e) => setOrganizationName(e.target.value)}
                   placeholder="যেমন: এবিসি ট্রেডার্স লিমিটেড"
-                  className="block w-full pl-10 pr-3 py-2 border border-ps-border rounded-[10px] text-sm focus:ring-ps-gold focus:border-ps-gold"
+                  className="block w-full pl-10 pr-3 py-2 border border-[#D4CCE3] rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-[#51406F]/25 focus:border-[#51406F]"
                 />
               </div>
             </div>
@@ -183,13 +184,13 @@ export default function CustomerRegisterPage() {
             <div>
               <label
                 htmlFor="password"
-                className="block text-xs font-semibold text-ps-navy"
+                className="block text-xs font-semibold text-[#081838]"
               >
                 পাসওয়ার্ড (কমপক্ষে ৮ অক্ষর) *
               </label>
               <div className="mt-1 relative rounded-md shadow-sm">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-4 w-4 text-ps-slate" aria-hidden="true" />
+                  <Lock className="h-4 w-4 text-[#596775]" aria-hidden="true" />
                 </div>
                 <input
                   id="password"
@@ -199,13 +200,13 @@ export default function CustomerRegisterPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="block w-full pl-10 pr-11 py-2 border border-ps-border rounded-[10px] text-sm focus:ring-ps-gold focus:border-ps-gold"
+                  className="block w-full pl-10 pr-11 py-2 border border-[#D4CCE3] rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-[#51406F]/25 focus:border-[#51406F]"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((prev) => !prev)}
                   aria-label={showPassword ? "পাসওয়ার্ড লুকান" : "পাসওয়ার্ড দেখুন"}
-                  className="absolute inset-y-0 right-0 px-3 flex items-center text-ps-slate hover:text-ps-navy cursor-pointer"
+                  className="absolute inset-y-0 right-0 px-3 flex items-center text-[#596775] hover:text-[#51406F] cursor-pointer"
                 >
                   {showPassword ? (
                     <EyeOff className="h-4 w-4" aria-hidden="true" />
@@ -219,25 +220,25 @@ export default function CustomerRegisterPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-[10px] shadow-sm text-sm font-bold text-ps-ivory bg-ps-midnight hover:bg-ps-navy focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ps-gold disabled:opacity-50 transition-colors"
+              className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-[10px] shadow-sm text-sm font-bold text-white bg-[#51406F] hover:bg-[#3F315A] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#51406F] disabled:opacity-50 transition-colors cursor-pointer"
             >
               <span>{loading ? "অ্যাকাউন্ট তৈরি হচ্ছে..." : "নিবন্ধন সম্পন্ন করুন"}</span>
               <ArrowRight className="w-4 h-4" aria-hidden="true" />
             </button>
           </form>
 
-          <div className="border-t border-ps-border pt-4 text-center space-y-2">
-            <p className="text-xs text-ps-slate">
+          <div className="border-t border-[#D4CCE3] pt-4 text-center space-y-2">
+            <p className="text-xs text-[#596775]">
               আগে থেকেই অ্যাকাউন্ট আছে?{" "}
               <Link
                 href="/portal/login"
-                className="font-bold text-ps-gold hover:underline"
+                className="font-bold text-[#51406F] hover:text-[#3F315A] hover:underline"
               >
                 লগইন করুন
               </Link>
             </p>
-            <div className="flex items-center justify-center gap-1.5 text-[11px] text-ps-slate">
-              <ShieldCheck className="w-3.5 h-3.5 text-ps-gold" aria-hidden="true" />
+            <div className="flex items-center justify-center gap-1.5 text-[11px] text-[#596775]">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#00865A]" aria-hidden="true" />
               <span>সুরক্ষিত প্ল্যাটফর্ম • কোনো থার্ড-পার্টি ডেটা শেয়ারিং নেই</span>
             </div>
           </div>

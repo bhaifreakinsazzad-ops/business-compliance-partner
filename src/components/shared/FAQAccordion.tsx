@@ -17,25 +17,30 @@ export function FAQAccordion({ items, headingId }: FAQAccordionProps) {
         return (
           <details
             key={faq.id}
-            className="ps-disclosure group rounded-[16px] border border-ps-border bg-ps-white shadow-[0_1px_6px_rgba(11,23,38,0.03)] open:border-ps-navy/30"
+            className="ps-disclosure group rounded-[16px] border border-[#D4CCE3] bg-white shadow-[0_1px_6px_rgba(81,64,111,0.04)] open:border-[#51406F]/55"
           >
-            <summary className="flex items-start justify-between gap-4 p-5 sm:p-6 text-base sm:text-lg font-semibold text-ps-navy select-none hover:bg-ps-cool/50 rounded-[16px] transition-colors">
+            <summary className="flex items-start justify-between gap-4 p-5 sm:p-6 text-base sm:text-lg font-semibold text-[#081838] select-none hover:bg-[#F2EFF8]/60 rounded-[16px] transition-colors cursor-pointer">
               <span className="flex-1 leading-snug">{faq.questionBn}</span>
               <ChevronDown
-                className="w-5 h-5 text-ps-navy shrink-0 mt-0.5 transition-transform duration-200 group-open:rotate-180"
+                className="w-5 h-5 text-[#51406F] shrink-0 mt-0.5 transition-transform duration-200 group-open:rotate-180"
                 aria-hidden="true"
               />
             </summary>
 
-            <div className="px-5 sm:px-6 pb-5 sm:pb-6 pt-1 space-y-3 text-sm sm:text-base text-ps-ink/90 leading-relaxed border-t border-ps-border/60">
+            <div className="px-5 sm:px-6 pb-5 sm:pb-6 pt-3 space-y-3 text-sm sm:text-base text-[#181D26]/90 leading-relaxed border-t border-[#D4CCE3]/70">
               <p>{faq.answerBn}</p>
               {faq.isRegulatory ? (
-                <div className="flex flex-wrap items-center gap-2 text-xs text-ps-muted">
-                  <span className="inline-flex items-center rounded-full bg-ps-cool border border-ps-border px-2.5 py-0.5 font-medium text-ps-navy">
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-[#596775]">
+                  <span className="font-semibold text-[#51406F]">
                     রেগুলেটরি তথ্য ও নীতিমালা
                   </span>
                   {verifiedDate ? (
-                    <span>সর্বশেষ পর্যালোচনা: {verifiedDate}</span>
+                    <>
+                      <span aria-hidden="true" className="text-[#D4CCE3]">
+                        ·
+                      </span>
+                      <span>সর্বশেষ পর্যালোচনা: {verifiedDate}</span>
+                    </>
                   ) : null}
                 </div>
               ) : null}
