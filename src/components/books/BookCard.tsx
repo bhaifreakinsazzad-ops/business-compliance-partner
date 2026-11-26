@@ -38,12 +38,12 @@ export function BookCard({
   });
 
   return (
-    <article className="bcp-surface-card group p-5 sm:p-6 flex flex-col justify-between gap-5">
+    <article className="bcp-flagship-card group p-5 sm:p-6 flex flex-col justify-between gap-5 transition-colors">
       <div className="space-y-4">
         {/* Clean Editorial Hardcover Preview Mockup */}
         <Link
           href={bookPath}
-          className="rounded-[12px] bg-surface-lavender border border-border-subtle p-4 flex items-center gap-4 group-hover:bg-surface-lavender-tint transition-colors"
+          className="rounded-[12px] bg-white/85 border border-[#D4CCE3] p-4 flex items-center gap-4 group-hover:bg-white transition-colors"
         >
           <div
             className="relative w-20 h-28 rounded-e-[8px] rounded-s-[3px] shrink-0 p-2.5 flex flex-col justify-between shadow-md overflow-hidden border border-black/10"
@@ -83,8 +83,13 @@ export function BookCard({
 
           <div className="min-w-0 space-y-1">
             <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs font-semibold">
-              <span className="text-text-accent">{book.categoryNameBn}</span>
-              <span aria-hidden="true" className="text-border-subtle">
+              <span
+                className="font-en text-[11px] font-bold uppercase tracking-[0.14em] text-[#51406F]"
+                lang="en"
+              >
+                {book.categoryNameEn}
+              </span>
+              <span aria-hidden="true" className="text-[#51406F]/40">
                 ·
               </span>
               {isPricedPublished && book.pricePaisa ? (
@@ -92,14 +97,22 @@ export function BookCard({
                   {formatVerifiedPriceBdt(book.pricePaisa)}
                 </span>
               ) : (
-                <span className="text-[#8A5800]">{BOOK_AVAILABILITY_BADGE_BN}</span>
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#DDD6EB]/90 text-[#51406F] border border-[#D4CCE3]">
+                  {BOOK_AVAILABILITY_BADGE_BN}
+                </span>
               )}
             </div>
-            <p className="text-xs font-en font-medium text-text-muted line-clamp-2" lang="en">
+            <p className="text-xs font-bold text-[#081838] line-clamp-1">
+              {book.categoryNameBn}
+            </p>
+            <p
+              className="text-xs font-en font-medium text-[#51406F] line-clamp-2"
+              lang="en"
+            >
               {book.titleEn}
             </p>
             {isPricedPublished && typeof book.stockQuantity === "number" ? (
-              <p className="text-[11px] font-semibold text-text-muted">
+              <p className="text-[11px] font-semibold text-[#51406F]">
                 {book.stockQuantity > 0
                   ? `স্টক উপলব্ধ (${book.stockQuantity} কপি)`
                   : "বর্তমানে স্টক শেষ"}
@@ -109,20 +122,27 @@ export function BookCard({
         </Link>
 
         <div className="space-y-2">
-          <h3 className="text-lg font-bold text-text-primary leading-snug group-hover:text-text-accent transition-colors">
+          <p
+            className="font-en text-[11px] font-bold uppercase tracking-[0.14em] text-[#51406F]"
+            lang="en"
+          >
+            03 · Books · {book.categoryNameEn}
+          </p>
+
+          <h3 className="text-lg sm:text-xl font-extrabold leading-snug text-[#081838] tracking-tight group-hover:text-[#51406F] transition-colors">
             <Link href={bookPath} className="hover:underline underline-offset-4">
               {book.titleBn}
             </Link>
           </h3>
 
-          <p className="text-sm text-text-body/85 leading-relaxed line-clamp-2">
+          <p className="text-xs sm:text-[13px] font-medium text-[#181D26]/90 leading-relaxed line-clamp-2">
             {book.subtitleBn}
           </p>
 
-          <ul className="space-y-1 pt-1 text-xs text-text-muted">
+          <ul className="space-y-1 pt-1 text-xs font-medium text-[#181D26]/90">
             {book.topicsBn.slice(0, 2).map((topic, idx) => (
               <li key={idx} className="flex items-start gap-1.5">
-                <span className="text-text-accent font-bold" aria-hidden="true">
+                <span className="text-[#51406F] font-bold" aria-hidden="true">
                   ·
                 </span>
                 <span className="line-clamp-1">{topic}</span>
@@ -132,7 +152,7 @@ export function BookCard({
         </div>
       </div>
 
-      <div className="pt-3.5 border-t border-border-subtle/70 flex flex-wrap items-center justify-between gap-2.5">
+      <div className="pt-3.5 border-t border-[#51406F]/15 flex flex-wrap items-center justify-between gap-2.5">
         <WhatsAppEnquiryButton
           verifiedWhatsapp={verifiedWhatsapp}
           serviceName={book.titleBn}
@@ -148,12 +168,16 @@ export function BookCard({
 
         <Link
           href={bookPath}
-          className="inline-flex items-center gap-1.5 text-sm font-semibold text-text-accent hover:text-action-primary-hover hover:underline underline-offset-4 whitespace-nowrap shrink-0 ms-auto"
+          className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#51406F] hover:text-[#3F315A] hover:underline underline-offset-4 whitespace-nowrap shrink-0 ms-auto"
         >
-          <span>
-            {isPricedPublished ? "বিস্তারিত ও অর্ডার" : "বইটির প্রিভিউ দেখুন"}
+          <span className="font-en" lang="en">
+            {isPricedPublished ? "Order Book" : "Explore Book"}
           </span>
-          <ArrowRight className="w-4 h-4" aria-hidden="true" />
+          <span className="hidden sm:inline">
+            {" "}
+            · {isPricedPublished ? "অর্ডার" : "প্রিভিউ"}
+          </span>
+          <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" aria-hidden="true" />
         </Link>
       </div>
     </article>

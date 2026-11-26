@@ -85,6 +85,22 @@ const RAW_BOOK_CATEGORIES: Omit<PublicBookCategoryDTO, "previewCount">[] = [
       "ট্রেড লাইসেন্স থেকে ব্যবসা সম্প্রসারণ পর্যন্ত পূর্ণাঙ্গ উদ্যোক্তা হ্যান্ডবুক।",
     sortOrder: 9,
   },
+  {
+    slug: "corporate-tax-audit",
+    nameBn: "কর্পোরেট ট্যাক্স অডিট",
+    nameEn: "Corporate Tax Audit",
+    shortDescBn:
+      "কর্পোরেট কর অডিট নোটিশ, শুনানির প্রস্তুতি, আপিল ও আইনি অ্যাসেসমেন্ট সহায়িকা।",
+    sortOrder: 10,
+  },
+  {
+    slug: "internal-compliance-procedures",
+    nameBn: "অভ্যন্তরীণ কমপ্লায়েন্স ও এসওপি",
+    nameEn: "Internal Compliance Procedures",
+    shortDescBn:
+      "প্রতিষ্ঠানিক এসওপি (SOP), ইন্টারনাল কন্ট্রোল, অডিট ট্রেইল ও ঝুঁকি ব্যবস্থাপনা ম্যানুয়াল।",
+    sortOrder: 11,
+  },
 ];
 
 export const BOOK_PREVIEW_CATALOG: PublicBookPreview[] = [
@@ -381,6 +397,72 @@ export const BOOK_PREVIEW_CATALOG: PublicBookPreview[] = [
     },
     relatedCourseCategorySlug: "entrepreneurship-sme",
     relatedServiceCategorySlug: "business-startup-advisory",
+    relatedLicensingCategorySlug: "general-business-registration",
+  },
+  {
+    id: "book-preview-corporate-tax-audit",
+    slug: "corporate-tax-audit-dispute-resolution-handbook",
+    titleBn: "কর্পোরেট ট্যাক্স অডিট ও শুনানি প্রস্তুতি: ব্যবহারিক নির্দেশিকা",
+    titleEn: "Corporate Tax Audit & Hearing Preparation: Practical Field Guide",
+    subtitleBn:
+      "কর আইনের ধারা অনুযায়ী অডিট নোটিশ ব্যবস্থাপনা, শুনানির কার্যবিবরণী, আপিল ও নথিপত্র সমন্বয়ের কৌশল",
+    categorySlug: "corporate-tax-audit",
+    categoryNameBn: "কর্পোরেট ট্যাক্স অডিট",
+    categoryNameEn: "Corporate Tax Audit",
+    summaryBn:
+      "কর্পোরেট করদাতা ও উপদেষ্টাদের জন্য আয়কর অডিট, বিরোধ নিষ্পত্তি ও কর শুনানি মোকাবিলার প্রস্তাবিত প্র্যাকটিক্যাল হ্যান্ডবুক।",
+    audienceBn:
+      "সিএফও, ফাইন্যান্স ডিরেক্টর, হেড অব ট্যাক্স, চার্টার্ড অ্যাকাউন্ট্যান্ট ও কর্পোরেট ট্যাক্স পরামর্শক।",
+    topicsBn: [
+      "কর্পোরেট ট্যাক্স অডিট নোটিশ বিশ্লেষণ ও প্রাথমিক জবাব",
+      "শুনানিতে নথিপত্র ও প্রমাণাদি উপস্থাপন কৌশল",
+      "ট্যাক্স অ্যাসেসমেন্ট অর্ডার পর্যালোচনা ও রিওপেনিং প্রতিকার",
+      "ট্যাক্সেস আপিল ট্রাইব্যুনাল ও রেফারেন্স আবেদনের পূর্বপ্রস্তুতি",
+    ],
+    editionNoteBn: BOOK_PRICING_NOTICE_BN,
+    availabilityState: "UPCOMING_PREVIEW",
+    featured: false,
+    coverPalette: {
+      spineHex: "#081838",
+      coverHex: "#182c50",
+      accentHex: "#dfb15b",
+      textHex: "#ffffff",
+    },
+    relatedCourseCategorySlug: "income-tax",
+    relatedServiceCategorySlug: "income-tax-solutions",
+    relatedLicensingCategorySlug: "general-business-registration",
+  },
+  {
+    id: "book-preview-internal-compliance-procedures",
+    slug: "internal-compliance-sop-corporate-governance-manual",
+    titleBn: "অভ্যন্তরীণ কমপ্লায়েন্স ও এসওপি (SOP): কর্পোরেট গভর্নেন্স ম্যানুয়াল",
+    titleEn: "Internal Compliance & SOP: Corporate Governance Field Manual",
+    subtitleBn:
+      "কোম্পানির অভ্যন্তরীণ নিয়ন্ত্রণ, কমপ্লায়েন্স ট্র্যাকিং, পলিসি ফ্রেমওয়ার্ক ও ঝুঁকি ব্যবস্থাপনা রূপরেখা",
+    categorySlug: "internal-compliance-procedures",
+    categoryNameBn: "অভ্যন্তরীণ কমপ্লায়েন্স ও এসওপি",
+    categoryNameEn: "Internal Compliance Procedures",
+    summaryBn:
+      "প্রতিষ্ঠানিক সুশাসন ও রেগুলেটরি ঝুঁকি এড়াতে কার্যকর স্ট্যান্ডার্ড অপারেটিং প্রসিডিউর (SOP) এবং অডিট ট্রেইল প্রণয়নের প্রস্তাবিত সংকলন।",
+    audienceBn:
+      "ম্যানেজিং ডিরেক্টর, চিফ কমপ্লায়েন্স অফিসার, ইন্টারনাল অডিটর ও অপারেশনস ম্যানেজার।",
+    topicsBn: [
+      "ব্যবসার মূল বিভাগসমূহের স্ট্যান্ডার্ড অপারেটিং প্রসিডিউর (SOP) প্রণয়ন",
+      "অভ্যন্তরীণ অডিট চেকলিস্ট ও ডকুমেন্টেড কন্ট্রোল পলিসি",
+      "রেগুলেটরি নন-কমপ্লায়েন্স ঝুঁকি শনাক্তকরণ ও মনিটরিং",
+      "বোর্ড কমিটি রিপোর্টিং ও তথ্য সংরক্ষণ নীতিমালা",
+    ],
+    editionNoteBn: BOOK_PRICING_NOTICE_BN,
+    availabilityState: "UPCOMING_PREVIEW",
+    featured: false,
+    coverPalette: {
+      spineHex: "#3f315a",
+      coverHex: "#4e3c6d",
+      accentHex: "#c59028",
+      textHex: "#ffffff",
+    },
+    relatedCourseCategorySlug: "company-secretarial",
+    relatedServiceCategorySlug: "company-secretarial-compliance",
     relatedLicensingCategorySlug: "general-business-registration",
   },
 ];

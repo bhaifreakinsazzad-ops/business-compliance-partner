@@ -190,7 +190,7 @@ describe("Governed Bookstore Catalog & Model Mapping", () => {
   it("loads governed catalog with preview fallback", async () => {
     const catalog = await loadBookCatalog({ limit: 5 });
     expect(catalog.items.length).toBeGreaterThanOrEqual(1);
-    expect(catalog.categories.length).toBe(9);
+    expect(catalog.categories.length).toBe(11);
 
     const single = await getGovernedBookBySlug("income-tax-practical-handbook-bangladesh");
     expect(single).not.toBeNull();

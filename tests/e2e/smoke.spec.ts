@@ -46,7 +46,7 @@ const PUBLIC_ROUTES: ReadonlyArray<PublicRouteSpec> = [
   {
     path: "/about",
     label: "About page",
-    h1Contains: "ব্যবসায়িক শিক্ষা ও কমপ্লায়েন্স সহায়তার",
+    h1Contains: "ব্যবসায়িক শিক্ষা, পেশাদার সেবা",
   },
   {
     path: "/faq",
