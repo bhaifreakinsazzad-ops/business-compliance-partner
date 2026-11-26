@@ -31,13 +31,17 @@ export async function createCustomerSession(
   );
 
   if (isDatabaseConfigured()) {
-    await prisma.customerSession.create({
-      data: {
-        tokenHash,
-        customerId,
-        expiresAt,
-      },
-    });
+    try {
+      await prisma.customerSession.create({
+        data: {
+          tokenHash,
+          customerId,
+          expiresAt,
+        },
+      });
+    } catch {
+      // Session persistence unavailable when database tables are not yet migrated
+    }
   }
 
   return { token: rawToken, expiresAt };
@@ -86,18 +90,23 @@ export async function getCurrentCustomer(): Promise<CurrentCustomer | null> {
   }
 
   const tokenHash = hashToken(rawToken);
-  const session = await prisma.customerSession.findUnique({
-    where: { tokenHash },
-    include: {
-      customer: {
-        include: {
-          memberships: {
-            include: { organization: true },
+  let session;
+  try {
+    session = await prisma.customerSession.findUnique({
+      where: { tokenHash },
+      include: {
+        customer: {
+          include: {
+            memberships: {
+              include: { organization: true },
+            },
           },
         },
       },
-    },
-  });
+    });
+  } catch {
+    return null;
+  }
 
   if (!session || session.expiresAt < new Date()) {
     return null;

@@ -16,6 +16,7 @@ import type {
 import { BOOK_PREVIEW_CATALOG, searchBookPreviews } from "@/lib/books/catalog";
 import { isPubliclyVisible, matchesSearchQuery } from "@/lib/content/helpers";
 import { isDatabaseConfigured, prisma } from "@/lib/db/prisma";
+import { isPublicSchemaReady } from "@/lib/db/schema-ready";
 import { SEED_CATEGORIES } from "../../../prisma/seed-data/categories";
 import { SEED_COURSES } from "../../../prisma/seed-data/courses";
 import { SEED_FAQS } from "../../../prisma/seed-data/faqs";
@@ -100,7 +101,7 @@ export async function listPublishedCourses(filter?: {
   q?: string;
   availability?: AvailabilityStatusValue;
 }): Promise<{ categories: PublicCategoryDTO[]; items: PublicCourseCard[] }> {
-  if (isDatabaseConfigured()) {
+  if (await isPublicSchemaReady()) {
     try {
       const [categories, courses, categoryCounts] = await Promise.all([
         prisma.category.findMany({
@@ -247,7 +248,7 @@ export async function listPublishedCourses(filter?: {
 export async function getPublishedCourseBySlug(
   slug: string,
 ): Promise<PublicCourseDetail | null> {
-  if (isDatabaseConfigured()) {
+  if (await isPublicSchemaReady()) {
     try {
       const c = await prisma.course.findFirst({
         where: {
@@ -342,7 +343,7 @@ export async function listPublishedServices(filter?: {
 }): Promise<{ categories: PublicCategoryDTO[]; items: PublicServiceCard[] }> {
   const resolvedCategorySlug = resolveServiceCategorySlug(filter?.categorySlug);
 
-  if (isDatabaseConfigured()) {
+  if (await isPublicSchemaReady()) {
     try {
       const [categories, services, categoryCounts] = await Promise.all([
         prisma.category.findMany({
@@ -484,7 +485,7 @@ export async function listPublishedServices(filter?: {
 export async function getPublishedServiceBySlug(
   slug: string,
 ): Promise<PublicServiceDetail | null> {
-  if (isDatabaseConfigured()) {
+  if (await isPublicSchemaReady()) {
     try {
       const s = await prisma.service.findFirst({
         where: {
@@ -575,7 +576,7 @@ export async function listPublishedLicensing(filter?: {
   categorySlug?: string;
   q?: string;
 }): Promise<{ categories: PublicCategoryDTO[]; items: PublicLicensingCard[] }> {
-  if (isDatabaseConfigured()) {
+  if (await isPublicSchemaReady()) {
     try {
       const [categories, entries, categoryCounts] = await Promise.all([
         prisma.category.findMany({
@@ -713,7 +714,7 @@ export async function listPublishedLicensing(filter?: {
 export async function getPublishedLicensingBySlug(
   slug: string,
 ): Promise<PublicLicensingDetail | null> {
-  if (isDatabaseConfigured()) {
+  if (await isPublicSchemaReady()) {
     try {
       const l = await prisma.licensingEntry.findFirst({
         where: {
@@ -794,7 +795,7 @@ export async function getPublishedLicensingBySlug(
 export async function listPublishedFaqs(
   pillar?: Pillar,
 ): Promise<PublicFaqItem[]> {
-  if (isDatabaseConfigured()) {
+  if (await isPublicSchemaReady()) {
     try {
       const rows = await prisma.faq.findMany({
         where: {

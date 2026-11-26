@@ -12,13 +12,17 @@ export async function GET() {
     return NextResponse.json({ quotes: [] });
   }
 
-  const quotes = await prisma.quote.findMany({
-    where: { customerId: customer.id },
-    include: { items: true, request: true },
-    orderBy: { createdAt: "desc" },
-  });
+  try {
+    const quotes = await prisma.quote.findMany({
+      where: { customerId: customer.id },
+      include: { items: true, request: true },
+      orderBy: { createdAt: "desc" },
+    });
 
-  return NextResponse.json({ quotes });
+    return NextResponse.json({ quotes });
+  } catch {
+    return NextResponse.json({ quotes: [] });
+  }
 }
 
 export async function POST(req: NextRequest) {

@@ -22,25 +22,35 @@ export async function GET(req: NextRequest) {
     });
   }
 
-  const certificate = await prisma.certificate.findUnique({
-    where: { verificationCode: code },
-    include: { customer: { select: { name: true } } },
-  });
+  try {
+    const certificate = await prisma.certificate.findUnique({
+      where: { verificationCode: code },
+      include: { customer: { select: { name: true } } },
+    });
 
-  if (!certificate) {
+    if (!certificate) {
+      return NextResponse.json(
+        { verified: false, error: "প্রদত্ত কোডযুক্ত কোনো বৈধ সনদ পাওয়া যায়নি।" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({
+      verified: true,
+      certificate: {
+        certificateNumber: certificate.certificateNumber,
+        courseTitleBn: certificate.courseTitleBn,
+        issuedAt: certificate.issuedAt,
+        recipientName: certificate.customer.name,
+      },
+    });
+  } catch {
     return NextResponse.json(
-      { verified: false, error: "প্রদত্ত কোডযুক্ত কোনো বৈধ সনদ পাওয়া যায়নি।" },
-      { status: 404 }
+      {
+        verified: false,
+        error: "সার্টিফিকেট যাচাই সেবা সাময়িকভাবে অনুপলভ্য।",
+      },
+      { status: 503 }
     );
   }
-
-  return NextResponse.json({
-    verified: true,
-    certificate: {
-      certificateNumber: certificate.certificateNumber,
-      courseTitleBn: certificate.courseTitleBn,
-      issuedAt: certificate.issuedAt,
-      recipientName: certificate.customer.name,
-    },
-  });
 }

@@ -9,12 +9,36 @@ export function isDatabaseConfigured(): boolean {
   return Boolean(url && url.length > 0 && !url.includes("USER:PASSWORD@HOST"));
 }
 
+function isExpectedFallbackPrismaError(message: string): boolean {
+  return (
+    message.includes("P2021") ||
+    message.includes("P2022") ||
+    message.includes("does not exist in the current database") ||
+    message.includes("does not exist") ||
+    message.includes("Environment variable not found: DATABASE_URL")
+  );
+}
+
 function createPrismaClient(): PrismaClient {
   try {
-    return new PrismaClient({
-      // Deliberately omit "query" logging so PII parameters never enter server stdout.
-      log: process.env.NODE_ENV === "development" ? ["warn", "error"] : ["error"],
+    const client = new PrismaClient({
+      // Emit error events instead of writing raw `prisma:error` directly to stderr,
+      // preventing noisy engine log spam when seed/graceful fallbacks handle missing
+      // tables or unconfigured environments cleanly.
+      log: [{ emit: "event", level: "error" }],
     });
+
+    client.$on("error", (event) => {
+      const msg = event?.message ?? "";
+      if (isExpectedFallbackPrismaError(msg)) {
+        return;
+      }
+      if (process.env.NODE_ENV !== "test") {
+        console.warn("[db] Database query warning:", event.target || "prisma");
+      }
+    });
+
+    return client;
   } catch {
     console.warn("[AI Studio] Database not connected — using mock");
     const noOp = {

@@ -94,10 +94,14 @@ export async function GET() {
     return NextResponse.json({ documents: [] });
   }
 
-  const documents = await prisma.document.findMany({
-    where: { customerId: customer.id },
-    orderBy: { createdAt: "desc" },
-  });
+  try {
+    const documents = await prisma.document.findMany({
+      where: { customerId: customer.id },
+      orderBy: { createdAt: "desc" },
+    });
 
-  return NextResponse.json({ documents });
+    return NextResponse.json({ documents });
+  } catch {
+    return NextResponse.json({ documents: [] });
+  }
 }

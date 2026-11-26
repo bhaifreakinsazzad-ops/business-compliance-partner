@@ -12,13 +12,17 @@ export async function GET() {
     return NextResponse.json({ cases: [] });
   }
 
-  const cases = await prisma.complianceCase.findMany({
-    where: { customerId: customer.id },
-    include: { milestones: { orderBy: { sortOrder: "asc" } } },
-    orderBy: { createdAt: "desc" },
-  });
+  try {
+    const cases = await prisma.complianceCase.findMany({
+      where: { customerId: customer.id },
+      include: { milestones: { orderBy: { sortOrder: "asc" } } },
+      orderBy: { createdAt: "desc" },
+    });
 
-  return NextResponse.json({ cases });
+    return NextResponse.json({ cases });
+  } catch {
+    return NextResponse.json({ cases: [] });
+  }
 }
 
 export async function POST(req: NextRequest) {

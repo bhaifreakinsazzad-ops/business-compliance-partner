@@ -5,6 +5,7 @@ import {
   OFFICIAL_ADMIN_WHATSAPP_E164,
 } from "@/lib/contact/whatsapp";
 import { isDatabaseConfigured, prisma } from "@/lib/db/prisma";
+import { isPublicSchemaReady } from "@/lib/db/schema-ready";
 
 export { OFFICIAL_ADMIN_WHATSAPP_DISPLAY, OFFICIAL_ADMIN_WHATSAPP_E164 };
 
@@ -86,7 +87,7 @@ export async function getPublicSiteConfig(): Promise<PublicSiteConfig> {
   const fallbackWhatsapp =
     getEnvVerifiedWhatsapp() ?? DEFAULT_PUBLIC_SITE_CONFIG.verifiedWhatsapp;
 
-  if (!isDatabaseConfigured()) {
+  if (!isDatabaseConfigured() || !(await isPublicSchemaReady())) {
     return {
       ...DEFAULT_PUBLIC_SITE_CONFIG,
       verifiedWhatsapp: fallbackWhatsapp,
