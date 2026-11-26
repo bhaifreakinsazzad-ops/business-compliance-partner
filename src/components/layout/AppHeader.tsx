@@ -45,7 +45,7 @@ export function AppHeader({ siteConfig }: AppHeaderProps) {
   return (
     <>
       {/* Slim Corporate Announcement & Verified Contact Bar */}
-      <div className="bg-[#081838] text-white border-b border-[#C59028]/30 text-xs">
+      <div className="bg-surface-navy text-white border-b border-[#C59028]/30 text-xs">
         <div className="ps-container py-1.5 flex flex-wrap items-center justify-between gap-2">
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-white/85">
             <span className="inline-flex items-center gap-1.5">
@@ -99,7 +99,7 @@ export function AppHeader({ siteConfig }: AppHeaderProps) {
       </div>
 
       {/* Main Executive Lavender Sticky Header */}
-      <header className="sticky top-0 z-40 bg-white/96 backdrop-blur-md border-b border-[#D4CCE3] shadow-[0_2px_14px_rgba(81,64,111,0.06)]">
+      <header className="sticky top-0 z-40 bg-surface-canvas/96 backdrop-blur-md border-b border-border-subtle shadow-[0_2px_14px_rgba(81,64,111,0.06)]">
         <div className="ps-container py-2.5 flex items-center justify-between gap-3">
           <Link
             href="/"
@@ -117,12 +117,12 @@ export function AppHeader({ siteConfig }: AppHeaderProps) {
             ) : null}
             <div className="min-w-0">
               <span
-                className="block font-editorial text-base sm:text-lg font-bold tracking-wide text-[#081838] leading-tight truncate"
+                className="block font-editorial text-base sm:text-lg font-bold tracking-wide text-text-primary leading-tight truncate"
                 lang="en"
               >
                 {siteConfig.brandDisplayName}
               </span>
-              <span className="block text-[11px] sm:text-xs text-[#51406F] font-medium truncate">
+              <span className="block text-[11px] sm:text-xs text-text-accent font-medium truncate">
                 {siteConfig.brandNameBn}
               </span>
             </div>
@@ -140,7 +140,7 @@ export function AppHeader({ siteConfig }: AppHeaderProps) {
 
             <Link
               href="/portal"
-              className="inline-flex items-center gap-1.5 h-10 px-3.5 rounded-[10px] border border-[#D4CCE3] bg-[#F2EFF8] text-xs font-semibold text-[#51406F] hover:bg-[#DDD6EB] transition-colors whitespace-nowrap"
+              className="inline-flex items-center gap-1.5 h-10 px-3.5 rounded-[10px] border border-border-subtle bg-surface-lavender text-xs font-semibold text-text-accent hover:bg-surface-lavender-muted transition-colors whitespace-nowrap"
             >
               <LogIn className="w-3.5 h-3.5" aria-hidden="true" />
               <span>পোর্টাল</span>
@@ -148,7 +148,7 @@ export function AppHeader({ siteConfig }: AppHeaderProps) {
 
             <Link
               href="/consultancy"
-              className="inline-flex items-center justify-center h-10 px-4 rounded-[10px] bg-[#51406F] hover:bg-[#3F315A] text-white text-xs xl:text-sm font-semibold whitespace-nowrap shadow-xs transition-colors"
+              className="inline-flex items-center justify-center h-10 px-4 rounded-[10px] bg-action-primary hover:bg-action-primary-hover text-white text-xs xl:text-sm font-semibold whitespace-nowrap shadow-xs transition-colors"
             >
               পরামর্শ নিন
             </Link>

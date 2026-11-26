@@ -556,6 +556,8 @@ model QuoteItem {
 model Order {
   id              String          @id @default(cuid())
   publicReference String          @unique
+  idempotencyKey  String?         @unique
+  orderKind       String          @default("SERVICE_QUOTE")
   quoteId         String?
   quote           Quote?          @relation(fields: [quoteId], references: [id], onDelete: SetNull)
   customerId      String?
@@ -563,10 +565,13 @@ model Order {
   totalBdt        Float
   paymentStatus   String          @default("UNPAID")
   status          String          @default("CONFIRMED")
+  shippingAddress String?
+  notes           String?
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
   invoices        Invoice[]
   payments        PaymentRecord[]
+  bookItems       BookOrderItem[]
 
   @@index([paymentStatus, status])
   @@index([customerId])
@@ -780,5 +785,97 @@ model Notification {
 
   @@index([recipientType, recipientId, isRead])
   @@map("notifications")
+}
+
+// =============================================================================
+// V6: GOVERNED BOOKSTORE & PUBLICATIONS DIVISION
+// =============================================================================
+
+model BookCategory {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  nameBn      String
+  nameEn      String
+  shortDescBn String
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  books       Book[]
+
+  @@index([isActive, sortOrder])
+  @@map("book_categories")
+}
+
+model Book {
+  id                           String                  @id @default(cuid())
+  slug                         String                  @unique
+  sku                          String?                 @unique
+  isbn                         String?
+  titleBn                      String
+  titleEn                      String
+  subtitleBn                   String
+  categoryId                   String
+  category                     BookCategory            @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  summaryBn                    String
+  audienceBn                   String
+  topicsBn                     String[]
+  editionLabel                 String?
+  editionNoteBn                String
+  pagesCount                   Int?
+  languageBnEn                 String?                 @default("বাংলা ও ইংরেজি রেফারেন্স")
+  deliveryMode                 String?                 @default("PRINT")
+  pricePaisa                   Int?
+  stockQuantity                Int                     @default(0)
+  contentStatus                ContentStatus           @default(DRAFT)
+  availabilityStatus           AvailabilityStatus      @default(UPCOMING)
+  featured                     Boolean                 @default(false)
+  sortOrder                    Int                     @default(0)
+  coverPalette                 Json
+  relatedCourseCategorySlug    String?
+  relatedServiceCategorySlug   String?
+  relatedLicensingCategorySlug String?
+  seoTitle                     String?
+  seoDescription               String?
+  lastVerifiedAt               DateTime?
+  verifiedBy                   String?
+  createdAt                    DateTime                @default(now())
+  updatedAt                    DateTime                @updatedAt
+  inventoryMovements           BookInventoryMovement[]
+  orderItems                   BookOrderItem[]
+
+  @@index([contentStatus, availabilityStatus, featured, sortOrder])
+  @@index([categoryId])
+  @@map("books")
+}
+
+model BookInventoryMovement {
+  id        String   @id @default(cuid())
+  bookId    String
+  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  delta     Int
+  reason    String
+  reference String?
+  createdAt DateTime @default(now())
+
+  @@index([bookId, createdAt])
+  @@map("book_inventory_movements")
+}
+
+model BookOrderItem {
+  id             String   @id @default(cuid())
+  orderId        String
+  order          Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  bookId         String
+  book           Book     @relation(fields: [bookId], references: [id], onDelete: Restrict)
+  titleSnapshot  String
+  quantity       Int      @default(1)
+  unitPricePaisa Int
+  lineTotalPaisa Int
+  createdAt      DateTime @default(now())
+
+  @@index([orderId])
+  @@index([bookId])
+  @@map("book_order_items")
 }
 

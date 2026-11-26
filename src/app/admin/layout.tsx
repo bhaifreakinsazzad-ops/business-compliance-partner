@@ -7,6 +7,7 @@ import {
   Users,
   GraduationCap,
   Briefcase,
+  BookOpen,
   FileCheck2,
   FileText,
   Settings,
@@ -107,6 +108,13 @@ export default async function AdminLayout({
                 <FileCheck2 className="w-4 h-4 text-ps-gold" aria-hidden="true" />
                 <span>লাইসেন্সিং ব্যবস্থাপনা</span>
               </Link>
+              <Link
+                href="/admin/books"
+                className="flex items-center gap-3 min-h-[44px] px-3.5 py-2.5 rounded-[12px] text-sm font-medium text-ps-ivory/90 hover:text-ps-white hover:bg-ps-midnight/70 transition-colors"
+              >
+                <BookOpen className="w-4 h-4 text-ps-gold" aria-hidden="true" />
+                <span>বই ও প্রকাশনা ব্যবস্থাপনা</span>
+              </Link>
             </>
           )}
           {canManageFaqs && (
@@ -172,6 +180,18 @@ export default async function AdminLayout({
             <span className="flex items-center gap-3">
               <FileCheck2 className="w-4 h-4 text-ps-gold" aria-hidden="true" />
               <span>লাইসেন্সিং ডিরেক্টরি</span>
+            </span>
+            <ExternalLink className="w-3.5 h-3.5 text-ps-ivory/75" aria-hidden="true" />
+          </Link>
+          <Link
+            href="/books"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-between min-h-[40px] px-3.5 py-2 rounded-[12px] text-sm text-ps-ivory/85 hover:text-ps-white hover:bg-ps-midnight/50 transition-colors"
+          >
+            <span className="flex items-center gap-3">
+              <BookOpen className="w-4 h-4 text-ps-gold" aria-hidden="true" />
+              <span>বই ক্যাটালগ</span>
             </span>
             <ExternalLink className="w-3.5 h-3.5 text-ps-ivory/75" aria-hidden="true" />
           </Link>

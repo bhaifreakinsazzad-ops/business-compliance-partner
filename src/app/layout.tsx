@@ -12,6 +12,8 @@ import {
 } from "@/lib/config/site";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { ServiceWorkerRegistration } from "@/components/seo/ServiceWorkerRegistration";
+import { AppMotionProvider } from "@/components/motion/AppMotionProvider";
+import { ReadingProgressBar } from "@/components/motion/ReadingProgressBar";
 import { buildOrganizationJsonLd } from "@/lib/seo/structured-data";
 import "./globals.css";
 
@@ -80,7 +82,7 @@ export default function RootLayout({
       lang="bn"
       className={`${notoSansBengali.variable} ${notoSerifBengali.variable} ${inter.variable} ${cormorant.variable}`}
     >
-      <body className="min-h-screen flex flex-col bg-ps-ivory text-ps-ink antialiased">
+      <body className="min-h-screen flex flex-col bg-surface-canvas text-text-body antialiased">
         <JsonLd
           data={buildOrganizationJsonLd(
             DEFAULT_PUBLIC_SITE_CONFIG,
@@ -92,7 +94,10 @@ export default function RootLayout({
         <a href="#main-content" className="skip-link">
           মূল বিষয়বস্তুতে যান
         </a>
-        {children}
+        <AppMotionProvider>
+          <ReadingProgressBar />
+          {children}
+        </AppMotionProvider>
       </body>
     </html>
   );

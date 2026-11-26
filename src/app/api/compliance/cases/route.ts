@@ -1,6 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { getCurrentCustomer } from "@/lib/customer/auth";
 import { isDatabaseConfigured, prisma } from "@/lib/db/prisma";
+import { isCoreCommerceSchemaReady } from "@/lib/db/schema-ready";
+import { generatePublicReference } from "@/lib/security/reference-id";
+
+const createCaseSchema = z.object({
+  titleBn: z.string().trim().min(3).max(200),
+  categorySlug: z.string().trim().min(2).max(120),
+  authorityName: z.string().trim().max(180).optional(),
+  organizationId: z.string().trim().optional(),
+});
 
 export async function GET() {
   const customer = await getCurrentCustomer();
@@ -8,7 +18,7 @@ export async function GET() {
     return NextResponse.json({ error: "অননুমোদিত অনুরোধ।" }, { status: 401 });
   }
 
-  if (!isDatabaseConfigured()) {
+  if (!isDatabaseConfigured() || !(await isCoreCommerceSchemaReady())) {
     return NextResponse.json({ cases: [] });
   }
 
@@ -31,37 +41,52 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "অননুমোদিত অনুরোধ।" }, { status: 401 });
   }
 
+  if (!isDatabaseConfigured() || !(await isCoreCommerceSchemaReady())) {
+    return NextResponse.json(
+      { error: "কমপ্লায়েন্স কেস সেবা সাময়িকভাবে অনুপলভ্য।" },
+      { status: 503 },
+    );
+  }
+
+  let body: z.infer<typeof createCaseSchema>;
   try {
-    const { titleBn, categorySlug, authorityName, organizationId } = await req.json();
-    if (!titleBn || !categorySlug) {
+    const raw = await req.json();
+    const parsed = createCaseSchema.safeParse(raw);
+    if (!parsed.success) {
       return NextResponse.json(
         { error: "কেসের শিরোনাম ও ক্যাটাগরি প্রয়োজন।" },
-        { status: 400 }
+        { status: 400 },
       );
     }
+    body = parsed.data;
+  } catch {
+    return NextResponse.json({ error: "অবৈধ JSON রিকোয়েস্ট।" }, { status: 400 });
+  }
 
-    const publicReference = `CASE-${Date.now()}`;
-
-    if (!isDatabaseConfigured()) {
-      return NextResponse.json({
-        success: true,
-        case: {
-          publicReference,
-          titleBn,
-          categorySlug,
-          status: "ASSESSMENT_PENDING",
-        },
-      });
+  // Enforce organization membership ownership if organizationId supplied
+  if (body.organizationId) {
+    const isMember = customer.organizations.some(
+      (org) => org.id === body.organizationId,
+    );
+    if (!isMember) {
+      return NextResponse.json(
+        { error: "নির্বাচিত প্রতিষ্ঠানে আপনার প্রবেশাধিকার নেই।" },
+        { status: 403 },
+      );
     }
+  }
+
+  try {
+    const publicReference = generatePublicReference().replace(/^BCP-/, "CASE-");
 
     const newCase = await prisma.complianceCase.create({
       data: {
         publicReference,
         customerId: customer.id,
-        organizationId: organizationId || null,
-        titleBn,
-        categorySlug,
-        authorityName: authorityName || null,
+        organizationId: body.organizationId || null,
+        titleBn: body.titleBn,
+        categorySlug: body.categorySlug,
+        authorityName: body.authorityName || null,
         status: "ASSESSMENT_PENDING",
         milestones: {
           create: [
@@ -75,12 +100,12 @@ export async function POST(req: NextRequest) {
       include: { milestones: true },
     });
 
-    return NextResponse.json({ success: true, case: newCase });
+    return NextResponse.json({ success: true, case: newCase }, { status: 201 });
   } catch (err) {
     console.error("[compliance/create] Error:", err);
     return NextResponse.json(
       { error: "কমপ্লায়েন্স কেস খুলতে সমস্যা হয়েছে।" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

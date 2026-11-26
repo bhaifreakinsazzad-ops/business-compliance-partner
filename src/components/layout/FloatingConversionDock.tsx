@@ -3,11 +3,14 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { AnimatePresence, m } from "motion/react";
 import { ArrowUp, MessageCircle, MessageSquareText } from "lucide-react";
+import { trackEvent } from "@/lib/analytics/events";
 import {
   buildWhatsAppGeneralMessage,
   buildWhatsAppUrl,
 } from "@/lib/contact/whatsapp";
+import { BCP_TRANSITIONS } from "@/lib/motion/presets";
 
 interface FloatingConversionDockProps {
   verifiedWhatsapp: string | null;
@@ -40,10 +43,6 @@ export function FloatingConversionDock({
     return () => window.removeEventListener("scroll", onScroll);
   }, [isHiddenRoute]);
 
-  if (isHiddenRoute || !visible) {
-    return null;
-  }
-
   const waHref = buildWhatsAppUrl(
     verifiedWhatsapp,
     buildWhatsAppGeneralMessage(),
@@ -60,40 +59,52 @@ export function FloatingConversionDock({
   };
 
   return (
-    <div
-      role="region"
-      aria-label="দ্রুত সহায়তা ও নেভিগেশন"
-      className="fixed bottom-4 end-4 z-30 flex items-center gap-1.5 rounded-[14px] border border-[#D4CCE3] bg-white/95 backdrop-blur p-1.5 shadow-xl"
-    >
-      {waHref ? (
-        <a
-          href={waHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 min-h-10 px-3.5 rounded-[10px] bg-[#00865A] text-white text-xs sm:text-sm font-bold hover:bg-[#006D49] transition-colors"
+    <AnimatePresence>
+      {!isHiddenRoute && visible ? (
+        <m.div
+          role="region"
+          aria-label="দ্রুত সহায়তা ও নেভিগেশন"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0, transition: BCP_TRANSITIONS.standard }}
+          exit={{ opacity: 0, y: 12, transition: { duration: 0.14 } }}
+          className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] end-4 z-[var(--z-dock)] flex items-center gap-1.5 rounded-[14px] border border-border-subtle bg-white/95 backdrop-blur p-1.5 shadow-xl"
         >
-          <MessageCircle className="w-4 h-4 shrink-0" aria-hidden="true" />
-          <span>WhatsApp সহায়তা</span>
-        </a>
-      ) : (
-        <Link
-          href="/consultancy"
-          className="inline-flex items-center gap-2 min-h-10 px-3.5 rounded-[10px] bg-[#51406F] text-white text-xs sm:text-sm font-bold hover:bg-[#3F315A] transition-colors"
-        >
-          <MessageSquareText className="w-4 h-4 shrink-0" aria-hidden="true" />
-          <span>দ্রুত পরামর্শ</span>
-        </Link>
-      )}
+          {waHref ? (
+            <a
+              href={waHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() =>
+                trackEvent("contact_click_whatsapp", {
+                  sourcePage: pathname,
+                })
+              }
+              className="inline-flex items-center gap-2 min-h-10 px-3.5 rounded-[10px] bg-action-whatsapp text-white text-xs sm:text-sm font-bold hover:bg-[var(--action-whatsapp-hover)] transition-colors"
+            >
+              <MessageCircle className="w-4 h-4 shrink-0" aria-hidden="true" />
+              <span>WhatsApp সহায়তা</span>
+            </a>
+          ) : (
+            <Link
+              href="/consultancy"
+              className="inline-flex items-center gap-2 min-h-10 px-3.5 rounded-[10px] bg-action-primary text-white text-xs sm:text-sm font-bold hover:bg-action-primary-hover transition-colors"
+            >
+              <MessageSquareText className="w-4 h-4 shrink-0" aria-hidden="true" />
+              <span>দ্রুত পরামর্শ</span>
+            </Link>
+          )}
 
-      <button
-        type="button"
-        onClick={scrollToTop}
-        aria-label="উপরে যান"
-        title="উপরে যান"
-        className="inline-flex items-center justify-center w-10 h-10 rounded-[10px] border border-[#D4CCE3] bg-[#F2EFF8] text-[#51406F] hover:bg-[#DDD6EB] transition-colors cursor-pointer"
-      >
-        <ArrowUp className="w-4 h-4" aria-hidden="true" />
-      </button>
-    </div>
+          <button
+            type="button"
+            onClick={scrollToTop}
+            aria-label="উপরে যান"
+            title="উপরে যান"
+            className="inline-flex items-center justify-center w-10 h-10 rounded-[10px] border border-border-subtle bg-surface-lavender text-text-accent hover:bg-surface-lavender-muted transition-colors cursor-pointer"
+          >
+            <ArrowUp className="w-4 h-4" aria-hidden="true" />
+          </button>
+        </m.div>
+      ) : null}
+    </AnimatePresence>
   );
 }

@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { getCurrentCustomer } from "@/lib/customer/auth";
 import { isDatabaseConfigured, prisma } from "@/lib/db/prisma";
+import { isCoreCommerceSchemaReady } from "@/lib/db/schema-ready";
+
+const quoteActionSchema = z.object({
+  quoteId: z.string().trim().min(1, "উদ্ধৃতি আইডি প্রয়োজন।"),
+  action: z.enum(["ACCEPT", "REJECT"]),
+});
 
 export async function GET() {
   const customer = await getCurrentCustomer();
@@ -8,7 +15,7 @@ export async function GET() {
     return NextResponse.json({ error: "অননুমোদিত অনুরোধ।" }, { status: 401 });
   }
 
-  if (!isDatabaseConfigured()) {
+  if (!isDatabaseConfigured() || !(await isCoreCommerceSchemaReady())) {
     return NextResponse.json({ quotes: [] });
   }
 
@@ -31,36 +38,43 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "অননুমোদিত অনুরোধ।" }, { status: 401 });
   }
 
+  if (!isDatabaseConfigured() || !(await isCoreCommerceSchemaReady())) {
+    return NextResponse.json(
+      { error: "কোটেশন সেবা সাময়িকভাবে অনুপলভ্য।" },
+      { status: 503 },
+    );
+  }
+
+  let body: z.infer<typeof quoteActionSchema>;
   try {
-    const { quoteId, action } = await req.json();
-    if (!quoteId || !["ACCEPT", "REJECT"].includes(action)) {
+    const raw = await req.json();
+    const parsed = quoteActionSchema.safeParse(raw);
+    if (!parsed.success) {
       return NextResponse.json(
         { error: "উদ্ধৃতি আইডি এবং সঠিক একশন নির্বাচন করুন।" },
-        { status: 400 }
+        { status: 400 },
       );
     }
+    body = parsed.data;
+  } catch {
+    return NextResponse.json({ error: "অবৈধ JSON রিকোয়েস্ট।" }, { status: 400 });
+  }
 
-    if (!isDatabaseConfigured()) {
-      return NextResponse.json({
-        success: true,
-        status: action === "ACCEPT" ? "ACCEPTED" : "REJECTED",
-      });
-    }
-
+  try {
     const quote = await prisma.quote.findFirst({
-      where: { id: quoteId, customerId: customer.id },
+      where: { id: body.quoteId, customerId: customer.id },
     });
 
     if (!quote) {
       return NextResponse.json(
         { error: "কোটেশনটি খুঁজে পাওয়া যায়নি।" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     const updated = await prisma.quote.update({
-      where: { id: quoteId },
-      data: { status: action === "ACCEPT" ? "ACCEPTED" : "REJECTED" },
+      where: { id: quote.id },
+      data: { status: body.action === "ACCEPT" ? "ACCEPTED" : "REJECTED" },
     });
 
     return NextResponse.json({ success: true, quote: updated });
@@ -68,7 +82,7 @@ export async function POST(req: NextRequest) {
     console.error("[quotes/action] Error:", err);
     return NextResponse.json(
       { error: "কোটেশন প্রক্রিয়াকরণে সমস্যা হয়েছে।" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

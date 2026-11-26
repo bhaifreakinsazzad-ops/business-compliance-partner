@@ -1,8 +1,11 @@
 import type {
   PublicBookCategoryDTO,
+  PublicBookCoverPalette,
   PublicBookPreview,
 } from "@/types/domain";
 import { matchesSearchQuery } from "@/lib/content/helpers";
+import { isDatabaseConfigured, prisma } from "@/lib/db/prisma";
+import { isBooksSchemaReady } from "@/lib/db/schema-ready";
 
 export const BOOK_AVAILABILITY_BADGE_BN = "প্রকাশনা আসন্ন";
 export const BOOK_PRICING_NOTICE_BN =
@@ -466,4 +469,213 @@ export function listRelatedBooksForLicensingCategory(
   const seen = new Set(direct.map((b) => b.slug));
   const extras = BOOK_PREVIEW_CATALOG.filter((b) => !seen.has(b.slug));
   return [...direct, ...extras].slice(0, limit);
+}
+
+const DEFAULT_BOOK_PALETTE: PublicBookCoverPalette = {
+  spineHex: "#081838",
+  coverHex: "#152b54",
+  accentHex: "#c59028",
+  textHex: "#f8f8f8",
+};
+
+function parseCoverPalette(raw: unknown): PublicBookCoverPalette {
+  if (!raw || typeof raw !== "object") return DEFAULT_BOOK_PALETTE;
+  const record = raw as Record<string, unknown>;
+  return {
+    spineHex:
+      typeof record.spineHex === "string"
+        ? record.spineHex
+        : DEFAULT_BOOK_PALETTE.spineHex,
+    coverHex:
+      typeof record.coverHex === "string"
+        ? record.coverHex
+        : DEFAULT_BOOK_PALETTE.coverHex,
+    accentHex:
+      typeof record.accentHex === "string"
+        ? record.accentHex
+        : DEFAULT_BOOK_PALETTE.accentHex,
+    textHex:
+      typeof record.textHex === "string"
+        ? record.textHex
+        : DEFAULT_BOOK_PALETTE.textHex,
+  };
+}
+
+export function mapDbBookToPublicPreview(dbBook: {
+  id: string;
+  slug: string;
+  sku: string | null;
+  isbn: string | null;
+  titleBn: string;
+  titleEn: string;
+  subtitleBn: string;
+  summaryBn: string;
+  audienceBn: string;
+  topicsBn: string[];
+  editionLabel: string | null;
+  editionNoteBn: string;
+  pagesCount: number | null;
+  languageBnEn: string | null;
+  deliveryMode: string | null;
+  pricePaisa: number | null;
+  stockQuantity: number;
+  contentStatus: string;
+  availabilityStatus: string;
+  featured: boolean;
+  coverPalette: unknown;
+  relatedCourseCategorySlug: string | null;
+  relatedServiceCategorySlug: string | null;
+  relatedLicensingCategorySlug: string | null;
+  lastVerifiedAt: Date | null;
+  verifiedBy: string | null;
+  category: {
+    slug: string;
+    nameBn: string;
+    nameEn: string;
+  };
+}): PublicBookPreview {
+  const isPublishedPriced =
+    dbBook.contentStatus === "PUBLISHED" &&
+    dbBook.availabilityStatus === "ACTIVE" &&
+    typeof dbBook.pricePaisa === "number" &&
+    dbBook.pricePaisa > 0;
+
+  return {
+    id: dbBook.id,
+    slug: dbBook.slug,
+    sku: dbBook.sku,
+    isbn: dbBook.isbn,
+    titleBn: dbBook.titleBn,
+    titleEn: dbBook.titleEn,
+    subtitleBn: dbBook.subtitleBn,
+    categorySlug: dbBook.category.slug,
+    categoryNameBn: dbBook.category.nameBn,
+    categoryNameEn: dbBook.category.nameEn,
+    summaryBn: dbBook.summaryBn,
+    audienceBn: dbBook.audienceBn,
+    topicsBn: dbBook.topicsBn,
+    editionLabel: dbBook.editionLabel,
+    editionNoteBn: dbBook.editionNoteBn,
+    pagesCount: dbBook.pagesCount,
+    languageBnEn: dbBook.languageBnEn,
+    deliveryMode: dbBook.deliveryMode,
+    pricePaisa: isPublishedPriced ? dbBook.pricePaisa : null,
+    stockQuantity: isPublishedPriced ? dbBook.stockQuantity : undefined,
+    availabilityState: isPublishedPriced
+      ? "PUBLISHED_PRICED"
+      : "UPCOMING_PREVIEW",
+    featured: dbBook.featured,
+    coverPalette: parseCoverPalette(dbBook.coverPalette),
+    relatedCourseCategorySlug: dbBook.relatedCourseCategorySlug ?? "",
+    relatedServiceCategorySlug: dbBook.relatedServiceCategorySlug ?? "",
+    relatedLicensingCategorySlug: dbBook.relatedLicensingCategorySlug ?? undefined,
+    lastVerifiedAt: dbBook.lastVerifiedAt
+      ? dbBook.lastVerifiedAt.toISOString()
+      : null,
+    verifiedBy: dbBook.verifiedBy,
+  };
+}
+
+/**
+ * Loads governed published books from PostgreSQL when migrated & populated,
+ * gracefully falling back to verified pre-launch previews when unseeded.
+ */
+export async function loadBookCatalog(filter?: {
+  categorySlug?: string;
+  q?: string;
+}): Promise<{ categories: PublicBookCategoryDTO[]; items: PublicBookPreview[] }> {
+  if (isDatabaseConfigured() && (await isBooksSchemaReady())) {
+    try {
+      const [dbCategories, dbBooks] = await Promise.all([
+        prisma.bookCategory.findMany({
+          where: { isActive: true },
+          orderBy: { sortOrder: "asc" },
+          include: {
+            books: {
+              where: { contentStatus: "PUBLISHED" },
+              select: { id: true },
+            },
+          },
+        }),
+        prisma.book.findMany({
+          where: { contentStatus: "PUBLISHED" },
+          orderBy: [{ featured: "desc" }, { sortOrder: "asc" }],
+          include: {
+            category: {
+              select: { slug: true, nameBn: true, nameEn: true },
+            },
+          },
+        }),
+      ]);
+
+      if (dbBooks.length > 0) {
+        const mapped = dbBooks.map(mapDbBookToPublicPreview);
+        const catSlug = filter?.categorySlug?.trim() || "";
+        const query = filter?.q?.trim() || "";
+
+        const items = mapped
+          .filter((book) => (catSlug ? book.categorySlug === catSlug : true))
+          .filter((book) =>
+            query
+              ? matchesSearchQuery(query, [
+                  book.titleBn,
+                  book.titleEn,
+                  book.subtitleBn,
+                  book.summaryBn,
+                  book.categoryNameBn,
+                  book.categoryNameEn,
+                  ...book.topicsBn,
+                ])
+              : true,
+          );
+
+        const categories: PublicBookCategoryDTO[] = dbCategories.map((cat) => ({
+          slug: cat.slug,
+          nameBn: cat.nameBn,
+          nameEn: cat.nameEn,
+          shortDescBn: cat.shortDescBn,
+          sortOrder: cat.sortOrder,
+          previewCount: cat.books.length,
+        }));
+
+        return { categories, items };
+      }
+    } catch {
+      // Fallback to verified preview catalog below
+    }
+  }
+
+  return listBookCatalog(filter);
+}
+
+export async function getGovernedBookBySlug(
+  slug: string,
+): Promise<PublicBookPreview | null> {
+  if (isDatabaseConfigured() && (await isBooksSchemaReady())) {
+    try {
+      const dbBook = await prisma.book.findFirst({
+        where: { slug, contentStatus: "PUBLISHED" },
+        include: {
+          category: {
+            select: { slug: true, nameBn: true, nameEn: true },
+          },
+        },
+      });
+      if (dbBook) {
+        return mapDbBookToPublicPreview(dbBook);
+      }
+    } catch {
+      // Fallback to verified preview catalog
+    }
+  }
+  return getBookPreviewBySlug(slug);
+}
+
+export async function searchGovernedBooks(
+  query: string,
+): Promise<PublicBookPreview[]> {
+  const trimmed = query.trim();
+  if (!trimmed) return [];
+  const { items } = await loadBookCatalog({ q: trimmed });
+  return items.slice(0, 6);
 }

@@ -187,12 +187,22 @@ export interface PublicBookPreview {
   audienceBn: string;
   topicsBn: string[];
   editionNoteBn: string;
-  availabilityState: "UPCOMING_PREVIEW";
+  availabilityState: "UPCOMING_PREVIEW" | "PUBLISHED_PRICED";
   featured: boolean;
   coverPalette: PublicBookCoverPalette;
   relatedCourseCategorySlug: string;
   relatedServiceCategorySlug: string;
   relatedLicensingCategorySlug?: string;
+  sku?: string | null;
+  isbn?: string | null;
+  editionLabel?: string | null;
+  pagesCount?: number | null;
+  languageBnEn?: string | null;
+  deliveryMode?: string | null;
+  pricePaisa?: number | null;
+  stockQuantity?: number;
+  lastVerifiedAt?: string | null;
+  verifiedBy?: string | null;
 }
 
 export interface PublicSiteConfig {

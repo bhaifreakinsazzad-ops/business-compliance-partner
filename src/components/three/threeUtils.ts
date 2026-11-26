@@ -22,17 +22,124 @@ export function detectSoftwareWebGL(renderer: THREE.WebGLRenderer): boolean {
   }
 }
 
+export interface RoomEnvironmentResources {
+  envMap: THREE.Texture;
+  renderTarget: THREE.WebGLRenderTarget;
+  pmrem: THREE.PMREMGenerator;
+  envScene: RoomEnvironment;
+}
+
 export function createRoomEnvironmentTexture(
   renderer: THREE.WebGLRenderer,
-): { envMap: THREE.Texture; pmrem: THREE.PMREMGenerator; envScene: RoomEnvironment } {
+): RoomEnvironmentResources {
   const pmrem = new THREE.PMREMGenerator(renderer);
   pmrem.compileEquirectangularShader();
   const envScene = new RoomEnvironment();
   const renderTarget = pmrem.fromScene(envScene, 0.04);
   return {
     envMap: renderTarget.texture,
+    renderTarget,
     pmrem,
     envScene,
+  };
+}
+
+export function disposeRoomEnvironment(
+  res: RoomEnvironmentResources | null,
+): void {
+  if (!res) return;
+  res.envMap.dispose();
+  res.renderTarget.dispose();
+  res.envScene.dispose();
+  res.pmrem.dispose();
+}
+
+/**
+ * Creates a ThreeUI-inspired subtle Executive Lavender radial shader backdrop
+ * built directly on three@0.187.0 ShaderMaterial (zero duplicate Three.js bundle).
+ */
+export function createAmbientLavenderShaderBackdrop(
+  width = 10,
+  height = 6,
+): {
+  mesh: THREE.Mesh;
+  uniforms: { uTime: { value: number } };
+} {
+  const uniforms = {
+    uTime: { value: 0 },
+  };
+  const material = new THREE.ShaderMaterial({
+    uniforms,
+    transparent: true,
+    depthWrite: false,
+    vertexShader: `
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      uniform float uTime;
+      varying vec2 vUv;
+      void main() {
+        vec2 center = vec2(0.5 + sin(uTime * 0.25) * 0.04, 0.52);
+        float dist = distance(vUv, center);
+        float soft = smoothstep(0.75, 0.05, dist);
+        vec3 lavender = vec3(0.867, 0.839, 0.922);
+        vec3 plumHint = vec3(0.647, 0.600, 0.761);
+        vec3 col = mix(lavender, plumHint, smoothstep(0.0, 1.0, vUv.x) * 0.22);
+        gl_FragColor = vec4(col, soft * 0.28);
+      }
+    `,
+  });
+
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(width, height), material);
+  mesh.position.set(0, 0.8, -3.5);
+  return { mesh, uniforms };
+}
+
+export function createResizeObserver(
+  container: HTMLElement,
+  onResize: (width: number, height: number) => void,
+): () => void {
+  if (typeof ResizeObserver !== "undefined") {
+    const ro = new ResizeObserver((entries) => {
+      const rect = entries[0]?.contentRect;
+      const w = rect ? Math.round(rect.width) : container.clientWidth;
+      const h = rect ? Math.round(rect.height) : container.clientHeight;
+      if (w > 0 && h > 0) onResize(w, h);
+    });
+    ro.observe(container);
+    return () => ro.disconnect();
+  }
+
+  const handler = () => {
+    const w = container.clientWidth;
+    const h = container.clientHeight;
+    if (w > 0 && h > 0) onResize(w, h);
+  };
+  window.addEventListener("resize", handler);
+  return () => window.removeEventListener("resize", handler);
+}
+
+export function attachContextLossRecovery(
+  canvas: HTMLCanvasElement,
+  onLost: () => void,
+  onRestored: () => void,
+): () => void {
+  const handleLost = (e: Event) => {
+    e.preventDefault();
+    onLost();
+  };
+  const handleRestored = () => {
+    onRestored();
+  };
+  canvas.addEventListener("webglcontextlost", handleLost);
+  canvas.addEventListener("webglcontextrestored", handleRestored);
+  return () => {
+    canvas.removeEventListener("webglcontextlost", handleLost);
+    canvas.removeEventListener("webglcontextrestored", handleRestored);
   };
 }
 
@@ -69,14 +176,12 @@ export function createBookSpineTexture(params: {
     ctx.fillStyle = params.bgHex;
     ctx.fillRect(0, 0, 512, 112);
 
-    // Subtle spine ribs & metallic gold bands
     ctx.fillStyle = params.accentHex;
     ctx.fillRect(28, 12, 6, 88);
     ctx.fillRect(42, 12, 2, 88);
     ctx.fillRect(468, 12, 2, 88);
     ctx.fillRect(478, 12, 6, 88);
 
-    // Subtle sheen gradient
     const grad = ctx.createLinearGradient(0, 0, 0, 112);
     grad.addColorStop(0, "rgba(255,255,255,0.14)");
     grad.addColorStop(0.5, "rgba(255,255,255,0)");
@@ -90,7 +195,6 @@ export function createBookSpineTexture(params: {
     ctx.textAlign = "left";
     ctx.fillText(params.title, 66, 56, 360);
 
-    // Small BCP emblem mark on right
     ctx.fillStyle = params.accentHex;
     ctx.font = "700 20px Georgia, serif";
     ctx.textAlign = "right";
@@ -119,14 +223,12 @@ export function createLaptopScreenTexture(
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, 768, 480);
 
-    // Subtle radial lavender glow
     const glow = ctx.createRadialGradient(384, 210, 20, 384, 210, 290);
     glow.addColorStop(0, "rgba(221, 214, 235, 0.34)");
     glow.addColorStop(1, "rgba(221, 214, 235, 0)");
     ctx.fillStyle = glow;
     ctx.fillRect(0, 0, 768, 480);
 
-    // Top studio bar
     ctx.fillStyle = "rgba(255,255,255,0.08)";
     ctx.fillRect(28, 24, 712, 34);
     ctx.fillStyle = "#DFB15B";
@@ -139,7 +241,6 @@ export function createLaptopScreenTexture(
     ctx.textBaseline = "middle";
     ctx.fillText("BUSINESS COMPLIANCE PARTNER  •  KNOWLEDGE STUDIO", 74, 41);
 
-    // Official circular logo or fallback gold ring
     if (logoImage && logoImage.complete && logoImage.naturalWidth > 0) {
       ctx.save();
       ctx.beginPath();
@@ -160,7 +261,6 @@ export function createLaptopScreenTexture(
       ctx.fill();
     }
 
-    // Crisp typography below badge
     ctx.fillStyle = "#FFFFFF";
     ctx.font = "700 28px Georgia, serif";
     ctx.textAlign = "center";
@@ -170,7 +270,6 @@ export function createLaptopScreenTexture(
     ctx.font = "600 16px Inter, sans-serif";
     ctx.fillText("Courses  •  Services  •  Books  •  Advisory", 384, 362);
 
-    // Subtle bottom hairline
     ctx.fillStyle = "rgba(197, 144, 40, 0.7)";
     ctx.fillRect(224, 396, 320, 2);
   }
@@ -199,7 +298,6 @@ export function createDocumentCardTexture(params: {
     ctx.lineWidth = 4;
     ctx.strokeRect(2, 2, 356, 124);
 
-    // Left icon block
     ctx.fillStyle = "#F2EFF8";
     ctx.fillRect(20, 24, 80, 80);
     ctx.fillStyle = params.accentHex;
@@ -225,7 +323,11 @@ export function createDocumentCardTexture(params: {
 
 export function disposeObject3D(root: THREE.Object3D): void {
   root.traverse((obj) => {
-    if (obj instanceof THREE.Mesh || obj instanceof THREE.Points || obj instanceof THREE.Line) {
+    if (
+      obj instanceof THREE.Mesh ||
+      obj instanceof THREE.Points ||
+      obj instanceof THREE.Line
+    ) {
       obj.geometry?.dispose();
       const materials = Array.isArray(obj.material)
         ? obj.material

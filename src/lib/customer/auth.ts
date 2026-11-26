@@ -72,21 +72,7 @@ export async function getCurrentCustomer(): Promise<CurrentCustomer | null> {
   if (!rawToken) return null;
 
   if (!isDatabaseConfigured()) {
-    // Graceful demo customer for offline / non-db environment
-    return {
-      id: "demo-customer",
-      name: "মোহাম্মদ রফিক",
-      email: "rafiq@example.com",
-      mobile: "01711000000",
-      isVerified: true,
-      organizations: [
-        {
-          id: "org-1",
-          name: "রফিক এন্টারপ্রাইজ লিমিটেড",
-          role: "OWNER",
-        },
-      ],
-    };
+    return null;
   }
 
   const tokenHash = hashToken(rawToken);

@@ -13,7 +13,11 @@ import type {
   PublicServiceCard,
   PublicServiceDetail,
 } from "@/types/domain";
-import { BOOK_PREVIEW_CATALOG, searchBookPreviews } from "@/lib/books/catalog";
+import {
+  BOOK_PREVIEW_CATALOG,
+  loadBookCatalog,
+  searchGovernedBooks,
+} from "@/lib/books/catalog";
 import { isPubliclyVisible, matchesSearchQuery } from "@/lib/content/helpers";
 import { isDatabaseConfigured, prisma } from "@/lib/db/prisma";
 import { isPublicSchemaReady } from "@/lib/db/schema-ready";
@@ -843,12 +847,12 @@ export async function searchPublishedCatalogue(query: string): Promise<{
     return { courses: [], services: [], licensing: [], books: [] };
   }
 
-  const [coursesRes, servicesRes, licensingRes] = await Promise.all([
+  const [coursesRes, servicesRes, licensingRes, books] = await Promise.all([
     listPublishedCourses({ q: trimmed }),
     listPublishedServices({ q: trimmed }),
     listPublishedLicensing({ q: trimmed }),
+    searchGovernedBooks(trimmed),
   ]);
-  const books = searchBookPreviews(trimmed);
 
   return {
     courses: coursesRes.items.slice(0, 6),
@@ -864,17 +868,23 @@ export async function getPublishedSlugManifest(): Promise<{
   licensing: string[];
   books: string[];
 }> {
-  const [coursesRes, servicesRes, licensingRes] = await Promise.all([
+  const [coursesRes, servicesRes, licensingRes, booksRes] = await Promise.all([
     listPublishedCourses(),
     listPublishedServices(),
     listPublishedLicensing(),
+    loadBookCatalog(),
+  ]);
+
+  const bookSlugSet = new Set([
+    ...BOOK_PREVIEW_CATALOG.map((b) => b.slug),
+    ...booksRes.items.map((b) => b.slug),
   ]);
 
   return {
     courses: coursesRes.items.map((c) => c.slug),
     services: servicesRes.items.map((s) => s.slug),
     licensing: licensingRes.items.map((l) => l.slug),
-    books: BOOK_PREVIEW_CATALOG.map((b) => b.slug),
+    books: Array.from(bookSlugSet),
   };
 }
 

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { AnimatePresence, m } from "motion/react";
 import {
   ArrowRight,
   BookOpen,
@@ -14,7 +15,7 @@ import {
   HelpCircle,
   MessageSquareText,
 } from "lucide-react";
-import { animatePanelReveal } from "@/lib/motion/tokens";
+import { PANEL_VARIANTS } from "@/lib/motion/presets";
 import { cn } from "@/lib/utils";
 import type { NavLinkItem } from "@/components/layout/MobileNavigation";
 
@@ -197,11 +198,11 @@ interface NavLinksClientProps {
   links?: NavLinkItem[];
 }
 
-export function NavLinksClient({ links: _links }: NavLinksClientProps) {
+export function NavLinksClient({ links }: NavLinksClientProps) {
+  void links;
   const pathname = usePathname() || "/";
   const [openMenu, setOpenMenu] = useState<MegaMenuKey | null>(null);
   const navRef = useRef<HTMLDivElement | null>(null);
-  const panelRef = useRef<HTMLDivElement | null>(null);
   const closeTimerRef = useRef<number | null>(null);
 
   const isRouteActive = (href: string) =>
@@ -231,12 +232,6 @@ export function NavLinksClient({ links: _links }: NavLinksClientProps) {
   useEffect(() => {
     setOpenMenu(null);
   }, [pathname]);
-
-  useEffect(() => {
-    if (openMenu && panelRef.current) {
-      animatePanelReveal(panelRef.current);
-    }
-  }, [openMenu]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -348,79 +343,85 @@ export function NavLinksClient({ links: _links }: NavLinksClientProps) {
       </Link>
 
       {/* Keyboard & Pointer Accessible Mega Menu Panel */}
-      {activeData ? (
-        <div
-          id="bcp-desktop-mega-menu"
-          ref={panelRef}
-          onMouseEnter={clearCloseTimer}
-          className="absolute top-full start-1/2 -translate-x-1/2 pt-3 w-[min(90vw,680px)] z-50"
-        >
-          <div className="rounded-[18px] border border-[#D4CCE3] bg-white shadow-[0_20px_48px_rgba(8,24,56,0.14)] overflow-hidden">
-            <div className="px-6 py-4 bg-[#F2EFF8] border-b border-[#D4CCE3] flex items-center justify-between gap-4">
-              <div className="flex items-center gap-2.5">
-                <span className="inline-flex items-center justify-center w-9 h-9 rounded-[10px] bg-[#DDD6EB] text-[#51406F]">
-                  <ActiveIcon className="w-4 h-4" aria-hidden="true" />
-                </span>
-                <div>
-                  <p className="text-sm font-bold text-[#081838]">
-                    {activeData.headingBn}
-                  </p>
-                  <p className="text-xs text-[#596775]">
-                    ক্যাটাগরি নির্বাচন করে সরাসরি বিবরণ দেখুন
-                  </p>
-                </div>
-              </div>
-              <Link
-                href={activeData.href}
-                onClick={() => setOpenMenu(null)}
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-[#51406F] hover:text-[#3F315A] hover:underline underline-offset-4 whitespace-nowrap"
-              >
-                <span>{activeData.viewAllLabelBn}</span>
-                <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
-              </Link>
-            </div>
-
-            <div className="p-4 grid grid-cols-2 gap-2.5">
-              {activeData.items.map((sub) => (
-                <Link
-                  key={sub.href}
-                  href={sub.href}
-                  onClick={() => setOpenMenu(null)}
-                  className="group flex items-center justify-between gap-3 rounded-[12px] border border-transparent bg-[#F8F7FB] hover:bg-[#F2EFF8] hover:border-[#D4CCE3] px-4 py-3 transition-colors"
-                >
-                  <div className="min-w-0">
-                    <p className="text-sm font-bold text-[#081838] group-hover:text-[#51406F] truncate">
-                      {sub.titleBn}
+      <AnimatePresence>
+        {activeData ? (
+          <m.div
+            key={openMenu}
+            id="bcp-desktop-mega-menu"
+            variants={PANEL_VARIANTS}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            onMouseEnter={clearCloseTimer}
+            className="absolute top-full start-1/2 -translate-x-1/2 pt-3 w-[min(90vw,680px)] z-[var(--z-dropdown)]"
+          >
+            <div className="rounded-[18px] border border-border-subtle bg-surface-card shadow-[0_20px_48px_rgba(8,24,56,0.14)] overflow-hidden">
+              <div className="px-6 py-4 bg-surface-lavender border-b border-border-subtle flex items-center justify-between gap-4">
+                <div className="flex items-center gap-2.5">
+                  <span className="inline-flex items-center justify-center w-9 h-9 rounded-[10px] bg-surface-lavender-muted text-text-accent">
+                    <ActiveIcon className="w-4 h-4" aria-hidden="true" />
+                  </span>
+                  <div>
+                    <p className="text-sm font-bold text-text-primary">
+                      {activeData.headingBn}
                     </p>
-                    <p className="font-en text-xs text-[#596775]" lang="en">
-                      {sub.subtitleEn}
+                    <p className="text-xs text-text-muted">
+                      ক্যাটাগরি নির্বাচন করে সরাসরি বিবরণ দেখুন
                     </p>
                   </div>
-                  <ArrowRight
-                    className="w-4 h-4 text-[#51406F] opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all shrink-0"
-                    aria-hidden="true"
-                  />
+                </div>
+                <Link
+                  href={activeData.href}
+                  onClick={() => setOpenMenu(null)}
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-text-accent hover:text-action-primary-hover hover:underline underline-offset-4 whitespace-nowrap"
+                >
+                  <span>{activeData.viewAllLabelBn}</span>
+                  <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
                 </Link>
-              ))}
-            </div>
+              </div>
 
-            <div className="px-6 py-3 bg-[#F8F8F8] border-t border-[#D4CCE3] flex items-center justify-between text-xs text-[#596775]">
-              <span className="inline-flex items-center gap-1.5">
-                <HelpCircle className="w-3.5 h-3.5 text-[#51406F]" aria-hidden="true" />
-                <span>সঠিক সমাধান খুঁজে না পেলে পরামর্শ ফর্ম বা WhatsApp ব্যবহার করুন</span>
-              </span>
-              <Link
-                href="/consultancy"
-                onClick={() => setOpenMenu(null)}
-                className="inline-flex items-center gap-1 font-bold text-[#51406F] hover:underline"
-              >
-                <MessageSquareText className="w-3.5 h-3.5" aria-hidden="true" />
-                <span>পরামর্শ নিন</span>
-              </Link>
+              <div className="p-4 grid grid-cols-2 gap-2.5">
+                {activeData.items.map((sub) => (
+                  <Link
+                    key={sub.href}
+                    href={sub.href}
+                    onClick={() => setOpenMenu(null)}
+                    className="group flex items-center justify-between gap-3 rounded-[12px] border border-transparent bg-[#F8F7FB] hover:bg-surface-lavender hover:border-border-subtle px-4 py-3 transition-colors"
+                  >
+                    <div className="min-w-0">
+                      <p className="text-sm font-bold text-text-primary group-hover:text-text-accent truncate">
+                        {sub.titleBn}
+                      </p>
+                      <p className="font-en text-xs text-text-muted" lang="en">
+                        {sub.subtitleEn}
+                      </p>
+                    </div>
+                    <ArrowRight
+                      className="w-4 h-4 text-text-accent opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all shrink-0"
+                      aria-hidden="true"
+                    />
+                  </Link>
+                ))}
+              </div>
+
+              <div className="px-6 py-3 bg-[#F8F8F8] border-t border-border-subtle flex items-center justify-between text-xs text-text-muted">
+                <span className="inline-flex items-center gap-1.5">
+                  <HelpCircle className="w-3.5 h-3.5 text-text-accent" aria-hidden="true" />
+                  <span>সঠিক সমাধান খুঁজে না পেলে পরামর্শ ফর্ম বা WhatsApp ব্যবহার করুন</span>
+                </span>
+                <Link
+                  href="/consultancy"
+                  onClick={() => setOpenMenu(null)}
+                  className="inline-flex items-center gap-1 font-bold text-text-accent hover:underline"
+                >
+                  <MessageSquareText className="w-3.5 h-3.5" aria-hidden="true" />
+                  <span>পরামর্শ নিন</span>
+                </Link>
+              </div>
             </div>
-          </div>
-        </div>
-      ) : null}
+          </m.div>
+        ) : null}
+      </AnimatePresence>
     </div>
   );
 }

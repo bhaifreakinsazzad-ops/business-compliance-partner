@@ -5,10 +5,14 @@ import * as THREE from "three";
 import { RotateCcw, RotateCw } from "lucide-react";
 import type { PublicBookPreview } from "@/types/domain";
 import {
+  attachContextLossRecovery,
   createContactShadowTexture,
+  createResizeObserver,
   createRoomEnvironmentTexture,
   detectSoftwareWebGL,
   disposeObject3D,
+  disposeRoomEnvironment,
+  type RoomEnvironmentResources,
 } from "@/components/three/threeUtils";
 
 interface BookPreview3DProps {
@@ -54,7 +58,6 @@ function createFrontCoverTexture(
     ctx.fillStyle = coverHex;
     ctx.fillRect(0, 0, 512, 720);
 
-    // Subtle spine crease gradient
     const crease = ctx.createLinearGradient(0, 0, 48, 0);
     crease.addColorStop(0, spineHex);
     crease.addColorStop(0.5, "rgba(0,0,0,0.28)");
@@ -62,12 +65,10 @@ function createFrontCoverTexture(
     ctx.fillStyle = crease;
     ctx.fillRect(0, 0, 48, 720);
 
-    // Gold editorial border frame
     ctx.strokeStyle = accentHex;
     ctx.lineWidth = 4;
     ctx.strokeRect(36, 36, 440, 648);
 
-    // Top badge bar
     ctx.fillStyle = accentHex;
     ctx.font = "700 18px Inter, sans-serif";
     ctx.textAlign = "center";
@@ -77,7 +78,6 @@ function createFrontCoverTexture(
     ctx.fillStyle = accentHex;
     ctx.fillRect(156, 106, 200, 2);
 
-    // Title
     ctx.fillStyle = textHex;
     ctx.font = "700 32px Georgia, serif";
     const nextY = wrapCanvasText(ctx, book.titleEn, 256, 148, 380, 42);
@@ -86,14 +86,13 @@ function createFrontCoverTexture(
     ctx.font = "500 18px Inter, sans-serif";
     wrapCanvasText(
       ctx,
-      "Upcoming Client-Approved Compliance Edition",
+      "Business Compliance Partner Edition",
       256,
       Math.max(nextY + 18, 320),
       360,
       26,
     );
 
-    // Untouched official circular badge at lower center
     if (logoImage && logoImage.complete && logoImage.naturalWidth > 0) {
       ctx.save();
       ctx.beginPath();
@@ -140,7 +139,13 @@ function createBackCoverTexture(book: PublicBookPreview): THREE.CanvasTexture {
     ctx.font = "700 18px Inter, sans-serif";
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
-    ctx.fillText("UPCOMING EDITION PREVIEW", 64, 72);
+    ctx.fillText(
+      book.availabilityState === "PUBLISHED_PRICED"
+        ? "PUBLISHED EDITION OVERVIEW"
+        : "UPCOMING EDITION PREVIEW",
+      64,
+      72,
+    );
 
     ctx.fillStyle = textHex;
     ctx.font = "600 22px Georgia, serif";
@@ -163,7 +168,13 @@ function createBackCoverTexture(book: PublicBookPreview): THREE.CanvasTexture {
 
     ctx.fillStyle = "rgba(255,255,255,0.7)";
     ctx.font = "500 15px Inter, sans-serif";
-    ctx.fillText("Status: Client Approval Pending", 64, 595);
+    ctx.fillText(
+      book.availabilityState === "PUBLISHED_PRICED"
+        ? "Status: Verified Commercial Edition"
+        : "Status: Client Approval Pending",
+      64,
+      595,
+    );
     ctx.fillText("Business Compliance Partner • Bangladesh", 64, 624);
   }
 
@@ -176,12 +187,19 @@ function createBackCoverTexture(book: PublicBookPreview): THREE.CanvasTexture {
 export function BookPreview3D({ book }: BookPreview3DProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const targetSideRef = useRef<"front" | "back">("front");
+  const resetSignalRef = useRef(0);
   const [activeSide, setActiveSide] = useState<"front" | "back">("front");
   const [webglSupported, setWebglSupported] = useState(true);
 
   const flipToSide = (side: "front" | "back") => {
     targetSideRef.current = side;
     setActiveSide(side);
+  };
+
+  const resetView = () => {
+    targetSideRef.current = "front";
+    resetSignalRef.current += 1;
+    setActiveSide("front");
   };
 
   useEffect(() => {
@@ -227,8 +245,7 @@ export function BookPreview3D({ book }: BookPreview3DProps) {
     camera.position.set(0, 0.45, 5.1);
     camera.lookAt(0, 0, 0);
 
-    let envResources: ReturnType<typeof createRoomEnvironmentTexture> | null =
-      null;
+    let envResources: RoomEnvironmentResources | null = null;
     if (!isSoftwareGl) {
       try {
         envResources = createRoomEnvironmentTexture(renderer);
@@ -246,7 +263,6 @@ export function BookPreview3D({ book }: BookPreview3DProps) {
     const bookGroup = new THREE.Group();
     scene.add(bookGroup);
 
-    // Contact grounding shadow
     const shadowTex = createContactShadowTexture();
     const shadow = new THREE.Mesh(
       new THREE.PlaneGeometry(3.2, 2.2),
@@ -289,7 +305,6 @@ export function BookPreview3D({ book }: BookPreview3DProps) {
       metalness: 0,
     });
 
-    // Front board
     const frontBoard = new THREE.Mesh(
       new THREE.BoxGeometry(bookW, bookH, 0.032),
       [spineMat, spineMat, spineMat, spineMat, frontMat, spineMat],
@@ -297,7 +312,6 @@ export function BookPreview3D({ book }: BookPreview3DProps) {
     frontBoard.position.z = bookD / 2 - 0.016;
     bookGroup.add(frontBoard);
 
-    // Back board
     const backBoard = new THREE.Mesh(
       new THREE.BoxGeometry(bookW, bookH, 0.032),
       [spineMat, spineMat, spineMat, spineMat, spineMat, backMat],
@@ -305,7 +319,6 @@ export function BookPreview3D({ book }: BookPreview3DProps) {
     backBoard.position.z = -bookD / 2 + 0.016;
     bookGroup.add(backBoard);
 
-    // Left spine wall
     const spineWall = new THREE.Mesh(
       new THREE.BoxGeometry(0.036, bookH, bookD),
       spineMat,
@@ -313,7 +326,6 @@ export function BookPreview3D({ book }: BookPreview3DProps) {
     spineWall.position.x = -bookW / 2 + 0.018;
     bookGroup.add(spineWall);
 
-    // Inset cream pages block
     const pages = new THREE.Mesh(
       new THREE.BoxGeometry(bookW - 0.09, bookH - 0.09, bookD - 0.068),
       pagesMat,
@@ -335,11 +347,11 @@ export function BookPreview3D({ book }: BookPreview3DProps) {
     };
     logoImg.src = "/brand/bcp-master-logo.png";
 
-    // Pointer drag rotation
     let isDragging = false;
     let prevX = 0;
     let dragOffsetY = 0;
     let currentRotY = -0.32;
+    let lastResetSignal = resetSignalRef.current;
 
     const onPointerDown = (e: PointerEvent) => {
       isDragging = true;
@@ -360,21 +372,31 @@ export function BookPreview3D({ book }: BookPreview3DProps) {
     window.addEventListener("pointermove", onPointerMove, { passive: true });
     window.addEventListener("pointerup", onPointerUp);
 
-    const handleResize = () => {
-      const newW = container.clientWidth;
-      const newH = container.clientHeight;
-      if (!newW || !newH) return;
+    const stopResize = createResizeObserver(container, (newW, newH) => {
       camera.aspect = newW / newH;
       camera.updateProjectionMatrix();
       renderer.setSize(newW, newH);
       renderer.render(scene, camera);
-    };
-    window.addEventListener("resize", handleResize);
+    });
 
     let isVisible = true;
     let isTabActive = !document.hidden;
+    let contextLost = false;
     let rafId = 0;
     let timeoutId = 0;
+
+    const stopContextLoss = attachContextLossRecovery(
+      renderer.domElement,
+      () => {
+        contextLost = true;
+        setWebglSupported(false);
+      },
+      () => {
+        contextLost = false;
+        setWebglSupported(true);
+        renderer.render(scene, camera);
+      },
+    );
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -393,21 +415,34 @@ export function BookPreview3D({ book }: BookPreview3DProps) {
 
     const renderFrame = () => {
       if (cancelled) return;
-      if (!isVisible || !isTabActive) {
+      if (contextLost || !isVisible || !isTabActive) {
         scheduleNext();
         return;
       }
 
-      const elapsed = clock.getElapsedTime();
+      if (resetSignalRef.current !== lastResetSignal) {
+        lastResetSignal = resetSignalRef.current;
+        dragOffsetY = 0;
+      }
+
+      const delta = Math.min(clock.getDelta(), 0.08);
+      const elapsed = clock.elapsedTime;
       const baseAngle =
         targetSideRef.current === "front" ? -0.32 : Math.PI - 0.32;
 
       if (!isDragging && !prefersReducedMotion) {
-        dragOffsetY *= 0.94;
+        dragOffsetY = THREE.MathUtils.damp(dragOffsetY, 0, 3.2, delta);
       }
 
-      const desiredY = baseAngle + dragOffsetY + (prefersReducedMotion ? 0 : Math.sin(elapsed * 0.7) * 0.06);
-      currentRotY += (desiredY - currentRotY) * (prefersReducedMotion ? 1 : 0.1);
+      const desiredY =
+        baseAngle +
+        dragOffsetY +
+        (prefersReducedMotion ? 0 : Math.sin(elapsed * 0.7) * 0.06);
+
+      currentRotY = prefersReducedMotion
+        ? desiredY
+        : THREE.MathUtils.damp(currentRotY, desiredY, 7.5, delta);
+
       bookGroup.rotation.y = currentRotY;
       bookGroup.rotation.x = 0.06;
 
@@ -437,24 +472,21 @@ export function BookPreview3D({ book }: BookPreview3DProps) {
       renderer.domElement.removeEventListener("pointerdown", onPointerDown);
       window.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("pointerup", onPointerUp);
-      window.removeEventListener("resize", handleResize);
+      stopResize();
+      stopContextLoss();
 
       if (renderer.domElement.parentNode === container) {
         container.removeChild(renderer.domElement);
       }
 
       disposeObject3D(scene);
-      if (envResources) {
-        envResources.envMap.dispose();
-        envResources.envScene.dispose();
-        envResources.pmrem.dispose();
-      }
+      disposeRoomEnvironment(envResources);
       renderer.dispose();
     };
   }, [book]);
 
   return (
-    <div className="rounded-[18px] border border-[#D4CCE3] bg-gradient-to-b from-[#F2EFF8] via-white to-[#F2EFF8]/60 overflow-hidden shadow-sm">
+    <div className="rounded-[18px] border border-border-subtle bg-gradient-to-b from-surface-lavender via-white to-surface-lavender/60 overflow-hidden shadow-sm">
       {webglSupported ? (
         <div
           ref={containerRef}
@@ -477,24 +509,28 @@ export function BookPreview3D({ book }: BookPreview3DProps) {
             <p className="font-editorial text-lg font-bold leading-snug">
               {book.titleBn}
             </p>
-            <p className="text-[11px] opacity-80">প্রকাশনা আসন্ন</p>
+            <p className="text-[11px] opacity-80">
+              {book.availabilityState === "PUBLISHED_PRICED"
+                ? "প্রকাশিত সংস্করণ"
+                : "প্রকাশনা আসন্ন"}
+            </p>
           </div>
         </div>
       )}
 
-      <div className="px-4 py-3 border-t border-[#D4CCE3] bg-white flex flex-wrap items-center justify-between gap-2">
-        <span className="text-xs font-medium text-[#596775]">
+      <div className="px-4 py-3 border-t border-border-subtle bg-white flex flex-wrap items-center justify-between gap-2">
+        <span className="text-xs font-medium text-text-muted">
           ড্র্যাগ করে প্রচ্ছদ ঘোরান
         </span>
-        <div className="flex items-center gap-1.5">
+        <div className="flex flex-wrap items-center gap-1.5">
           <button
             type="button"
             onClick={() => flipToSide("front")}
             aria-pressed={activeSide === "front"}
             className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-[8px] text-xs font-semibold border transition-colors cursor-pointer ${
               activeSide === "front"
-                ? "bg-[#51406F] text-white border-[#51406F]"
-                : "bg-[#F2EFF8] text-[#081838] border-[#D4CCE3] hover:bg-[#DDD6EB]"
+                ? "bg-action-primary text-white border-action-primary"
+                : "bg-surface-lavender text-text-primary border-border-subtle hover:bg-surface-lavender-muted"
             }`}
           >
             <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />
@@ -506,12 +542,19 @@ export function BookPreview3D({ book }: BookPreview3DProps) {
             aria-pressed={activeSide === "back"}
             className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-[8px] text-xs font-semibold border transition-colors cursor-pointer ${
               activeSide === "back"
-                ? "bg-[#51406F] text-white border-[#51406F]"
-                : "bg-[#F2EFF8] text-[#081838] border-[#D4CCE3] hover:bg-[#DDD6EB]"
+                ? "bg-action-primary text-white border-action-primary"
+                : "bg-surface-lavender text-text-primary border-border-subtle hover:bg-surface-lavender-muted"
             }`}
           >
             <RotateCw className="w-3.5 h-3.5" aria-hidden="true" />
             <span>পিছনের প্রচ্ছদ</span>
+          </button>
+          <button
+            type="button"
+            onClick={resetView}
+            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-[8px] text-xs font-semibold border border-border-subtle bg-white text-text-accent hover:bg-surface-lavender transition-colors cursor-pointer"
+          >
+            রিসেট ভিউ
           </button>
         </div>
       </div>

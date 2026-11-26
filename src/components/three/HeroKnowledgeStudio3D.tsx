@@ -4,13 +4,18 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import * as THREE from "three";
 import {
+  attachContextLossRecovery,
+  createAmbientLavenderShaderBackdrop,
   createBookSpineTexture,
   createContactShadowTexture,
   createDocumentCardTexture,
   createLaptopScreenTexture,
+  createResizeObserver,
   createRoomEnvironmentTexture,
   detectSoftwareWebGL,
   disposeObject3D,
+  disposeRoomEnvironment,
+  type RoomEnvironmentResources,
 } from "@/components/three/threeUtils";
 
 interface HeroKnowledgeStudio3DProps {
@@ -89,8 +94,7 @@ export function HeroKnowledgeStudio3D({
     camera.lookAt(0, 0.35, 0);
 
     // Environment IBL (skipped on software WebGL for steady responsiveness)
-    let envResources: ReturnType<typeof createRoomEnvironmentTexture> | null =
-      null;
+    let envResources: RoomEnvironmentResources | null = null;
     if (!isSoftwareGl) {
       try {
         envResources = createRoomEnvironmentTexture(renderer);
@@ -98,6 +102,14 @@ export function HeroKnowledgeStudio3D({
       } catch {
         envResources = null;
       }
+    }
+
+    // Subtle Executive Lavender shader backdrop
+    const shaderBackdrop = !isSoftwareGl
+      ? createAmbientLavenderShaderBackdrop(9, 5)
+      : null;
+    if (shaderBackdrop) {
+      scene.add(shaderBackdrop.mesh);
     }
 
     // Studio 3-point Lighting Rig
@@ -296,7 +308,6 @@ export function HeroKnowledgeStudio3D({
         metalness: 0.18,
       });
 
-      // Top + bottom cover boards
       const boardTop = new THREE.Mesh(
         new THREE.BoxGeometry(w, 0.024, d),
         coverMat,
@@ -311,7 +322,6 @@ export function HeroKnowledgeStudio3D({
       boardBottom.position.y = 0.012;
       bookHolder.add(boardBottom);
 
-      // Pages inset
       const pages = new THREE.Mesh(
         new THREE.BoxGeometry(w - 0.06, h - 0.048, d - 0.06),
         pagesMat,
@@ -319,7 +329,6 @@ export function HeroKnowledgeStudio3D({
       pages.position.set(0.015, h / 2, -0.015);
       bookHolder.add(pages);
 
-      // Spine facing camera front
       const spineFace = new THREE.Mesh(
         new THREE.BoxGeometry(w, h, 0.04),
         spineMat,
@@ -398,23 +407,31 @@ export function HeroKnowledgeStudio3D({
     container.addEventListener("pointermove", handlePointerMove, { passive: true });
     container.addEventListener("pointerleave", handlePointerLeave);
 
-    const handleResize = () => {
-      const newW = container.clientWidth;
-      const newH = container.clientHeight;
-      if (!newW || !newH) return;
+    const stopResize = createResizeObserver(container, (newW, newH) => {
       camera.aspect = newW / newH;
       camera.updateProjectionMatrix();
       renderer.setSize(newW, newH);
       renderer.render(scene, camera);
-    };
+    });
 
-    window.addEventListener("resize", handleResize);
-
-    // Visibility & IntersectionObserver throttling
     let isVisible = true;
     let isTabActive = !document.hidden;
+    let contextLost = false;
     let rafId = 0;
     let timeoutId = 0;
+
+    const stopContextLoss = attachContextLossRecovery(
+      renderer.domElement,
+      () => {
+        contextLost = true;
+        setWebglReady(false);
+      },
+      () => {
+        contextLost = false;
+        setWebglReady(true);
+        renderer.render(scene, camera);
+      },
+    );
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -435,7 +452,7 @@ export function HeroKnowledgeStudio3D({
       if (cancelled) return;
 
       const renderFrame = () => {
-        if (!isVisible || !isTabActive) {
+        if (contextLost || !isVisible || !isTabActive) {
           scheduleNext();
           return;
         }
@@ -443,7 +460,10 @@ export function HeroKnowledgeStudio3D({
         const elapsed = clock.getElapsedTime();
         const slideIdx = slideTargetRef.current;
 
-        // Subtle focus shift per promotional slide without resetting WebGL
+        if (shaderBackdrop) {
+          shaderBackdrop.uniforms.uTime.value = elapsed;
+        }
+
         const slideYawOffset =
           slideIdx === 4 ? -0.14 : slideIdx === 1 ? 0.06 : 0;
 
@@ -468,10 +488,8 @@ export function HeroKnowledgeStudio3D({
       };
 
       const scheduleNext = () => {
-        if (cancelled) return;
-        if (prefersReducedMotion) return; // Render once cleanly for reduced motion
+        if (cancelled || prefersReducedMotion) return;
         if (isSoftwareGl) {
-          // Pace software WebGL afterDraw to ~20fps so main thread stays silky
           timeoutId = window.setTimeout(() => {
             rafId = window.requestAnimationFrame(renderFrame);
           }, 48);
@@ -493,18 +511,15 @@ export function HeroKnowledgeStudio3D({
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       container.removeEventListener("pointermove", handlePointerMove);
       container.removeEventListener("pointerleave", handlePointerLeave);
-      window.removeEventListener("resize", handleResize);
+      stopResize();
+      stopContextLoss();
 
       if (renderer.domElement.parentNode === container) {
         container.removeChild(renderer.domElement);
       }
 
       disposeObject3D(scene);
-      if (envResources) {
-        envResources.envMap.dispose();
-        envResources.envScene.dispose();
-        envResources.pmrem.dispose();
-      }
+      disposeRoomEnvironment(envResources);
       renderer.dispose();
     };
   }, [logoAssetPath]);

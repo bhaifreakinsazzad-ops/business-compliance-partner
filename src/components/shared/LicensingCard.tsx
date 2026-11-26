@@ -27,11 +27,11 @@ export function LicensingCard({
         : "text-[#51406F]";
 
   return (
-    <article className="group rounded-[16px] border border-[#D4CCE3] bg-white p-6 flex flex-col justify-between gap-5 shadow-[0_2px_10px_rgba(81,64,111,0.04)] hover:border-[#51406F]/50 hover:shadow-[0_10px_24px_rgba(81,64,111,0.1)] transition-[border-color,box-shadow] duration-200">
+    <article className="bcp-surface-card group p-6 flex flex-col justify-between gap-5">
       <div className="space-y-3">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-semibold">
-          <span className="text-[#596775]">{entry.categoryNameBn}</span>
-          <span aria-hidden="true" className="text-[#D4CCE3]">
+          <span className="text-text-muted">{entry.categoryNameBn}</span>
+          <span aria-hidden="true" className="text-border-subtle">
             ·
           </span>
           <span className={statusTone}>
@@ -39,7 +39,7 @@ export function LicensingCard({
           </span>
         </div>
 
-        <h3 className="text-lg sm:text-xl font-bold text-[#081838] leading-snug group-hover:text-[#51406F] transition-colors">
+        <h3 className="text-lg sm:text-xl font-bold text-text-primary leading-snug group-hover:text-text-accent transition-colors">
           <Link href={`/licensing/${entry.slug}`} className="hover:underline underline-offset-4">
             {entry.titleBn}
           </Link>
