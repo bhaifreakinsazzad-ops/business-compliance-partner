@@ -15,20 +15,20 @@ import { NavLinksClient } from "@/components/layout/NavLinksClient";
 import { QuickSearchDialog } from "@/components/layout/QuickSearchDialog";
 
 const PRIMARY_NAV_LINKS: NavLinkItem[] = [
-  { href: "/", labelBn: "হোম" },
-  { href: "/courses", labelBn: "সকল কোর্স" },
-  { href: "/services", labelBn: "সকল সেবা" },
-  { href: "/books", labelBn: "আমাদের বইসমূহ" },
-  { href: "/about", labelBn: "আমাদের সম্পর্কে" },
-  { href: "/contact", labelBn: "যোগাযোগ" },
+  { href: "/courses", labelEn: "Courses", labelBn: "আমাদের সকল কোর্সসমূহ" },
+  { href: "/services", labelEn: "Services", labelBn: "আমাদের সকল সেবাসমূহ" },
+  { href: "/books", labelEn: "Books", labelBn: "আমাদের সকল বইসমূহ" },
+  { href: "/", labelEn: "Home", labelBn: "হোম" },
+  { href: "/about", labelEn: "About", labelBn: "আমাদের সম্পর্কে" },
+  { href: "/contact", labelEn: "Contact", labelBn: "যোগাযোগ" },
 ];
 
 const SECONDARY_NAV_LINKS: NavLinkItem[] = [
-  { href: "/licensing", labelBn: "লাইসেন্সিং" },
-  { href: "/consultancy", labelBn: "কনসালটেন্সি" },
-  { href: "/tools", labelBn: "বিজনেস টুলস" },
-  { href: "/faq", labelBn: "সচরাচর জিজ্ঞাসা" },
-  { href: "/portal", labelBn: "কাস্টমার পোর্টাল" },
+  { href: "/licensing", labelEn: "Licensing", labelBn: "লাইসেন্সিং ও নিবন্ধন" },
+  { href: "/consultancy", labelEn: "Consultancy", labelBn: "কনসালটেন্সি" },
+  { href: "/tools", labelEn: "Tools", labelBn: "বিজনেস টুলস" },
+  { href: "/faq", labelEn: "FAQ", labelBn: "সচরাচর জিজ্ঞাসা" },
+  { href: "/portal", labelEn: "Portal", labelBn: "কাস্টমার পোর্টাল" },
 ];
 
 interface AppHeaderProps {

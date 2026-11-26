@@ -59,8 +59,8 @@ export function BookCard({
               style={{ backgroundColor: book.coverPalette.spineHex }}
             />
             <span
-              className="ps-1.5 text-[9px] font-en font-bold uppercase tracking-wider line-clamp-1"
-              style={{ color: book.coverPalette.accentHex }}
+              className="ps-1.5 text-[9px] font-en font-bold uppercase tracking-wider line-clamp-1 opacity-95"
+              style={{ color: book.coverPalette.textHex }}
               lang="en"
             >
               {book.categoryNameEn}

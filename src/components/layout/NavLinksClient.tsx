@@ -7,19 +7,23 @@ import { AnimatePresence, m } from "motion/react";
 import {
   ArrowRight,
   BookOpen,
-  BookText,
   BriefcaseBusiness,
   ChevronDown,
   Compass,
   FileCheck2,
+  GraduationCap,
   HelpCircle,
   MessageSquareText,
 } from "lucide-react";
+import {
+  MASTER_THREE_PILLARS,
+  type MasterPillarId,
+} from "@/lib/config/pillars";
 import { PANEL_VARIANTS } from "@/lib/motion/presets";
 import { cn } from "@/lib/utils";
 import type { NavLinkItem } from "@/components/layout/MobileNavigation";
 
-type MegaMenuKey = "courses" | "services" | "books" | "resources";
+type MegaMenuKey = MasterPillarId | "resources";
 
 interface MegaItem {
   href: string;
@@ -31,17 +35,21 @@ const MEGA_MENU_DATA: Record<
   MegaMenuKey,
   {
     href: string;
+    labelEn: string;
     labelBn: string;
     headingBn: string;
+    intentBn: string;
     viewAllLabelBn: string;
     items: MegaItem[];
   }
 > = {
   courses: {
     href: "/courses",
-    labelBn: "কোর্স",
-    headingBn: "ব্যবহারিক প্রশিক্ষণ ও কোর্স বিভাগ",
-    viewAllLabelBn: "সকল ১০টি কোর্স ক্যাটাগরি দেখুন",
+    labelEn: "Courses",
+    labelBn: "কোর্সসমূহ",
+    headingBn: "Courses · ব্যবহারিক প্রশিক্ষণ ও কোর্স বিভাগ",
+    intentBn: "পেশাদার দক্ষতা অর্জন করুন এবং নিজেকে প্রস্তুত করুন",
+    viewAllLabelBn: "Explore Courses · সব ১০টি বিভাগ",
     items: [
       {
         href: "/courses?category=income-tax",
@@ -77,9 +85,11 @@ const MEGA_MENU_DATA: Record<
   },
   services: {
     href: "/services",
-    labelBn: "সেবা",
-    headingBn: "পেশাদার কমপ্লায়েন্স ও ব্যবসায়িক সেবা",
-    viewAllLabelBn: "সকল ১১টি সেবা বিভাগ দেখুন",
+    labelEn: "Services",
+    labelBn: "সেবাসমূহ",
+    headingBn: "Services · পেশাদার কমপ্লায়েন্স ও ব্যবসায়িক সেবা",
+    intentBn: "ব্যবসার প্রয়োজনীয় পেশাদার সহায়তা, লাইসেন্সিং ও পরামর্শ নিন",
+    viewAllLabelBn: "Explore Services · সব ১১টি বিভাগ",
     items: [
       {
         href: "/services?category=income-tax-solutions",
@@ -102,22 +112,24 @@ const MEGA_MENU_DATA: Record<
         subtitleEn: "e-GP Procurement",
       },
       {
-        href: "/services?category=customs-international-trade",
-        titleBn: "কাস্টমস, IRC ও ERC সহায়তা",
-        subtitleEn: "Import & Export",
-      },
-      {
         href: "/licensing",
         titleBn: "ব্যবসায়িক লাইসেন্সিং ও নিবন্ধন",
-        subtitleEn: "Trade · DIFE · Fire",
+        subtitleEn: "Trade · DIFE · Fire · IRC",
+      },
+      {
+        href: "/consultancy",
+        titleBn: "বিশেষজ্ঞ কনসালটেন্সি ও পরামর্শ",
+        subtitleEn: "Direct Business Advisory",
       },
     ],
   },
   books: {
     href: "/books",
-    labelBn: "বই",
-    headingBn: "প্রস্তাবিত কমপ্লায়েন্স প্রকাশনা ও হ্যান্ডবুক",
-    viewAllLabelBn: "বইয়ের পূর্ণাঙ্গ স্টোরফ্রন্ট দেখুন",
+    labelEn: "Books",
+    labelBn: "বইসমূহ",
+    headingBn: "Books · প্র্যাকটিক্যাল কমপ্লায়েন্স প্রকাশনা ও হ্যান্ডবুক",
+    intentBn: "প্রয়োজনীয় বই ও প্রকাশনার মাধ্যমে জ্ঞান সমৃদ্ধ করুন",
+    viewAllLabelBn: "Explore Books · সকল বই প্রিভিউ",
     items: [
       {
         href: "/books?category=tax",
@@ -153,8 +165,10 @@ const MEGA_MENU_DATA: Record<
   },
   resources: {
     href: "/tools",
+    labelEn: "Resources",
     labelBn: "রিসোর্স",
-    headingBn: "ব্যবসায়িক টুলস, লাইসেন্সিং ও পরামর্শ",
+    headingBn: "সহায়ক টুলস, লাইসেন্সিং ও পরামর্শ রিসোর্স",
+    intentBn: "প্রস্তুতি চেকলিস্ট, রোডম্যাপ ও সচরাচর জিজ্ঞাসা",
     viewAllLabelBn: "সব রিসোর্স ও টুলস দেখুন",
     items: [
       {
@@ -184,11 +198,11 @@ const MEGA_MENU_DATA: Record<
 function getMenuIcon(key: MegaMenuKey) {
   switch (key) {
     case "courses":
-      return BookOpen;
+      return GraduationCap;
     case "services":
       return BriefcaseBusiness;
     case "books":
-      return BookText;
+      return BookOpen;
     case "resources":
       return Compass;
   }
@@ -226,7 +240,7 @@ export function NavLinksClient({ links }: NavLinksClientProps) {
     clearCloseTimer();
     closeTimerRef.current = window.setTimeout(() => {
       setOpenMenu(null);
-    }, 140);
+    }, 150);
   };
 
   useEffect(() => {
@@ -261,13 +275,13 @@ export function NavLinksClient({ links }: NavLinksClientProps) {
     <div
       ref={navRef}
       onMouseLeave={scheduleClose}
-      className="relative flex items-center gap-4 xl:gap-5 text-sm font-semibold"
+      className="relative flex items-center gap-2.5 xl:gap-4 text-[13px] xl:text-sm font-semibold"
     >
       <Link
         href="/"
         aria-current={isRouteActive("/") ? "page" : undefined}
         className={cn(
-          "py-2 whitespace-nowrap underline-offset-8 decoration-[#51406F] decoration-2 transition-colors",
+          "py-2 px-1 whitespace-nowrap shrink-0 underline-offset-8 decoration-[#51406F] decoration-2 transition-colors",
           isRouteActive("/")
             ? "text-[#51406F] font-bold underline"
             : "text-[#081838] hover:text-[#51406F] hover:underline",
@@ -276,51 +290,113 @@ export function NavLinksClient({ links }: NavLinksClientProps) {
         হোম
       </Link>
 
-      {(["courses", "services", "books", "resources"] as MegaMenuKey[]).map(
-        (key) => {
-          const item = MEGA_MENU_DATA[key];
-          const isActive = isRouteActive(item.href);
-          const isExpanded = openMenu === key;
+      {/* Mandated Commercial Pillars in Exact Sequence: Courses -> Services -> Books */}
+      {MASTER_THREE_PILLARS.map((pillar) => {
+        const key = pillar.id;
+        const isActive = isRouteActive(pillar.href);
+        const isExpanded = openMenu === key;
 
-          return (
-            <div
-              key={key}
-              onMouseEnter={() => handleOpen(key)}
-              className="relative"
+        return (
+          <div
+            key={key}
+            onMouseEnter={() => handleOpen(key)}
+            className="relative inline-flex items-center shrink-0"
+          >
+            <Link
+              href={pillar.href}
+              data-nav-pillar={pillar.id}
+              aria-current={isActive ? "page" : undefined}
+              onClick={() => setOpenMenu(null)}
+              className={cn(
+                "inline-flex items-baseline gap-1 py-2 ps-1.5 pe-0.5 whitespace-nowrap shrink-0 underline-offset-8 decoration-[#51406F] decoration-2 transition-colors",
+                isActive || isExpanded
+                  ? "text-[#51406F] font-bold underline"
+                  : "text-[#081838] hover:text-[#51406F] hover:underline",
+              )}
             >
-              <button
-                type="button"
-                aria-expanded={isExpanded}
-                aria-controls="bcp-desktop-mega-menu"
-                onClick={() =>
-                  setOpenMenu((prev) => (prev === key ? null : key))
-                }
+              <span className="font-en font-bold tracking-tight" lang="en">
+                {pillar.labelEn}
+              </span>
+              <span className="hidden xl:inline text-[11px] font-medium text-[#596775]">
+                · {pillar.navLabelBn}
+              </span>
+            </Link>
+
+            <button
+              type="button"
+              aria-expanded={isExpanded}
+              aria-controls="bcp-desktop-mega-menu"
+              aria-label={`${pillar.labelEn} (${pillar.navLabelBn}) সাব-মেনু`}
+              onClick={() =>
+                setOpenMenu((prev) => (prev === key ? null : key))
+              }
+              className={cn(
+                "inline-flex items-center justify-center w-6 h-8 rounded-[6px] transition-colors cursor-pointer shrink-0",
+                isExpanded
+                  ? "text-[#51406F] bg-[#F2EFF8]"
+                  : "text-[#596775] hover:text-[#51406F] hover:bg-[#F2EFF8]/80",
+              )}
+            >
+              <ChevronDown
                 className={cn(
-                  "inline-flex items-center gap-1 py-2 whitespace-nowrap underline-offset-8 decoration-[#51406F] decoration-2 transition-colors cursor-pointer",
-                  isActive || isExpanded
-                    ? "text-[#51406F] font-bold underline"
-                    : "text-[#081838] hover:text-[#51406F] hover:underline",
+                  "w-3.5 h-3.5 transition-transform duration-150",
+                  isExpanded && "rotate-180 text-[#51406F]",
                 )}
-              >
-                <span>{item.labelBn}</span>
-                <ChevronDown
-                  className={cn(
-                    "w-3.5 h-3.5 transition-transform duration-150",
-                    isExpanded && "rotate-180 text-[#51406F]",
-                  )}
-                  aria-hidden="true"
-                />
-              </button>
-            </div>
-          );
-        },
-      )}
+                aria-hidden="true"
+              />
+            </button>
+          </div>
+        );
+      })}
+
+      {/* Supporting Resources Mega Menu */}
+      <div
+        onMouseEnter={() => handleOpen("resources")}
+        className="relative inline-flex items-center shrink-0"
+      >
+        <Link
+          href="/tools"
+          aria-current={isRouteActive("/tools") ? "page" : undefined}
+          onClick={() => setOpenMenu(null)}
+          className={cn(
+            "py-2 ps-1 pe-0.5 whitespace-nowrap shrink-0 underline-offset-8 decoration-[#51406F] decoration-2 transition-colors",
+            isRouteActive("/tools") || openMenu === "resources"
+              ? "text-[#51406F] font-bold underline"
+              : "text-[#081838] hover:text-[#51406F] hover:underline",
+          )}
+        >
+          রিসোর্স
+        </Link>
+        <button
+          type="button"
+          aria-expanded={openMenu === "resources"}
+          aria-controls="bcp-desktop-mega-menu"
+          aria-label="রিসোর্স ও টুলস সাব-মেনু"
+          onClick={() =>
+            setOpenMenu((prev) => (prev === "resources" ? null : "resources"))
+          }
+          className={cn(
+            "inline-flex items-center justify-center w-6 h-8 rounded-[6px] transition-colors cursor-pointer shrink-0",
+            openMenu === "resources"
+              ? "text-[#51406F] bg-[#F2EFF8]"
+              : "text-[#596775] hover:text-[#51406F] hover:bg-[#F2EFF8]/80",
+          )}
+        >
+          <ChevronDown
+            className={cn(
+              "w-3.5 h-3.5 transition-transform duration-150",
+              openMenu === "resources" && "rotate-180 text-[#51406F]",
+            )}
+            aria-hidden="true"
+          />
+        </button>
+      </div>
 
       <Link
         href="/about"
         aria-current={isRouteActive("/about") ? "page" : undefined}
         className={cn(
-          "py-2 whitespace-nowrap underline-offset-8 decoration-[#51406F] decoration-2 transition-colors",
+          "py-2 px-1 whitespace-nowrap shrink-0 underline-offset-8 decoration-[#51406F] decoration-2 transition-colors hidden xl:inline-block",
           isRouteActive("/about")
             ? "text-[#51406F] font-bold underline"
             : "text-[#081838] hover:text-[#51406F] hover:underline",
@@ -333,7 +409,7 @@ export function NavLinksClient({ links }: NavLinksClientProps) {
         href="/contact"
         aria-current={isRouteActive("/contact") ? "page" : undefined}
         className={cn(
-          "py-2 whitespace-nowrap underline-offset-8 decoration-[#51406F] decoration-2 transition-colors",
+          "py-2 px-1 whitespace-nowrap shrink-0 underline-offset-8 decoration-[#51406F] decoration-2 transition-colors",
           isRouteActive("/contact")
             ? "text-[#51406F] font-bold underline"
             : "text-[#081838] hover:text-[#51406F] hover:underline",
@@ -366,7 +442,7 @@ export function NavLinksClient({ links }: NavLinksClientProps) {
                       {activeData.headingBn}
                     </p>
                     <p className="text-xs text-text-muted">
-                      ক্যাটাগরি নির্বাচন করে সরাসরি বিবরণ দেখুন
+                      {activeData.intentBn}
                     </p>
                   </div>
                 </div>
@@ -406,8 +482,13 @@ export function NavLinksClient({ links }: NavLinksClientProps) {
 
               <div className="px-6 py-3 bg-[#F8F8F8] border-t border-border-subtle flex items-center justify-between text-xs text-text-muted">
                 <span className="inline-flex items-center gap-1.5">
-                  <HelpCircle className="w-3.5 h-3.5 text-text-accent" aria-hidden="true" />
-                  <span>সঠিক সমাধান খুঁজে না পেলে পরামর্শ ফর্ম বা WhatsApp ব্যবহার করুন</span>
+                  <HelpCircle
+                    className="w-3.5 h-3.5 text-text-accent"
+                    aria-hidden="true"
+                  />
+                  <span>
+                    সঠিক সমাধান খুঁজে না পেলে পরামর্শ ফর্ম বা WhatsApp ব্যবহার করুন
+                  </span>
                 </span>
                 <Link
                   href="/consultancy"

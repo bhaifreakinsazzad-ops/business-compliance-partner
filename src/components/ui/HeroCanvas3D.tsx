@@ -4,7 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import {
   attachContextLossRecovery,
+  awaitWebGLFrameFence,
   createContactShadowTexture,
+  createDeltaTimer,
   createResizeObserver,
   createRoomEnvironmentTexture,
   detectSoftwareWebGL,
@@ -375,7 +377,7 @@ export function HeroCanvas3D({
     let contextLost = false;
     let cancelled = false;
     let rafId = 0;
-    let timeoutId = 0;
+    let cancelFence: (() => void) | null = null;
 
     const stopContextLoss = attachContextLossRecovery(
       renderer.domElement,
@@ -392,27 +394,31 @@ export function HeroCanvas3D({
 
     const observer = new IntersectionObserver(
       (entries) => {
-        isVisible = entries.some((entry) => entry.isIntersecting);
+        const nextVisible = entries.some((entry) => entry.isIntersecting);
+        isVisible = nextVisible;
+        if (nextVisible) scheduleNext();
       },
       { threshold: 0.1 },
     );
     observer.observe(container);
 
+    const timer = createDeltaTimer();
     const handleVisibilityChange = () => {
       isTabActive = !document.hidden;
+      if (isTabActive) {
+        timer.step();
+        scheduleNext();
+      }
     };
     document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    const clock = new THREE.Clock();
 
     const renderFrame = () => {
       if (cancelled) return;
       if (contextLost || !isVisible || !isTabActive) {
-        scheduleNext();
         return;
       }
 
-      const elapsed = clock.getElapsedTime();
+      const { elapsed } = timer.step();
       if (!prefersReducedMotion) {
         dragVelocity *= 0.92;
         manualOrbitOffset += dragVelocity;
@@ -446,11 +452,18 @@ export function HeroCanvas3D({
     };
 
     const scheduleNext = () => {
-      if (cancelled || prefersReducedMotion) return;
+      if (cancelled || prefersReducedMotion || contextLost || !isVisible || !isTabActive) return;
       if (isSoftwareGl) {
-        timeoutId = window.setTimeout(() => {
-          rafId = window.requestAnimationFrame(renderFrame);
-        }, 48);
+        cancelFence?.();
+        cancelFence = awaitWebGLFrameFence(
+          renderer,
+          () => {
+            if (!cancelled) {
+              rafId = window.requestAnimationFrame(renderFrame);
+            }
+          },
+          48,
+        );
       } else {
         rafId = window.requestAnimationFrame(renderFrame);
       }
@@ -461,7 +474,7 @@ export function HeroCanvas3D({
     return () => {
       cancelled = true;
       window.cancelAnimationFrame(rafId);
-      window.clearTimeout(timeoutId);
+      cancelFence?.();
       observer.disconnect();
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       renderer.domElement.removeEventListener("pointerdown", handlePointerDown);

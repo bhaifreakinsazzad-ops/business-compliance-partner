@@ -66,7 +66,7 @@ export default async function BooksPage({ searchParams }: BooksPageProps) {
             <div className="max-w-3xl space-y-2.5">
               <p className="inline-flex items-center gap-2 text-xs font-en font-semibold uppercase tracking-[0.14em] text-[#51406F]">
                 <BookOpen className="w-4 h-4 text-[#51406F]" aria-hidden="true" />
-                <span>Our Books Storefront · Upcoming Preview Editions</span>
+                <span>03 · Books · Practical Knowledge & Publications</span>
               </p>
               <h1 className="text-3xl sm:text-4xl font-extrabold leading-snug text-[#081838]">
                 আমাদের সকল বইসমূহ ও প্রকাশনা প্রিভিউ
@@ -179,12 +179,15 @@ export default async function BooksPage({ searchParams }: BooksPageProps) {
         </section>
 
         <CTASection
+          eyebrowEn="Courses · Services · Books"
           titleBn="প্রকাশনার আগে থেকেই বই বা কর্পোরেট কপির বিষয়ে আগ্রহ জানাতে চান?"
-          descriptionBn="কোনো বই প্রকাশিত হলেই অগ্রাধিকার ভিত্তিতে তথ্য পেতে আপনার আগ্রহ নিবন্ধন করুন অথবা WhatsApp-এ বার্তা পাঠান।"
+          descriptionBn="কোনো বই প্রকাশিত হলেই অগ্রাধিকার ভিত্তিতে তথ্য পেতে আপনার আগ্রহ নিবন্ধন করুন অথবা সংশ্লিষ্ট কোর্স ও সেবা দেখুন।"
           primaryHref="/consultancy?pillar=CONSULTANCY&topic=%E0%A6%AC%E0%A6%87+%E0%A6%AA%E0%A7%8D%E0%A6%B0%E0%A6%95%E0%A6%BE%E0%A6%B6%E0%A6%A8%E0%A6%BE+%E0%A6%86%E0%A6%97%E0%A7%8D%E0%A6%B0%E0%A6%B9"
           primaryLabelBn="প্রকাশনা আগ্রহ জানান"
           secondaryHref="/courses"
-          secondaryLabelBn="সংশ্লিষ্ট কোর্স দেখুন"
+          secondaryLabelBn="Explore Courses · কোর্সসমূহ"
+          tertiaryHref="/services"
+          tertiaryLabelBn="Explore Services · সেবাসমূহ"
         />
       </main>
 

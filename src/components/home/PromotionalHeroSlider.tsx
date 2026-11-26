@@ -31,56 +31,61 @@ interface PromoSlide {
   ctaLabelBn: string;
   secondaryHref: string;
   secondaryLabelBn: string;
+  tertiaryHref?: string;
+  tertiaryLabelBn?: string;
 }
 
 const PROMO_SLIDES: PromoSlide[] = [
   {
     id: "ecosystem-overview",
-    badgeBn: "Business Compliance Partner · বাংলাদেশ",
-    titleBn: "ব্যবসা শুরু থেকে সফল পরিচালনা—সব সমাধান এক জায়গায়।",
+    badgeBn: "Courses · Services · Books — Business Compliance Partner",
+    titleBn:
+      "ব্যবসা শুরু থেকে সফল পরিচালনা—কোর্স, পেশাদার সেবা ও বই একই প্ল্যাটফর্মে।",
     subtitleBn:
-      "পেশাদার কোর্স, ট্যাক্স-ভ্যাট কমপ্লায়েন্স সেবা, বইয়ের প্রিভিউ, লাইসেন্সিং ও বিশেষজ্ঞ পরামর্শের বিশ্বস্ত প্ল্যাটফর্ম।",
+      "Learn with confidence. Get professional assistance. Discover practical knowledge — দক্ষতা অর্জন করুন, পেশাদার সহায়তা নিন এবং প্র্যাকটিক্যাল বই দিয়ে জ্ঞান সমৃদ্ধ করুন।",
     ctaHref: "/courses",
-    ctaLabelBn: "আমাদের কোর্স দেখুন",
+    ctaLabelBn: "Explore Courses · কোর্সসমূহ",
+    secondaryHref: "/services",
+    secondaryLabelBn: "Explore Services · সেবাসমূহ",
+    tertiaryHref: "/books",
+    tertiaryLabelBn: "Explore Books · বইসমূহ",
+  },
+  {
+    id: "professional-courses",
+    badgeBn: "01 · Courses — দক্ষতা উন্নয়ন ও প্রশিক্ষণ",
+    titleBn: "Tax, VAT, e-GP, E-commerce ও RJSC ব্যবহারিক কোর্স",
+    subtitleBn:
+      "পেশাদার দক্ষতা অর্জন করুন এবং নিজেকে প্রস্তুত করুন — ১০টি ব্যবহারিক প্রশিক্ষণ ট্র্যাক ও স্পষ্ট সিলেবাস।",
+    ctaHref: "/courses",
+    ctaLabelBn: "Explore Courses · সব কোর্স দেখুন",
+    secondaryHref: "/services",
+    secondaryLabelBn: "Explore Services · সেবাসমূহ",
+  },
+  {
+    id: "tax-vat-services",
+    badgeBn: "02 · Services — সরাসরি WhatsApp ও কমপ্লায়েন্স সহায়তা",
+    titleBn: "আয়কর, ভ্যাট, মূসক ও কর্পোরেট কমপ্লায়েন্স পেশাদার সেবা",
+    subtitleBn:
+      "ব্যবসার প্রয়োজনীয় পেশাদার সহায়তা ও সমাধান নিন — e-TIN, BIN, মূসক ৯.১, Smart RJSC ও লাইসেন্সিং সহায়তা।",
+    ctaHref: "/services",
+    ctaLabelBn: "Explore Services · সব সেবা দেখুন",
     secondaryHref: "/consultancy",
     secondaryLabelBn: "বিশেষজ্ঞ পরামর্শ নিন",
   },
   {
-    id: "professional-courses",
-    badgeBn: "দক্ষতা উন্নয়ন ও প্রশিক্ষণ",
-    titleBn: "Tax, VAT, e-GP, E-commerce ও RJSC ব্যবহারিক কোর্স",
-    subtitleBn:
-      "বাস্তবভিত্তিক সিলেবাস, ১০টি পেশাদার প্রশিক্ষণ ট্র্যাক এবং সহজ আগ্রহ নিবন্ধনের সুবিধা।",
-    ctaHref: "/courses",
-    ctaLabelBn: "সকল কোর্স দেখুন",
-    secondaryHref: "/services",
-    secondaryLabelBn: "সকল সেবাসমূহ",
-  },
-  {
-    id: "tax-vat-services",
-    badgeBn: "সরাসরি WhatsApp সহায়তা",
-    titleBn: "আয়কর, ভ্যাট ও মূসক কমপ্লায়েন্স সেবা এখন আরও সহজ",
-    subtitleBn:
-      "e-TIN, BIN নিবন্ধন, মূসক ৯.১ রিটার্ন এবং কর্পোরেট কমপ্লায়েন্সে দ্রুত পেশাদার সহায়তা।",
-    ctaHref: "/services?category=income-tax-solutions",
-    ctaLabelBn: "ট্যাক্স ও ভ্যাট সেবা",
-    secondaryHref: "/services",
-    secondaryLabelBn: "সকল সেবা দেখুন",
-  },
-  {
     id: "books-storefront",
-    badgeBn: "প্রকাশনা ও রেফারেন্স বই",
-    titleBn: "কোর্স ও সেবার সাথে সামঞ্জস্যপূর্ণ কমপ্লায়েন্স বইসমূহ",
+    badgeBn: "03 · Books — প্রকাশনা ও রেফারেন্স বইসমূহ",
+    titleBn: "প্রয়োজনীয় বই ও প্রকাশনার মাধ্যমে আপনার কমপ্লায়েন্স জ্ঞান সমৃদ্ধ করুন",
     subtitleBn:
-      "আয়কর, ভ্যাট, e-GP, RJSC ও ই-কমার্স সংক্রান্ত আসন্ন প্রকাশনার প্রিভিউ দেখুন ও আগ্রহ জানান।",
+      "আয়কর, ভ্যাট, e-GP, RJSC ও ই-কমার্স সংক্রান্ত ব্যবহারিক হ্যান্ডবুকের প্রিভিউ দেখুন ও প্রকাশনা আগ্রহ জানান।",
     ctaHref: "/books",
-    ctaLabelBn: "সব বই প্রিভিউ দেখুন",
-    secondaryHref: "/consultancy",
-    secondaryLabelBn: "প্রকাশনা আগ্রহ জানান",
+    ctaLabelBn: "Explore Books · সব বই দেখুন",
+    secondaryHref: "/courses",
+    secondaryLabelBn: "সংশ্লিষ্ট কোর্সসমূহ",
   },
   {
     id: "licensing-registration",
-    badgeBn: "নিবন্ধন ও লাইসেন্সিং",
+    badgeBn: "Services Extension · নিবন্ধন ও লাইসেন্সিং",
     titleBn: "ট্রেড লাইসেন্স, Smart RJSC, DIFE ও ফায়ার লাইসেন্স সহায়তা",
     subtitleBn:
       "সরকারি কর্তৃপক্ষের সঠিক তথ্যসূত্র, প্রয়োজনীয় নথিপত্র ও ধাপে ধাপে আবেদন নির্দেশিকা।",
@@ -243,7 +248,7 @@ export function PromotionalHeroSlider({
             </div>
 
             {activeIndex === 0 ? (
-              <h1 className="text-2xl sm:text-3xl lg:text-[2.15rem] font-extrabold leading-[1.24] text-[#081838] [text-wrap:balance] max-w-2xl">
+              <h1 className="text-2xl sm:text-3xl lg:text-[2.1rem] font-extrabold leading-[1.24] text-[#081838] [text-wrap:balance] max-w-2xl">
                 {activeSlide.titleBn}
               </h1>
             ) : (
@@ -251,7 +256,7 @@ export function PromotionalHeroSlider({
                 <h1 className="visually-hidden">
                   {PROMO_SLIDES[0]!.titleBn}
                 </h1>
-                <p className="text-2xl sm:text-3xl lg:text-[2.15rem] font-extrabold leading-[1.24] text-[#081838] [text-wrap:balance] max-w-2xl">
+                <p className="text-2xl sm:text-3xl lg:text-[2.1rem] font-extrabold leading-[1.24] text-[#081838] [text-wrap:balance] max-w-2xl">
                   {activeSlide.titleBn}
                 </p>
               </>
@@ -261,11 +266,11 @@ export function PromotionalHeroSlider({
               {activeSlide.subtitleBn}
             </p>
 
-            {/* Primary & Secondary CTAs + Carousel Controls */}
-            <div className="pt-1 flex flex-wrap items-center gap-3">
+            {/* Primary & Secondary CTAs + Tertiary Books Link */}
+            <div className="pt-1 flex flex-wrap items-center gap-2.5 sm:gap-3">
               <Link
                 href={activeSlide.ctaHref}
-                className="inline-flex items-center justify-center gap-2 min-h-11 px-5 py-2.5 rounded-[10px] bg-[#51406F] text-white font-semibold text-sm whitespace-nowrap shrink-0 hover:bg-[#3F315A] transition-colors duration-150 shadow-sm focus-visible:outline-3 focus-visible:outline-[#C59028] focus-visible:outline-offset-2"
+                className="inline-flex items-center justify-center gap-2 min-h-11 px-4 sm:px-5 py-2.5 rounded-[10px] bg-[#51406F] text-white font-semibold text-xs sm:text-sm whitespace-nowrap shrink-0 hover:bg-[#3F315A] transition-colors duration-150 shadow-sm focus-visible:outline-3 focus-visible:outline-[#C59028] focus-visible:outline-offset-2"
               >
                 <span>{activeSlide.ctaLabelBn}</span>
                 <ArrowRight className="w-4 h-4" aria-hidden="true" />
@@ -273,10 +278,19 @@ export function PromotionalHeroSlider({
 
               <Link
                 href={activeSlide.secondaryHref}
-                className="inline-flex items-center justify-center min-h-11 px-4 py-2.5 rounded-[10px] border border-[#51406F]/35 bg-white/90 text-[#081838] font-semibold text-sm whitespace-nowrap shrink-0 hover:bg-white hover:border-[#51406F] transition-colors duration-150 focus-visible:outline-3 focus-visible:outline-[#C59028] focus-visible:outline-offset-2"
+                className="inline-flex items-center justify-center min-h-11 px-4 py-2.5 rounded-[10px] border border-[#51406F]/35 bg-white/95 text-[#081838] font-semibold text-xs sm:text-sm whitespace-nowrap shrink-0 hover:bg-white hover:border-[#51406F] transition-colors duration-150 focus-visible:outline-3 focus-visible:outline-[#C59028] focus-visible:outline-offset-2"
               >
                 {activeSlide.secondaryLabelBn}
               </Link>
+
+              {activeSlide.tertiaryHref && activeSlide.tertiaryLabelBn ? (
+                <Link
+                  href={activeSlide.tertiaryHref}
+                  className="inline-flex items-center justify-center min-h-11 px-4 py-2.5 rounded-[10px] border border-[#D4CCE3] bg-[#DDD6EB]/75 text-[#081838] font-semibold text-xs sm:text-sm whitespace-nowrap shrink-0 hover:bg-[#DDD6EB] hover:border-[#51406F] transition-colors duration-150 focus-visible:outline-3 focus-visible:outline-[#C59028] focus-visible:outline-offset-2"
+                >
+                  {activeSlide.tertiaryLabelBn}
+                </Link>
+              ) : null}
             </div>
 
             {/* Pagination Dots + Prev / Pause / Next */}

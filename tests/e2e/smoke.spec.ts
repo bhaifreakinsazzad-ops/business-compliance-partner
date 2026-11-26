@@ -127,8 +127,9 @@ test.describe("Business Compliance Partner smoke & responsiveness", () => {
     const res = await request.get("/api/health");
     expect([200, 503]).toContain(res.status());
     const body = (await res.json()) as Record<string, unknown>;
+    expect(body).toHaveProperty("ok");
     expect(body).toHaveProperty("status");
-    expect(body).toHaveProperty("database");
+    expect(body).not.toHaveProperty("database");
     expect(body).toHaveProperty("timestamp");
   });
 

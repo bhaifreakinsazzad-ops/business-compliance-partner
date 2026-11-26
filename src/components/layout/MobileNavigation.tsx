@@ -2,12 +2,25 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Menu, MessageCircle, X } from "lucide-react";
+import {
+  ArrowRight,
+  BookOpen,
+  BriefcaseBusiness,
+  GraduationCap,
+  Menu,
+  MessageCircle,
+  X,
+} from "lucide-react";
+import {
+  MASTER_THREE_PILLARS,
+  type PillarIconName,
+} from "@/lib/config/pillars";
 import { QuickSearchDialog } from "@/components/layout/QuickSearchDialog";
 
 export interface NavLinkItem {
   href: string;
   labelBn: string;
+  labelEn?: string;
 }
 
 interface MobileNavigationProps {
@@ -19,6 +32,17 @@ interface MobileNavigationProps {
   ctaLabelBn: string;
   whatsappHref?: string | null;
   whatsappDisplay?: string | null;
+}
+
+function getPillarIcon(iconName: PillarIconName) {
+  switch (iconName) {
+    case "GraduationCap":
+      return GraduationCap;
+    case "BriefcaseBusiness":
+      return BriefcaseBusiness;
+    case "BookOpen":
+      return BookOpen;
+  }
 }
 
 export function MobileNavigation({
@@ -64,6 +88,14 @@ export function MobileNavigation({
     return () => dialog.removeEventListener("close", handleClose);
   }, []);
 
+  const pillarHrefs = new Set<string>(
+    MASTER_THREE_PILLARS.map((pillar) => pillar.href),
+  );
+  const supportingLinks = [
+    ...links.filter((item) => !pillarHrefs.has(item.href)),
+    ...secondaryLinks.filter((item) => !pillarHrefs.has(item.href)),
+  ];
+
   return (
     <div className="lg:hidden flex items-center gap-2 shrink-0">
       <QuickSearchDialog variant="mobile" />
@@ -89,21 +121,21 @@ export function MobileNavigation({
       >
         <div className="flex flex-col h-full">
           <div className="flex items-center justify-between px-5 py-4 border-b border-border-subtle bg-surface-lavender">
-            <div>
+            <div className="min-w-0">
               <p
                 id="ps-mobile-nav-title"
-                className="font-editorial text-lg font-semibold text-text-primary leading-tight"
+                className="font-editorial text-lg font-semibold text-text-primary leading-tight truncate"
                 lang="en"
               >
                 {brandDisplayName}
               </p>
-              <p className="text-xs text-text-accent">{brandNameBn}</p>
+              <p className="text-xs text-text-accent truncate">{brandNameBn}</p>
             </div>
             <button
               type="button"
               onClick={closeMenu}
               aria-label="মেনু বন্ধ করুন"
-              className="inline-flex items-center justify-center w-11 h-11 rounded-[12px] border border-border-subtle bg-surface-card text-text-accent hover:bg-surface-lavender-muted transition-colors"
+              className="inline-flex items-center justify-center w-11 h-11 rounded-[12px] border border-border-subtle bg-surface-card text-text-accent hover:bg-surface-lavender-muted transition-colors shrink-0"
             >
               <X className="w-5 h-5" aria-hidden="true" />
             </button>
@@ -111,35 +143,76 @@ export function MobileNavigation({
 
           <nav
             aria-label="মোবাইল নেভিগেশন"
-            className="flex-1 overflow-y-auto px-5 py-4"
+            className="flex-1 overflow-y-auto px-5 py-4 space-y-5"
           >
-            <ul className="space-y-1">
-              {links.map((item) => (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    onClick={closeMenu}
-                    className="flex items-center min-h-12 px-3 rounded-[12px] text-base font-semibold text-text-primary hover:bg-surface-lavender hover:text-text-accent transition-colors"
-                  >
-                    {item.labelBn}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-            {secondaryLinks.length > 0 ? (
-              <div className="mt-5 pt-4 border-t border-border-subtle">
-                <p className="px-3 mb-2 text-xs font-semibold text-text-muted">
-                  অন্যান্য বিভাগ ও টুলস
+            {/* Primary 3 Commercial Pillars strictly ordered first: Courses -> Services -> Books */}
+            <div>
+              <p className="px-1 mb-2.5 text-[11px] font-en font-bold uppercase tracking-[0.14em] text-text-accent">
+                Courses · Services · Books
+              </p>
+              <ul
+                data-mobile-pillar-list="true"
+                className="space-y-2"
+              >
+                {MASTER_THREE_PILLARS.map((pillar) => {
+                  const Icon = getPillarIcon(pillar.iconName);
+                  return (
+                    <li key={pillar.id}>
+                      <Link
+                        href={pillar.href}
+                        data-mobile-pillar={pillar.id}
+                        onClick={closeMenu}
+                        className="flex items-center justify-between gap-3 min-h-14 px-3.5 py-2.5 rounded-[14px] border border-border-subtle bg-[#DDD6EB] hover:bg-[#D5CCE8] text-text-primary transition-colors"
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <span className="inline-flex items-center justify-center w-10 h-10 rounded-[10px] bg-action-primary text-white shrink-0">
+                            <Icon className="w-5 h-5" aria-hidden="true" />
+                          </span>
+                          <div className="min-w-0">
+                            <span
+                              className="block font-en text-sm font-extrabold text-[#081838] leading-tight"
+                              lang="en"
+                            >
+                              {pillar.orderLabel}. {pillar.labelEn}
+                            </span>
+                            <span className="block text-xs font-semibold text-[#51406F] truncate">
+                              {pillar.labelBn}
+                            </span>
+                          </div>
+                        </div>
+                        <ArrowRight
+                          className="w-4 h-4 text-[#51406F] shrink-0"
+                          aria-hidden="true"
+                        />
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+
+            {supportingLinks.length > 0 ? (
+              <div className="pt-4 border-t border-border-subtle">
+                <p className="px-2 mb-2 text-xs font-semibold text-text-muted">
+                  সহায়ক বিভাগ ও তথ্য
                 </p>
                 <ul className="space-y-1">
-                  {secondaryLinks.map((item) => (
+                  {supportingLinks.map((item) => (
                     <li key={item.href}>
                       <Link
                         href={item.href}
                         onClick={closeMenu}
-                        className="flex items-center min-h-11 px-3 rounded-[12px] text-sm font-medium text-text-body hover:bg-surface-lavender hover:text-text-accent transition-colors"
+                        className="flex items-center justify-between min-h-11 px-3 rounded-[10px] text-sm font-medium text-text-body hover:bg-surface-lavender hover:text-text-accent transition-colors"
                       >
-                        {item.labelBn}
+                        <span>{item.labelBn}</span>
+                        {item.labelEn ? (
+                          <span
+                            className="font-en text-[11px] text-text-muted"
+                            lang="en"
+                          >
+                            {item.labelEn}
+                          </span>
+                        ) : null}
                       </Link>
                     </li>
                   ))}
