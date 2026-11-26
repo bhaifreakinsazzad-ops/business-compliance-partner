@@ -9,12 +9,29 @@ export function isDatabaseConfigured(): boolean {
   return Boolean(url && url.length > 0 && !url.includes("USER:PASSWORD@HOST"));
 }
 
+function createPrismaClient(): PrismaClient {
+  try {
+    return new PrismaClient({
+      // Deliberately omit "query" logging so PII parameters never enter server stdout.
+      log: process.env.NODE_ENV === "development" ? ["warn", "error"] : ["error"],
+    });
+  } catch {
+    console.warn("[AI Studio] Database not connected — using mock");
+    const noOp = {
+      findMany: async () => [],
+      findFirst: async () => null,
+      findUnique: async () => null,
+      count: async () => 0,
+      create: async (d: { data?: unknown }) => d?.data ?? {},
+      update: async (d: { data?: unknown }) => d?.data ?? {},
+      delete: async () => ({}),
+    };
+    return new Proxy({}, { get: () => noOp }) as unknown as PrismaClient;
+  }
+}
+
 export const prisma: PrismaClient =
-  globalForPrisma.prisma ??
-  new PrismaClient({
-    // Deliberately omit "query" logging so PII parameters never enter server stdout.
-    log: process.env.NODE_ENV === "development" ? ["warn", "error"] : ["error"],
-  });
+  globalForPrisma.prisma ?? createPrismaClient();
 
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;

@@ -16,7 +16,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  ...(process.env.DOCKER_BUILD === "1" ? { output: "standalone" as const } : {}),
+  output: "standalone",
   images: {
     formats: ["image/avif", "image/webp"],
   },
