@@ -1,11 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import {
-  Cormorant_Garamond,
-  Inter,
-  Noto_Sans_Bengali,
-  Noto_Serif_Bengali,
-} from "next/font/google";
-import {
   DEFAULT_PUBLIC_SITE_CONFIG,
   getCanonicalBaseUrl,
   isStagingEnvironment,
@@ -16,34 +10,6 @@ import { AppMotionProvider } from "@/components/motion/AppMotionProvider";
 import { ReadingProgressBar } from "@/components/motion/ReadingProgressBar";
 import { buildOrganizationJsonLd } from "@/lib/seo/structured-data";
 import "./globals.css";
-
-const notoSansBengali = Noto_Sans_Bengali({
-  subsets: ["bengali", "latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-  variable: "--font-noto-sans-bengali",
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-  variable: "--font-inter",
-});
-
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
-  display: "swap",
-  variable: "--font-cormorant",
-});
-
-const notoSerifBengali = Noto_Serif_Bengali({
-  subsets: ["bengali", "latin"],
-  weight: ["500", "600", "700"],
-  display: "swap",
-  variable: "--font-noto-serif-bengali",
-});
 
 const isStaging = isStagingEnvironment();
 
@@ -78,10 +44,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="bn"
-      className={`${notoSansBengali.variable} ${notoSerifBengali.variable} ${inter.variable} ${cormorant.variable}`}
-    >
+    <html lang="bn">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700&family=Noto+Serif+Bengali:wght@500;600;700&display=swap"
+        />
+      </head>
       <body className="min-h-screen flex flex-col bg-surface-canvas text-text-body antialiased">
         <JsonLd
           data={buildOrganizationJsonLd(

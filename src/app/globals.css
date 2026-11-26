@@ -96,6 +96,11 @@
   --z-modal: 60;
   --z-toast: 70;
 
+  --font-noto-sans-bengali: "Noto Sans Bengali";
+  --font-noto-serif-bengali: "Noto Serif Bengali";
+  --font-inter: "Inter";
+  --font-cormorant: "Cormorant Garamond";
+
   --ps-font-bn: var(--font-noto-sans-bengali), "Noto Sans Bengali", sans-serif;
   --ps-font-en: var(--font-inter), "Inter", "Noto Sans", sans-serif;
   --ps-font-editorial: var(--font-cormorant), var(--font-noto-serif-bengali), Georgia, serif;
