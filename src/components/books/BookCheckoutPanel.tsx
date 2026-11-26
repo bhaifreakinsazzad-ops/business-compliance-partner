@@ -14,9 +14,20 @@ import {
 } from "lucide-react";
 import type { PublicBookPreview } from "@/types/domain";
 import { trackEvent } from "@/lib/analytics/events";
+import {
+  computeLineItemTotalPaisa,
+  formatBdtFromPaisa,
+} from "@/lib/commerce/payments";
 
 interface BookCheckoutPanelProps {
   book: PublicBookPreview;
+}
+
+function createCheckoutIntentKey(): string {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return `bko-${crypto.randomUUID()}`;
+  }
+  return `bko-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
 export function BookCheckoutPanel({ book }: BookCheckoutPanelProps) {
@@ -24,17 +35,20 @@ export function BookCheckoutPanel({ book }: BookCheckoutPanelProps) {
   const [quantity, setQuantity] = useState(1);
   const [shippingAddress, setShippingAddress] = useState("");
   const [notes, setNotes] = useState("");
+  const [checkoutIntentKey, setCheckoutIntentKey] = useState(createCheckoutIntentKey);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successOrder, setSuccessOrder] = useState<{
     reference: string;
-    totalBdt: number;
+    totalPaisa: number;
     invoiceNumber: string;
   } | null>(null);
 
   const unitPricePaisa = book.pricePaisa ?? 0;
-  const unitPriceBdt = Math.round(unitPricePaisa / 100);
-  const totalBdt = unitPriceBdt * quantity;
+  const totalPaisa =
+    unitPricePaisa > 0
+      ? computeLineItemTotalPaisa(unitPricePaisa, quantity)
+      : 0;
   const inStock = (book.stockQuantity ?? 0) > 0;
   const maxAvailable = Math.min(book.stockQuantity ?? 5, 10);
 
@@ -62,6 +76,7 @@ export function BookCheckoutPanel({ book }: BookCheckoutPanelProps) {
           items: [{ bookId: book.id, quantity }],
           shippingAddress: shippingAddress.trim(),
           notes: notes.trim() || undefined,
+          idempotencyKey: checkoutIntentKey,
         }),
       });
 
@@ -82,15 +97,12 @@ export function BookCheckoutPanel({ book }: BookCheckoutPanelProps) {
         return;
       }
 
-      trackEvent("order_created", {
-        slug: book.slug,
-        quantity,
-        orderKind: "BOOKSTORE",
-      });
-
       setSuccessOrder({
         reference: json.order.publicReference,
-        totalBdt: json.order.totalBdt,
+        totalPaisa:
+          typeof json.order.totalPaisa === "number"
+            ? json.order.totalPaisa
+            : totalPaisa,
         invoiceNumber: json.invoice?.invoiceNumber ?? "INV-PENDING",
       });
     } catch {
@@ -125,7 +137,7 @@ export function BookCheckoutPanel({ book }: BookCheckoutPanelProps) {
           <p>
             মোট প্রদেয় মূল্য:{" "}
             <strong className="text-action-whatsapp tabular-nums text-sm">
-              ৳ {successOrder.totalBdt.toLocaleString("en-US")}
+              {formatBdtFromPaisa(successOrder.totalPaisa, "en-US")}
             </strong>
           </p>
         </div>
@@ -142,7 +154,10 @@ export function BookCheckoutPanel({ book }: BookCheckoutPanelProps) {
           </Link>
           <button
             type="button"
-            onClick={() => setSuccessOrder(null)}
+            onClick={() => {
+              setSuccessOrder(null);
+              setCheckoutIntentKey(createCheckoutIntentKey());
+            }}
             className="inline-flex items-center justify-center min-h-10 px-4 rounded-[10px] border border-border-subtle bg-white text-xs font-semibold text-text-accent hover:bg-surface-lavender"
           >
             আরেকটি অর্ডার করুন
@@ -171,7 +186,7 @@ export function BookCheckoutPanel({ book }: BookCheckoutPanelProps) {
         <div className="flex items-center justify-between text-xs">
           <span className="text-text-muted">প্রতি কপির মূল্য:</span>
           <span className="text-sm font-extrabold text-action-whatsapp tabular-nums">
-            ৳ {unitPriceBdt.toLocaleString("en-US")}
+            {formatBdtFromPaisa(unitPricePaisa, "en-US")}
           </span>
         </div>
         <div className="flex items-center justify-between text-xs">
@@ -242,7 +257,7 @@ export function BookCheckoutPanel({ book }: BookCheckoutPanelProps) {
           <div className="flex items-center justify-between pt-1 border-t border-border-subtle text-xs">
             <span className="font-bold text-text-primary">সর্বমোট প্রদেয়:</span>
             <span className="text-base font-extrabold text-action-whatsapp tabular-nums">
-              ৳ {totalBdt.toLocaleString("en-US")}
+              {formatBdtFromPaisa(totalPaisa, "en-US")}
             </span>
           </div>
 
@@ -269,7 +284,9 @@ export function BookCheckoutPanel({ book }: BookCheckoutPanelProps) {
             ) : (
               <>
                 <Lock className="w-4 h-4" aria-hidden="true" />
-                <span>অর্ডার নিশ্চিত করুন (৳ {totalBdt.toLocaleString("en-US")})</span>
+                <span>
+                  অর্ডার নিশ্চিত করুন ({formatBdtFromPaisa(totalPaisa, "en-US")})
+                </span>
               </>
             )}
           </button>

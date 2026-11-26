@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { recordServerVerifiedEvent } from "@/lib/analytics/server";
+import { isSandboxGatewayEnabled } from "@/lib/commerce/checkout-rules";
 import {
   fromPaisa,
   toPaisa,
@@ -15,20 +17,13 @@ const sandboxPaymentSchema = z.object({
   transactionReference: z.string().trim().min(4).max(120).optional(),
 });
 
-function isSandboxPaymentAllowed(): boolean {
-  const appEnv = process.env.NEXT_PUBLIC_APP_ENV?.toLowerCase();
-  if (process.env.NODE_ENV === "production" || appEnv === "production") {
-    return false;
-  }
-  return true;
-}
-
 export async function POST(req: NextRequest) {
-  if (!isSandboxPaymentAllowed()) {
+  if (!isSandboxGatewayEnabled()) {
     return NextResponse.json(
       {
-        error: "প্রোডাকশন পরিবেশে স্যান্ডবক্স পেমেন্ট নিষ্ক্রিয়। অনুমোদিত পেমেন্ট গেটওয়ে ব্যবহার করুন।",
-        code: "SANDBOX_DISABLED_IN_PRODUCTION",
+        error:
+          "এই পরিবেশে স্যান্ডবক্স পেমেন্ট নিষ্ক্রিয়। অনুগ্রহ করে অনুমোদিত পেমেন্ট গেটওয়ে ব্যবহার করুন।",
+        code: "SANDBOX_DISABLED",
       },
       { status: 403 },
     );
@@ -74,6 +69,13 @@ export async function POST(req: NextRequest) {
           id: parsedBody.orderId,
           customerId: customer.id,
         },
+        include: {
+          quote: {
+            include: {
+              request: true,
+            },
+          },
+        },
       });
 
       if (!order) {
@@ -94,11 +96,15 @@ export async function POST(req: NextRequest) {
         };
       }
 
+      if (order.status === "CANCELLED" || order.status === "REFUNDED") {
+        return { kind: "CANCELLED_ORDER" as const };
+      }
+
       if (order.paymentStatus === "PAID") {
         return { kind: "ALREADY_PAID" as const };
       }
 
-      const serverPaisa = toPaisa(order.totalBdt);
+      const serverPaisa = order.totalPaisa ?? toPaisa(order.totalBdt);
       if (
         parsedBody.amountBdt !== undefined &&
         toPaisa(parsedBody.amountBdt) !== serverPaisa
@@ -111,19 +117,32 @@ export async function POST(req: NextRequest) {
 
       const authoritativeAmountBdt = fromPaisa(serverPaisa);
 
-      const updatedOrder = await tx.order.update({
-        where: { id: order.id },
+      const atomicUpdate = await tx.order.updateMany({
+        where: {
+          id: order.id,
+          customerId: customer.id,
+          paymentStatus: "UNPAID",
+          status: { notIn: ["CANCELLED", "REFUNDED"] },
+        },
         data: {
           paymentStatus: "PAID",
           status: "IN_FULFILLMENT",
-          payments: {
-            create: {
-              transactionReference: txnRef,
-              method: "SANDBOX",
-              amountBdt: authoritativeAmountBdt,
-              status: "SUCCESSFUL",
-            },
-          },
+        },
+      });
+
+      if (atomicUpdate.count === 0) {
+        return { kind: "ALREADY_PAID" as const };
+      }
+
+      await tx.paymentRecord.create({
+        data: {
+          transactionReference: txnRef,
+          orderId: order.id,
+          method: "SANDBOX",
+          currency: "BDT",
+          amountPaisa: serverPaisa,
+          amountBdt: authoritativeAmountBdt,
+          status: "SUCCESSFUL",
         },
       });
 
@@ -132,10 +151,45 @@ export async function POST(req: NextRequest) {
         data: { status: "PAID", paidAt: new Date() },
       });
 
+      // If this paid quote/order references a published paid course, grant CourseEntitlement atomically
+      const linkedCourseSlug = order.quote?.request?.serviceSlug;
+      if (linkedCourseSlug) {
+        const course = await tx.course.findFirst({
+          where: { slug: linkedCourseSlug, contentStatus: "PUBLISHED" },
+          select: { id: true },
+        });
+        if (course) {
+          await tx.courseEntitlement.upsert({
+            where: {
+              customerId_courseId: {
+                customerId: customer.id,
+                courseId: course.id,
+              },
+            },
+            create: {
+              customerId: customer.id,
+              courseId: course.id,
+              sourceType: "ORDER",
+              orderId: order.id,
+              status: "ACTIVE",
+            },
+            update: {
+              sourceType: "ORDER",
+              orderId: order.id,
+              status: "ACTIVE",
+            },
+          });
+        }
+      }
+
+      const refreshedOrder = await tx.order.findUnique({
+        where: { id: order.id },
+      });
+
       return {
         kind: "PAID" as const,
         amountBdt: authoritativeAmountBdt,
-        order: updatedOrder,
+        order: refreshedOrder ?? order,
       };
     });
 
@@ -143,6 +197,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { error: "অর্ডারটি খুঁজে পাওয়া যায়নি।" },
         { status: 404 },
+      );
+    }
+
+    if (outcome.kind === "CANCELLED_ORDER") {
+      return NextResponse.json(
+        { error: "বাতিলকৃত অর্ডারের বিপরীতে পেমেন্ট গ্রহণ করা যাবে না।" },
+        { status: 409 },
       );
     }
 
@@ -165,6 +226,16 @@ export async function POST(req: NextRequest) {
         { error: "পেমেন্টের পরিমাণ অর্ডারের মোট মূল্যের সাথে সামঞ্জস্যপূর্ণ নয়।" },
         { status: 400 },
       );
+    }
+
+    if (outcome.kind === "PAID") {
+      await recordServerVerifiedEvent({
+        eventName: "payment_verified",
+        customerId: customer.id,
+        entityType: "Order",
+        entityId: outcome.order.id,
+        payload: { orderKind: outcome.order.orderKind },
+      });
     }
 
     const verification = verifySandboxPayment(

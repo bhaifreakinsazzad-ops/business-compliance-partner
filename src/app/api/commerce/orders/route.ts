@@ -1,6 +1,12 @@
+import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { fromPaisa, toPaisa } from "@/lib/commerce/payments";
+import { recordServerVerifiedEvent } from "@/lib/analytics/server";
+import { hashIdempotencyPayload } from "@/lib/commerce/checkout-rules";
+import {
+  fromPaisa,
+  toPaisa,
+} from "@/lib/commerce/payments";
 import { getCurrentCustomer } from "@/lib/customer/auth";
 import { isDatabaseConfigured, prisma } from "@/lib/db/prisma";
 import { isCoreCommerceSchemaReady } from "@/lib/db/schema-ready";
@@ -43,8 +49,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "অবৈধ JSON রিকোয়েস্ট।" }, { status: 400 });
   }
 
+  const clientSuppliedKey = parsedBody.idempotencyKey?.trim();
   const effectiveIdempotencyKey =
-    parsedBody.idempotencyKey || `quote:${customer.id}:${parsedBody.quoteId}`;
+    clientSuppliedKey || `quote:${customer.id}:${parsedBody.quoteId}`;
+  const payloadHash = hashIdempotencyPayload({
+    customerId: customer.id,
+    quoteId: parsedBody.quoteId,
+    notes: parsedBody.notes || null,
+  });
 
   try {
     const result = await prisma.$transaction(async (tx) => {
@@ -60,6 +72,13 @@ export async function POST(req: NextRequest) {
       });
 
       if (existingByKey) {
+        if (
+          clientSuppliedKey &&
+          existingByKey.idempotencyKey === effectiveIdempotencyKey &&
+          existingByKey.quoteId !== parsedBody.quoteId
+        ) {
+          return { kind: "KEY_CONFLICT" as const };
+        }
         return { kind: "EXISTING" as const, order: existingByKey };
       }
 
@@ -84,12 +103,14 @@ export async function POST(req: NextRequest) {
       }
 
       // Compute server-authoritative total in integer paisa
-      const itemsTotalPaisa = quote.items.reduce(
-        (sum, item) => sum + toPaisa(item.unitPriceBdt) * Math.max(1, item.quantity),
-        0,
-      );
+      const itemsTotalPaisa = quote.items.reduce((sum, item) => {
+        const unitPaisa = item.unitPricePaisa ?? toPaisa(item.unitPriceBdt);
+        return sum + unitPaisa * Math.max(1, item.quantity);
+      }, 0);
       const quoteTotalPaisa =
-        itemsTotalPaisa > 0 ? itemsTotalPaisa : toPaisa(quote.totalAmountBdt);
+        itemsTotalPaisa > 0
+          ? itemsTotalPaisa
+          : (quote.totalAmountPaisa ?? toPaisa(quote.totalAmountBdt));
 
       if (quoteTotalPaisa <= 0) {
         return { kind: "INVALID_AMOUNT" as const };
@@ -103,9 +124,15 @@ export async function POST(req: NextRequest) {
         data: {
           publicReference: orderRef,
           idempotencyKey: effectiveIdempotencyKey,
+          idempotencyHash: payloadHash,
           orderKind: "SERVICE_QUOTE",
           quoteId: quote.id,
           customerId: customer.id,
+          currency: "BDT",
+          subtotalPaisa: quoteTotalPaisa,
+          shippingPaisa: 0,
+          discountPaisa: 0,
+          totalPaisa: quoteTotalPaisa,
           totalBdt: authoritativeTotalBdt,
           paymentStatus: "UNPAID",
           status: "CONFIRMED",
@@ -114,6 +141,8 @@ export async function POST(req: NextRequest) {
             create: {
               invoiceNumber: invoiceNum,
               customerId: customer.id,
+              currency: "BDT",
+              amountPaisa: quoteTotalPaisa,
               amountBdt: authoritativeTotalBdt,
               status: "DUE",
             },
@@ -124,6 +153,16 @@ export async function POST(req: NextRequest) {
 
       return { kind: "CREATED" as const, order };
     });
+
+    if (result.kind === "KEY_CONFLICT") {
+      return NextResponse.json(
+        {
+          error: "একই ইডেমপোটেন্সি কী ভিন্ন কোটেশনের সাথে পুনঃব্যবহার করা যাবে না।",
+          code: "IDEMPOTENCY_KEY_MISMATCH",
+        },
+        { status: 409 },
+      );
+    }
 
     if (result.kind === "NOT_FOUND") {
       return NextResponse.json(
@@ -153,12 +192,41 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (result.kind === "CREATED") {
+      await recordServerVerifiedEvent({
+        eventName: "order_created",
+        customerId: customer.id,
+        entityType: "Order",
+        entityId: result.order.id,
+        payload: { orderKind: "SERVICE_QUOTE" },
+      });
+    }
+
     return NextResponse.json({
       success: true,
       idempotent: result.kind === "EXISTING",
       order: result.order,
     });
   } catch (err) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
+      const existing = await prisma.order.findFirst({
+        where: {
+          customerId: customer.id,
+          OR: [
+            { quoteId: parsedBody.quoteId },
+            { idempotencyKey: effectiveIdempotencyKey },
+          ],
+        },
+        include: { invoices: true },
+      });
+      if (existing) {
+        return NextResponse.json({
+          success: true,
+          idempotent: true,
+          order: existing,
+        });
+      }
+    }
     console.error("[orders/create] Error:", err);
     return NextResponse.json(
       { error: "অর্ডার তৈরি করতে সমস্যা হয়েছে।" },

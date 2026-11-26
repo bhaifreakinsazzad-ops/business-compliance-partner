@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { recordServerVerifiedEvent } from "@/lib/analytics/server";
 import { getCurrentCustomer } from "@/lib/customer/auth";
 import { isDatabaseConfigured, prisma } from "@/lib/db/prisma";
 import { isCoreCommerceSchemaReady } from "@/lib/db/schema-ready";
@@ -33,7 +34,11 @@ export async function POST(req: NextRequest) {
     const parsed = progressSchema.safeParse(raw);
     if (!parsed.success) {
       return NextResponse.json(
-        { error: parsed.error.errors[0]?.message || "এনরোলমেন্ট ও লেসন আইডি প্রয়োজন।" },
+        {
+          error:
+            parsed.error.errors[0]?.message ||
+            "এনরোলমেন্ট ও লেসন আইডি প্রয়োজন।",
+        },
         { status: 400 },
       );
     }
@@ -43,6 +48,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    const now = new Date();
     const result = await prisma.$transaction(async (tx) => {
       const enrollment = await tx.enrollment.findFirst({
         where: {
@@ -53,7 +59,9 @@ export async function POST(req: NextRequest) {
           course: {
             select: {
               id: true,
+              slug: true,
               titleBn: true,
+              enrollmentModel: true,
             },
           },
         },
@@ -61,6 +69,25 @@ export async function POST(req: NextRequest) {
 
       if (!enrollment) {
         return { kind: "ENROLLMENT_NOT_FOUND" as const };
+      }
+
+      if (enrollment.status === "REVOKED") {
+        return { kind: "ENTITLEMENT_REVOKED" as const };
+      }
+
+      if (enrollment.course.enrollmentModel === "PAID") {
+        const entitlement = await tx.courseEntitlement.findFirst({
+          where: {
+            customerId: customer.id,
+            courseId: enrollment.courseId,
+            status: "ACTIVE",
+            OR: [{ expiresAt: null }, { expiresAt: { gt: now } }],
+          },
+          select: { id: true },
+        });
+        if (!entitlement) {
+          return { kind: "ENTITLEMENT_REVOKED" as const };
+        }
       }
 
       const lesson = await tx.lesson.findFirst({
@@ -86,13 +113,13 @@ export async function POST(req: NextRequest) {
         },
         update: {
           isCompleted: body.isCompleted,
-          completedAt: body.isCompleted ? new Date() : null,
+          completedAt: body.isCompleted ? now : null,
         },
         create: {
           enrollmentId: enrollment.id,
           lessonId: lesson.id,
           isCompleted: body.isCompleted,
-          completedAt: body.isCompleted ? new Date() : null,
+          completedAt: body.isCompleted ? now : null,
         },
       });
 
@@ -112,17 +139,19 @@ export async function POST(req: NextRequest) {
         totalLessons > 0
           ? Math.min(100, Math.round((completedLessons / totalLessons) * 100))
           : 0;
-      const isFullyCompleted = totalLessons > 0 && completedLessons >= totalLessons;
+      const isFullyCompleted =
+        totalLessons > 0 && completedLessons >= totalLessons;
 
       const updatedEnrollment = await tx.enrollment.update({
         where: { id: enrollment.id },
         data: {
           progressPercentage,
           status: isFullyCompleted ? "COMPLETED" : "ACTIVE",
-          completedAt: isFullyCompleted ? new Date() : null,
+          completedAt: isFullyCompleted ? now : null,
         },
       });
 
+      let certIssued = false;
       if (isFullyCompleted) {
         const existingCert = await tx.certificate.findFirst({
           where: {
@@ -142,6 +171,7 @@ export async function POST(req: NextRequest) {
               verificationCode,
             },
           });
+          certIssued = true;
         }
       }
 
@@ -149,6 +179,8 @@ export async function POST(req: NextRequest) {
         kind: "OK" as const,
         progress,
         enrollment: updatedEnrollment,
+        certIssued,
+        courseSlug: enrollment.course.slug,
       };
     });
 
@@ -159,11 +191,31 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (result.kind === "ENTITLEMENT_REVOKED") {
+      return NextResponse.json(
+        {
+          error: "এই কোর্সের সক্রিয় প্রবেশাধিকার বা এনটাইটেলমেন্ট বাতিল বা মেয়াদোত্তীর্ণ হয়েছে।",
+          code: "ENTITLEMENT_INVALID",
+        },
+        { status: 403 },
+      );
+    }
+
     if (result.kind === "LESSON_MISMATCH") {
       return NextResponse.json(
         { error: "এই লেসনটি নির্বাচিত কোর্সের অন্তর্ভুক্ত নয়।" },
         { status: 403 },
       );
+    }
+
+    if (result.certIssued) {
+      await recordServerVerifiedEvent({
+        eventName: "enrollment_completed",
+        customerId: customer.id,
+        entityType: "Certificate",
+        entityId: result.enrollment.id,
+        payload: { slug: result.courseSlug },
+      });
     }
 
     return NextResponse.json({

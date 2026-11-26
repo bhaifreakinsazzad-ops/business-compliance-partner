@@ -43,11 +43,27 @@ const mockTx = vi.hoisted(() => ({
     findFirst: vi.fn(),
     create: vi.fn(),
   },
+  document: {
+    create: vi.fn(),
+    update: vi.fn(),
+  },
+  auditLog: {
+    create: vi.fn(),
+  },
+  courseEntitlement: {
+    findFirst: vi.fn(),
+    create: vi.fn(),
+    upsert: vi.fn(),
+  },
 }));
 
 const mockPrisma = vi.hoisted(() => ({
   course: {
     findUnique: vi.fn(),
+  },
+  courseEntitlement: {
+    findFirst: vi.fn(),
+    create: vi.fn(),
   },
   enrollment: {
     findUnique: vi.fn(),
@@ -61,6 +77,12 @@ const mockPrisma = vi.hoisted(() => ({
   },
   serviceRequest: {
     findFirst: vi.fn(),
+  },
+  organizationMembership: {
+    findFirst: vi.fn(),
+  },
+  auditLog: {
+    create: vi.fn(async () => ({})),
   },
   document: {
     create: vi.fn(),
@@ -138,6 +160,7 @@ describe("V6 Security & Commerce Integrity Remediations (V6-001 to V6-004)", () 
     NODE_ENV: process.env.NODE_ENV,
     NEXT_PUBLIC_APP_ENV: process.env.NEXT_PUBLIC_APP_ENV,
     PRIVATE_STORAGE_DIR: process.env.PRIVATE_STORAGE_DIR,
+    SANDBOX_PAYMENTS_ENABLED: process.env.SANDBOX_PAYMENTS_ENABLED,
   };
 
   beforeEach(() => {
@@ -148,11 +171,13 @@ describe("V6 Security & Commerce Integrity Remediations (V6-001 to V6-004)", () 
     state.admin = null;
     process.env.PRIVATE_STORAGE_DIR = tempStorageDir;
     process.env.NEXT_PUBLIC_APP_ENV = "staging";
+    process.env.SANDBOX_PAYMENTS_ENABLED = "true";
   });
 
   afterAll(() => {
     process.env.NEXT_PUBLIC_APP_ENV = originalEnv.NEXT_PUBLIC_APP_ENV;
     process.env.PRIVATE_STORAGE_DIR = originalEnv.PRIVATE_STORAGE_DIR;
+    process.env.SANDBOX_PAYMENTS_ENABLED = originalEnv.SANDBOX_PAYMENTS_ENABLED;
     rmSync(tempStorageDir, { recursive: true, force: true });
   });
 
@@ -266,10 +291,11 @@ describe("V6 Security & Commerce Integrity Remediations (V6-001 to V6-004)", () 
       titleBn: "VAT Pro",
       contentStatus: "PUBLISHED",
       availabilityStatus: "ACTIVE",
-      feeDisplay: "৳ ৫,০০০",
+      enrollmentModel: "PAID",
+      pricePaisa: 500000,
     });
+    mockPrisma.courseEntitlement.findFirst.mockResolvedValueOnce(null);
     mockPrisma.enrollment.findUnique.mockResolvedValueOnce(null);
-    mockPrisma.order.findFirst.mockResolvedValueOnce(null);
 
     const unpaidEnrollRes = await postEnroll(
       jsonReq("http://localhost/api/lms/enroll", { courseId: "course-paid" }),
@@ -281,7 +307,13 @@ describe("V6 Security & Commerce Integrity Remediations (V6-001 to V6-004)", () 
       id: "enr-1",
       customerId: "cust-a",
       courseId: "course-1",
-      course: { id: "course-1", titleBn: "Course 1" },
+      status: "ACTIVE",
+      course: {
+        id: "course-1",
+        slug: "course-1",
+        titleBn: "Course 1",
+        enrollmentModel: "FREE",
+      },
     });
     mockTx.lesson.findFirst.mockResolvedValueOnce(null);
     const wrongLessonRes = await postProgress(
@@ -334,7 +366,7 @@ describe("V6 Security & Commerce Integrity Remediations (V6-001 to V6-004)", () 
 
     // Valid upload by Customer A saves file & DB row, then Customer B gets 403 on download, Customer A gets 200 bytes
     mockPrisma.complianceCase.findFirst.mockResolvedValueOnce({ id: "case-owned" });
-    mockPrisma.document.create.mockImplementationOnce(async ({ data }) => data);
+    mockTx.document.create.mockImplementationOnce(async ({ data }) => data);
 
     const validForm = new FormData();
     validForm.append("title", "TIN Certificate");

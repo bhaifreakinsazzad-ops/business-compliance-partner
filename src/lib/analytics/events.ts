@@ -32,12 +32,6 @@ export type AnalyticsEventName = (typeof ANALYTICS_EVENTS)[number];
 
 export type AnalyticsVerificationLevel = "client_observed" | "server_verified";
 
-const SERVER_VERIFIED_EVENTS = new Set<AnalyticsEventName>([
-  "order_created",
-  "payment_verified",
-  "enrollment_completed",
-]);
-
 const ALLOWED_ANALYTICS_KEYS = new Set([
   "pillar",
   "slug",
@@ -85,6 +79,7 @@ export function sanitizeAnalyticsPayload(
     const lowerKey = key.toLowerCase();
     if (FORBIDDEN_PII_KEYS.has(lowerKey)) continue;
     if (!ALLOWED_ANALYTICS_KEYS.has(key)) continue;
+    if (key === "verificationLevel") continue;
     if (
       typeof value === "string" ||
       typeof value === "number" ||
@@ -96,12 +91,17 @@ export function sanitizeAnalyticsPayload(
   return clean;
 }
 
+/**
+ * Browser-emitted events are ALWAYS `client_observed`, never `server_verified`.
+ * Authoritative conversions (`order_created`, `payment_verified`,
+ * `enrollment_completed`) are recorded exclusively by server API routes via
+ * `recordServerVerifiedEvent` in `@/lib/analytics/server`.
+ */
 export function getAnalyticsVerificationLevel(
-  eventName: AnalyticsEventName,
+  eventName?: AnalyticsEventName,
 ): AnalyticsVerificationLevel {
-  return SERVER_VERIFIED_EVENTS.has(eventName)
-    ? "server_verified"
-    : "client_observed";
+  void eventName;
+  return "client_observed";
 }
 
 export function trackEvent(
@@ -125,7 +125,7 @@ export function trackEvent(
     new CustomEvent("bcp:analytics", {
       detail: {
         eventName,
-        verificationLevel: getAnalyticsVerificationLevel(eventName),
+        verificationLevel: "client_observed" satisfies AnalyticsVerificationLevel,
         payload: safePayload,
       },
     }),

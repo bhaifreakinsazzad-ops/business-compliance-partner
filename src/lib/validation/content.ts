@@ -16,6 +16,14 @@ export const AVAILABILITY_STATUS_ENUM = z.enum([
   "INACTIVE",
 ]);
 
+export const COURSE_ENROLLMENT_MODEL_ENUM = z.enum([
+  "FREE",
+  "PAID",
+  "ENQUIRY_ONLY",
+  "INVITATION_ONLY",
+  "UNAVAILABLE",
+]);
+
 export const LEAD_STATUS_ENUM = z.enum([
   "NEW",
   "REVIEWED",
@@ -91,6 +99,8 @@ export const courseUpsertSchema = z.object({
   deliveryMode: z.string().trim().max(120).optional().nullable(),
   duration: z.string().trim().max(120).optional().nullable(),
   feeDisplay: z.string().trim().max(120).optional().nullable(),
+  enrollmentModel: COURSE_ENROLLMENT_MODEL_ENUM.default("ENQUIRY_ONLY"),
+  pricePaisa: z.number().int().min(0).max(50_000_000).optional().nullable(),
   instructorId: z.string().trim().optional().nullable(),
   contentStatus: CONTENT_STATUS_ENUM.default("DRAFT"),
   availabilityStatus: AVAILABILITY_STATUS_ENUM.default("INTEREST_ONLY"),

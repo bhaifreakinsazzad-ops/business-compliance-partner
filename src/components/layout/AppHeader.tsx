@@ -46,7 +46,7 @@ export function AppHeader({ siteConfig }: AppHeaderProps) {
     <>
       {/* Slim Corporate Announcement & Verified Contact Bar */}
       <div className="bg-surface-navy text-white border-b border-[#C59028]/30 text-xs">
-        <div className="ps-container py-1.5 flex flex-wrap items-center justify-between gap-2">
+        <div className="ps-container py-1 sm:py-1.5 flex flex-wrap items-center justify-between gap-2">
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-white/85">
             <span className="inline-flex items-center gap-1.5">
               <ShieldCheck
@@ -100,10 +100,10 @@ export function AppHeader({ siteConfig }: AppHeaderProps) {
 
       {/* Main Executive Lavender Sticky Header */}
       <header className="sticky top-0 z-40 bg-surface-canvas/96 backdrop-blur-md border-b border-border-subtle shadow-[0_2px_14px_rgba(81,64,111,0.06)]">
-        <div className="ps-container py-2.5 flex items-center justify-between gap-3">
+        <div className="ps-container py-2 lg:py-2.5 flex items-center justify-between gap-2 sm:gap-3">
           <Link
             href="/"
-            className="flex items-center gap-2.5 sm:gap-3 rounded-lg min-w-0 shrink-0"
+            className="flex items-center gap-2 sm:gap-3 rounded-lg min-w-0 flex-1 lg:flex-initial"
           >
             {siteConfig.logoAssetPath ? (
               <Image
@@ -112,12 +112,12 @@ export function AppHeader({ siteConfig }: AppHeaderProps) {
                 width={44}
                 height={44}
                 priority
-                className="rounded-full border border-[#C59028]/55 object-contain shrink-0 bg-white"
+                className="w-9 h-9 sm:w-11 sm:h-11 rounded-full border border-[#C59028]/55 object-contain shrink-0 bg-white"
               />
             ) : null}
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1 lg:flex-initial">
               <span
-                className="block font-editorial text-base sm:text-lg font-bold tracking-wide text-text-primary leading-tight truncate"
+                className="block font-editorial text-[13px] sm:text-lg font-bold tracking-wide text-text-primary leading-tight truncate"
                 lang="en"
               >
                 {siteConfig.brandDisplayName}

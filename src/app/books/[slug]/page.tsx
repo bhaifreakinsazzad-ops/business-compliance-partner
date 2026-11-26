@@ -8,6 +8,7 @@ import {
   getGovernedBookBySlug,
   loadBookCatalog,
 } from "@/lib/books/catalog";
+import { formatBdtFromPaisa } from "@/lib/commerce/payments";
 import { buildWhatsAppBookMessage } from "@/lib/contact/whatsapp";
 import {
   rankRelatedBooks,
@@ -125,7 +126,14 @@ export default async function BookDetailPage({ params }: BookDetailPageProps) {
                 <span aria-hidden="true" className="text-[#D4CCE3]">
                   ·
                 </span>
-                <span className="text-[#9A6300]">{BOOK_AVAILABILITY_BADGE_BN}</span>
+                {book.availabilityState === "PUBLISHED_PRICED" &&
+                typeof book.pricePaisa === "number" ? (
+                  <span className="text-[#00865A] font-bold tabular-nums">
+                    প্রকাশিত সংস্করণ · {formatBdtFromPaisa(book.pricePaisa)}
+                  </span>
+                ) : (
+                  <span className="text-[#9A6300]">{BOOK_AVAILABILITY_BADGE_BN}</span>
+                )}
               </div>
               <h1 className="text-2xl sm:text-4xl font-extrabold leading-snug text-[#081838]">
                 {book.titleBn}
@@ -147,7 +155,7 @@ export default async function BookDetailPage({ params }: BookDetailPageProps) {
               {/* Interactive 3D Hardcover Preview */}
               <BookPreview3D book={book} />
 
-              {/* Honest Pre-Launch Notice */}
+              {/* Publication & Pricing Notice */}
               <div className="rounded-[16px] border border-[#D4CCE3] bg-[#F2EFF8] p-5 sm:p-6 flex items-start gap-3">
                 <Info className="w-5 h-5 text-[#51406F] shrink-0 mt-0.5" aria-hidden="true" />
                 <div className="space-y-1">

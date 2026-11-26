@@ -6,7 +6,9 @@ import { BookOpen, RotateCcw, RotateCw } from "lucide-react";
 import type { PublicBookPreview } from "@/types/domain";
 import {
   attachContextLossRecovery,
+  awaitWebGLFrameFence,
   createContactShadowTexture,
+  createDeltaTimer,
   createResizeObserver,
   createRoomEnvironmentTexture,
   detectSoftwareWebGL,
@@ -281,9 +283,12 @@ export function BookPreview3D({ book }: BookPreview3DProps) {
   const isOpenRef = useRef(false);
   const [webglSupported, setWebglSupported] = useState(true);
 
+  const requestRenderRef = useRef<(() => void) | null>(null);
+
   const flipToSide = (side: "front" | "back") => {
     targetSideRef.current = side;
     setActiveSide(side);
+    requestRenderRef.current?.();
   };
 
   const toggleOpen = () => {
@@ -294,6 +299,7 @@ export function BookPreview3D({ book }: BookPreview3DProps) {
         targetSideRef.current = "front";
         setActiveSide("front");
       }
+      requestRenderRef.current?.();
       return next;
     });
   };
@@ -304,6 +310,7 @@ export function BookPreview3D({ book }: BookPreview3DProps) {
     setActiveSide("front");
     setIsOpen(false);
     isOpenRef.current = false;
+    requestRenderRef.current?.();
   };
 
   useEffect(() => {
@@ -350,13 +357,11 @@ export function BookPreview3D({ book }: BookPreview3DProps) {
     camera.lookAt(0, 0, 0);
 
     let envResources: RoomEnvironmentResources | null = null;
-    if (!isSoftwareGl) {
-      try {
-        envResources = createRoomEnvironmentTexture(renderer);
-        scene.environment = envResources.envMap;
-      } catch {
-        envResources = null;
-      }
+    try {
+      envResources = createRoomEnvironmentTexture(renderer);
+      scene.environment = envResources.envMap;
+    } catch {
+      envResources = null;
     }
 
     scene.add(new THREE.HemisphereLight(0xf2eff8, 0x261d3a, 0.95));
@@ -484,20 +489,139 @@ export function BookPreview3D({ book }: BookPreview3DProps) {
     let currentRotY = -0.32;
     let lastResetSignal = resetSignalRef.current;
 
+    const timer = createDeltaTimer();
+    let isVisible = true;
+    let isTabActive = !document.hidden;
+    let contextLost = false;
+    let rafId = 0;
+    let renderBusy = false;
+    let renderDirty = false;
+    let cancelFence: (() => void) | null = null;
+
     const onPointerDown = (e: PointerEvent) => {
       isDragging = true;
       prevX = e.clientX;
       renderer.domElement.setPointerCapture?.(e.pointerId);
+      requestRender();
     };
     const onPointerMove = (e: PointerEvent) => {
       if (!isDragging) return;
       const dx = e.clientX - prevX;
       prevX = e.clientX;
       dragOffsetY = THREE.MathUtils.clamp(dragOffsetY + dx * 0.01, -1.2, 1.2);
+      requestRender();
     };
     const onPointerUp = () => {
+      if (!isDragging) return;
       isDragging = false;
+      requestRender();
     };
+
+    const drawFrame = (): boolean => {
+      if (resetSignalRef.current !== lastResetSignal) {
+        lastResetSignal = resetSignalRef.current;
+        dragOffsetY = 0;
+      }
+
+      const { delta, elapsed } = timer.step();
+      const baseAngle =
+        targetSideRef.current === "front" ? -0.32 : Math.PI - 0.32;
+
+      if (!isDragging && !prefersReducedMotion && !isSoftwareGl) {
+        dragOffsetY = THREE.MathUtils.damp(dragOffsetY, 0, 3.2, delta);
+      } else if (!isDragging && isSoftwareGl && !prefersReducedMotion) {
+        dragOffsetY = THREE.MathUtils.damp(
+          dragOffsetY,
+          0,
+          6,
+          Math.max(delta, 0.03),
+        );
+      }
+
+      const desiredY =
+        baseAngle +
+        dragOffsetY +
+        (prefersReducedMotion || isSoftwareGl ? 0 : Math.sin(elapsed * 0.7) * 0.06);
+
+      if (prefersReducedMotion) {
+        currentRotY = desiredY;
+      } else if (isSoftwareGl) {
+        currentRotY = THREE.MathUtils.damp(
+          currentRotY,
+          desiredY,
+          10,
+          Math.max(delta, 0.03),
+        );
+      } else {
+        currentRotY = THREE.MathUtils.damp(currentRotY, desiredY, 7.5, delta);
+      }
+
+      bookGroup.rotation.y = currentRotY;
+      bookGroup.rotation.x = 0.06;
+
+      const targetCoverAngle = isOpenRef.current ? -Math.PI * 0.72 : 0;
+      frontCoverPivot.rotation.y = prefersReducedMotion
+        ? targetCoverAngle
+        : THREE.MathUtils.damp(
+            frontCoverPivot.rotation.y,
+            targetCoverAngle,
+            isSoftwareGl ? 10 : 6.5,
+            isSoftwareGl ? Math.max(delta, 0.03) : delta,
+          );
+
+      const targetBookX = isOpenRef.current ? 0.38 : 0;
+      bookGroup.position.x = prefersReducedMotion
+        ? targetBookX
+        : THREE.MathUtils.damp(
+            bookGroup.position.x,
+            targetBookX,
+            isSoftwareGl ? 10 : 6.5,
+            isSoftwareGl ? Math.max(delta, 0.03) : delta,
+          );
+
+      renderer.render(scene, camera);
+
+      if (prefersReducedMotion) return false;
+      if (isSoftwareGl) {
+        return (
+          isDragging ||
+          Math.abs(currentRotY - desiredY) > 0.004 ||
+          Math.abs(dragOffsetY) > 0.004 ||
+          Math.abs(frontCoverPivot.rotation.y - targetCoverAngle) > 0.004 ||
+          Math.abs(bookGroup.position.x - targetBookX) > 0.003
+        );
+      }
+      return isVisible && isTabActive;
+    };
+
+    const requestRender = () => {
+      if (cancelled || contextLost || !isVisible || !isTabActive) return;
+      if (renderBusy) {
+        renderDirty = true;
+        return;
+      }
+      renderBusy = true;
+      rafId = window.requestAnimationFrame(() => {
+        if (cancelled) return;
+        renderDirty = false;
+        const shouldContinue = drawFrame();
+        const finishFrame = () => {
+          renderBusy = false;
+          if (cancelled) return;
+          if (renderDirty || shouldContinue) {
+            requestRender();
+          }
+        };
+        if (isSoftwareGl) {
+          cancelFence?.();
+          cancelFence = awaitWebGLFrameFence(renderer, finishFrame, 80);
+        } else {
+          finishFrame();
+        }
+      });
+    };
+
+    requestRenderRef.current = requestRender;
 
     renderer.domElement.addEventListener("pointerdown", onPointerDown);
     window.addEventListener("pointermove", onPointerMove, { passive: true });
@@ -507,14 +631,8 @@ export function BookPreview3D({ book }: BookPreview3DProps) {
       camera.aspect = newW / newH;
       camera.updateProjectionMatrix();
       renderer.setSize(newW, newH);
-      renderer.render(scene, camera);
+      requestRender();
     });
-
-    let isVisible = true;
-    let isTabActive = !document.hidden;
-    let contextLost = false;
-    let rafId = 0;
-    let timeoutId = 0;
 
     const stopContextLoss = attachContextLossRecovery(
       renderer.domElement,
@@ -525,13 +643,15 @@ export function BookPreview3D({ book }: BookPreview3DProps) {
       () => {
         contextLost = false;
         setWebglSupported(true);
-        renderer.render(scene, camera);
+        requestRender();
       },
     );
 
     const observer = new IntersectionObserver(
       (entries) => {
-        isVisible = entries.some((entry) => entry.isIntersecting);
+        const nextVisible = entries.some((entry) => entry.isIntersecting);
+        isVisible = nextVisible;
+        if (nextVisible) requestRender();
       },
       { threshold: 0.1 },
     );
@@ -539,75 +659,28 @@ export function BookPreview3D({ book }: BookPreview3DProps) {
 
     const handleVisibilityChange = () => {
       isTabActive = !document.hidden;
+      if (isTabActive) {
+        timer.step();
+        requestRender();
+      }
     };
     document.addEventListener("visibilitychange", handleVisibilityChange);
 
-    const clock = new THREE.Clock();
-
-    const renderFrame = () => {
-      if (cancelled) return;
-      if (contextLost || !isVisible || !isTabActive) {
-        scheduleNext();
-        return;
+    if (!isSoftwareGl) {
+      try {
+        renderer.compile(scene, camera);
+      } catch {
+        // Non-fatal shader warmup fallback
       }
+    }
 
-      if (resetSignalRef.current !== lastResetSignal) {
-        lastResetSignal = resetSignalRef.current;
-        dragOffsetY = 0;
-      }
-
-      const delta = Math.min(clock.getDelta(), 0.08);
-      const elapsed = clock.elapsedTime;
-      const baseAngle =
-        targetSideRef.current === "front" ? -0.32 : Math.PI - 0.32;
-
-      if (!isDragging && !prefersReducedMotion) {
-        dragOffsetY = THREE.MathUtils.damp(dragOffsetY, 0, 3.2, delta);
-      }
-
-      const desiredY =
-        baseAngle +
-        dragOffsetY +
-        (prefersReducedMotion ? 0 : Math.sin(elapsed * 0.7) * 0.06);
-
-      currentRotY = prefersReducedMotion
-        ? desiredY
-        : THREE.MathUtils.damp(currentRotY, desiredY, 7.5, delta);
-
-      bookGroup.rotation.y = currentRotY;
-      bookGroup.rotation.x = 0.06;
-
-      const targetCoverAngle = isOpenRef.current ? -Math.PI * 0.72 : 0;
-      frontCoverPivot.rotation.y = prefersReducedMotion
-        ? targetCoverAngle
-        : THREE.MathUtils.damp(frontCoverPivot.rotation.y, targetCoverAngle, 6.5, delta);
-
-      const targetBookX = isOpenRef.current ? 0.38 : 0;
-      bookGroup.position.x = prefersReducedMotion
-        ? targetBookX
-        : THREE.MathUtils.damp(bookGroup.position.x, targetBookX, 6.5, delta);
-
-      renderer.render(scene, camera);
-      scheduleNext();
-    };
-
-    const scheduleNext = () => {
-      if (cancelled) return;
-      if (isSoftwareGl) {
-        timeoutId = window.setTimeout(() => {
-          rafId = window.requestAnimationFrame(renderFrame);
-        }, 48);
-      } else {
-        rafId = window.requestAnimationFrame(renderFrame);
-      }
-    };
-
-    renderFrame();
+    requestRender();
 
     return () => {
       cancelled = true;
+      requestRenderRef.current = null;
       window.cancelAnimationFrame(rafId);
-      window.clearTimeout(timeoutId);
+      cancelFence?.();
       observer.disconnect();
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       renderer.domElement.removeEventListener("pointerdown", onPointerDown);
@@ -627,7 +700,13 @@ export function BookPreview3D({ book }: BookPreview3DProps) {
   }, [book]);
 
   return (
-    <div className="rounded-[18px] border border-border-subtle bg-gradient-to-b from-surface-lavender via-white to-surface-lavender/60 overflow-hidden shadow-sm">
+    <div
+      data-testid="book-preview-3d"
+      data-webgl-state={webglSupported ? "ready" : "fallback"}
+      data-book-open={String(isOpen)}
+      data-active-side={activeSide}
+      className="rounded-[18px] border border-border-subtle bg-gradient-to-b from-surface-lavender via-white to-surface-lavender/60 overflow-hidden shadow-sm"
+    >
       {webglSupported ? (
         <div
           ref={containerRef}

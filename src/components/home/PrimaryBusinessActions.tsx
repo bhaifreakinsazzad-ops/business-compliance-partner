@@ -93,7 +93,7 @@ export function PrimaryBusinessActions() {
                       </span>
                     </div>
                   </div>
-                  <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/85 text-text-accent border border-border-subtle shrink-0 transition-transform duration-200 group-hover:translate-x-1 group-hover:bg-action-primary group-hover:text-white">
+                  <span className="inline-flex items-center justify-center w-9 h-9 rounded-[10px] bg-white/85 text-text-accent border border-border-subtle shrink-0 transition-transform duration-200 group-hover:translate-x-1 group-hover:bg-action-primary group-hover:text-white">
                     <ArrowRight className="w-4 h-4" aria-hidden="true" />
                   </span>
                 </Link>

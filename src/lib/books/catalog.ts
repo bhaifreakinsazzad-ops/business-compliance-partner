@@ -3,6 +3,7 @@ import type {
   PublicBookCoverPalette,
   PublicBookPreview,
 } from "@/types/domain";
+import { fromPaisa } from "@/lib/commerce/payments";
 import { matchesSearchQuery } from "@/lib/content/helpers";
 import { isDatabaseConfigured, prisma } from "@/lib/db/prisma";
 import { isBooksSchemaReady } from "@/lib/db/schema-ready";
@@ -568,7 +569,7 @@ export function mapDbBookToPublicPreview(dbBook: {
     pricePaisa: isPublishedPriced ? dbBook.pricePaisa : null,
     priceBdt:
       isPublishedPriced && typeof dbBook.pricePaisa === "number"
-        ? Math.round(dbBook.pricePaisa / 100)
+        ? fromPaisa(dbBook.pricePaisa)
         : null,
     inStock: isPublishedPriced ? dbBook.stockQuantity > 0 : false,
     stockQuantity: isPublishedPriced ? dbBook.stockQuantity : undefined,
@@ -661,6 +662,9 @@ export async function loadBookCatalog(filter?: {
     }
   }
 
+  if (process.env.DISABLE_SEED_FALLBACK === "true") {
+    return { categories: [], items: [] };
+  }
   return listBookCatalog(filter);
 }
 
@@ -669,8 +673,8 @@ export async function getGovernedBookBySlug(
 ): Promise<PublicBookPreview | null> {
   if (isDatabaseConfigured() && (await isBooksSchemaReady())) {
     try {
-      const dbBook = await prisma.book.findFirst({
-        where: { slug, contentStatus: "PUBLISHED" },
+      const dbBook = await prisma.book.findUnique({
+        where: { slug },
         include: {
           category: {
             select: { slug: true, nameBn: true, nameEn: true },
@@ -678,11 +682,27 @@ export async function getGovernedBookBySlug(
         },
       });
       if (dbBook) {
+        if (
+          dbBook.contentStatus !== "PUBLISHED" ||
+          dbBook.availabilityStatus === "INACTIVE"
+        ) {
+          return null;
+        }
         return mapDbBookToPublicPreview(dbBook);
       }
+
+      const dbHasBooks = (await prisma.book.count()) > 0;
+      if (dbHasBooks) {
+        return null;
+      }
     } catch {
-      // Fallback to verified preview catalog
+      if (process.env.NODE_ENV === "production") {
+        return null;
+      }
     }
+  }
+  if (process.env.DISABLE_SEED_FALLBACK === "true") {
+    return null;
   }
   return getBookPreviewBySlug(slug);
 }

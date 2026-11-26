@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, ShieldCheck } from "lucide-react";
 import { getCanonicalBaseUrl, getPublicSiteConfig } from "@/lib/config/site";
-import { listBookCatalog } from "@/lib/books/catalog";
+import { loadBookCatalog } from "@/lib/books/catalog";
 import {
   listPublishedCourses,
   listPublishedFaqs,
@@ -60,13 +60,14 @@ const CLIENT_JOURNEY_STEPS = [
 ];
 
 export default async function HomePage() {
-  const [siteConfig, coursesData, servicesData, licensingData, faqs] =
+  const [siteConfig, coursesData, servicesData, licensingData, faqs, booksData] =
     await Promise.all([
       getPublicSiteConfig(),
       listPublishedCourses(),
       listPublishedServices(),
       listPublishedLicensing(),
       listPublishedFaqs(),
+      loadBookCatalog(),
     ]);
 
   const canonicalBaseUrl = getCanonicalBaseUrl();
@@ -76,9 +77,7 @@ export default async function HomePage() {
   const topServiceCategories = servicesData.categories.slice(0, 6);
   const featuredCourses = coursesData.items.slice(0, 6);
   const featuredServices = servicesData.items.slice(0, 6);
-  const featuredBooks = listBookCatalog()
-    .items.filter((b) => b.featured)
-    .slice(0, 6);
+  const featuredBooks = booksData.items.filter((b) => b.featured).slice(0, 6);
   const featuredLicensing = licensingData.items.slice(0, 4);
 
   return (

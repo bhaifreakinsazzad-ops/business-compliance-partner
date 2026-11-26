@@ -24,10 +24,13 @@ export async function GET(req: NextRequest) {
   try {
     const certificate = await prisma.certificate.findUnique({
       where: { verificationCode: code },
-      include: { customer: { select: { name: true } } },
+      include: {
+        customer: { select: { name: true } },
+        enrollment: { select: { status: true, courseId: true } },
+      },
     });
 
-    if (!certificate) {
+    if (!certificate || certificate.enrollment.status !== "COMPLETED") {
       return NextResponse.json(
         { verified: false, error: "প্রদত্ত কোডযুক্ত কোনো বৈধ সনদ পাওয়া যায়নি।" },
         { status: 404 },

@@ -1,5 +1,11 @@
 import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
+export {
+  clampFrameDelta,
+  createDeltaTimer,
+  resolveSlideYawOffset,
+  type DeltaTimer,
+} from "@/lib/three/timing";
 
 /**
  * Probes WebGL renderer string to detect software rasterizers (e.g. SwiftShader,
@@ -97,6 +103,73 @@ export function createAmbientLavenderShaderBackdrop(
   const mesh = new THREE.Mesh(new THREE.PlaneGeometry(width, height), material);
   mesh.position.set(0, 0.8, -3.5);
   return { mesh, uniforms };
+}
+
+/**
+ * Software-WebGL frame pacing using WebGL2 fenceSync so SwiftShader/llvmpipe
+ * completes queued draw commands before releasing the next animation frame.
+ * Returns a cancellation callback to clean up pending timers/sync objects.
+ */
+export function awaitWebGLFrameFence(
+  renderer: THREE.WebGLRenderer,
+  onComplete: () => void,
+  restMs = 80,
+): () => void {
+  let cancelled = false;
+  let timerId = 0;
+
+  const gl = renderer.getContext() as WebGL2RenderingContext | null;
+  const hasFence =
+    gl &&
+    typeof gl.fenceSync === "function" &&
+    typeof gl.getSyncParameter === "function" &&
+    typeof gl.deleteSync === "function";
+
+  if (!hasFence || !gl) {
+    timerId = window.setTimeout(() => {
+      if (!cancelled) onComplete();
+    }, restMs);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timerId);
+    };
+  }
+
+  const sync = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
+  gl.flush();
+  let polls = 0;
+
+  const poll = () => {
+    if (cancelled) {
+      if (sync) gl.deleteSync(sync);
+      return;
+    }
+    const status = sync
+      ? gl.getSyncParameter(sync, gl.SYNC_STATUS)
+      : gl.SIGNALED;
+    if (status === gl.UNSIGNALED && polls < 40) {
+      polls += 1;
+      timerId = window.setTimeout(poll, 5);
+    } else {
+      if (sync) gl.deleteSync(sync);
+      timerId = window.setTimeout(() => {
+        if (!cancelled) onComplete();
+      }, restMs);
+    }
+  };
+
+  timerId = window.setTimeout(poll, 5);
+  return () => {
+    cancelled = true;
+    window.clearTimeout(timerId);
+    if (sync) {
+      try {
+        gl.deleteSync(sync);
+      } catch {
+        // Context may already be lost during unmount
+      }
+    }
+  };
 }
 
 export function createResizeObserver(

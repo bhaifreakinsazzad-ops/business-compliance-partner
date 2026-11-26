@@ -2,11 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { getCurrentCustomer } from "@/lib/customer/auth";
 import { isDatabaseConfigured, prisma } from "@/lib/db/prisma";
 import { isCoreCommerceSchemaReady } from "@/lib/db/schema-ready";
+import { hashClientIp } from "@/lib/security/password";
 import { generatePublicReference } from "@/lib/security/reference-id";
 import {
   deletePrivateDocument,
   MAX_PRIVATE_DOCUMENT_BYTES,
   savePrivateDocument,
+  StorageConfigurationError,
   verifyDocumentMagicBytes,
 } from "@/lib/storage/private-documents";
 
@@ -27,6 +29,8 @@ export async function POST(req: NextRequest) {
   }
 
   let savedFileKey: string | null = null;
+  let savedProvider: string | null = null;
+  let savedBucket: string | null = null;
 
   try {
     const formData = await req.formData();
@@ -35,6 +39,8 @@ export async function POST(req: NextRequest) {
     const rawCategory = (formData.get("category") as string | null)?.trim();
     const caseId = (formData.get("caseId") as string | null)?.trim() || null;
     const requestId = (formData.get("requestId") as string | null)?.trim() || null;
+    const organizationId =
+      (formData.get("organizationId") as string | null)?.trim() || null;
 
     if (!file || !(file instanceof File)) {
       return NextResponse.json(
@@ -59,7 +65,19 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Verify ownership of linked caseId / requestId before saving anything
+    if (organizationId) {
+      const membership = await prisma.organizationMembership.findFirst({
+        where: { organizationId, customerId: customer.id },
+        select: { id: true },
+      });
+      if (!membership) {
+        return NextResponse.json(
+          { error: "নির্বাচিত প্রতিষ্ঠানটি আপনার অ্যাকাউন্টের সাথে যুক্ত নয়।" },
+          { status: 403 },
+        );
+      }
+    }
+
     if (caseId) {
       const ownedCase = await prisma.complianceCase.findFirst({
         where: { id: caseId, customerId: customer.id },
@@ -97,27 +115,70 @@ export async function POST(req: NextRequest) {
       verifiedMime,
     });
     savedFileKey = persisted.fileKey;
+    savedProvider = persisted.storageProvider;
+    savedBucket = persisted.storageBucket;
 
-    const document = await prisma.document.create({
-      data: {
-        publicReference,
-        customerId: customer.id,
-        caseId,
-        requestId,
-        title,
-        category,
-        fileKey: persisted.fileKey,
-        fileUrl: `/api/documents/${publicReference}`,
-        fileSizeBytes: persisted.sizeBytes,
-        mimeType: verifiedMime,
-        status: "PENDING_REVIEW",
-      },
+    const rawIp =
+      req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      req.headers.get("x-real-ip") ||
+      null;
+    const ipHash = rawIp ? hashClientIp(rawIp) : null;
+
+    const document = await prisma.$transaction(async (tx) => {
+      const created = await tx.document.create({
+        data: {
+          publicReference,
+          customerId: customer.id,
+          organizationId,
+          caseId,
+          requestId,
+          title,
+          category,
+          fileKey: persisted.fileKey,
+          fileUrl: `/api/documents/${publicReference}`,
+          fileSizeBytes: persisted.sizeBytes,
+          mimeType: verifiedMime,
+          sha256: persisted.sha256,
+          storageProvider: persisted.storageProvider,
+          storageBucket: persisted.storageBucket,
+          quarantineStatus: "CLEAR",
+          status: "PENDING_REVIEW",
+        },
+      });
+
+      await tx.auditLog.create({
+        data: {
+          action: "UPLOAD_PRIVATE_DOCUMENT",
+          entityType: "Document",
+          entityId: created.id,
+          summary: `Customer uploaded private document ${created.publicReference}`,
+          metadata: {
+            publicReference: created.publicReference,
+            customerId: customer.id,
+            storageProvider: persisted.storageProvider,
+            sizeBytes: persisted.sizeBytes,
+            mimeType: verifiedMime,
+          },
+          ipHash,
+        },
+      });
+
+      return created;
     });
 
     return NextResponse.json({ success: true, document }, { status: 201 });
   } catch (err) {
     if (savedFileKey) {
-      await deletePrivateDocument(savedFileKey);
+      await deletePrivateDocument(savedFileKey, {
+        storageProvider: savedProvider,
+        storageBucket: savedBucket,
+      });
+    }
+    if (err instanceof StorageConfigurationError) {
+      return NextResponse.json(
+        { error: err.message, code: err.code },
+        { status: err.statusCode },
+      );
     }
     console.error("[documents/upload] Error:", err);
     return NextResponse.json(
@@ -139,7 +200,19 @@ export async function GET() {
 
   try {
     const documents = await prisma.document.findMany({
-      where: { customerId: customer.id },
+      where: {
+        deletedAt: null,
+        OR: [
+          { customerId: customer.id },
+          {
+            organization: {
+              memberships: {
+                some: { customerId: customer.id },
+              },
+            },
+          },
+        ],
+      },
       orderBy: { createdAt: "desc" },
     });
 

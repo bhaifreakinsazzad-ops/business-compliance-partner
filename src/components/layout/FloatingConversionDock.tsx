@@ -67,7 +67,7 @@ export function FloatingConversionDock({
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0, transition: BCP_TRANSITIONS.standard }}
           exit={{ opacity: 0, y: 12, transition: { duration: 0.14 } }}
-          className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] end-4 z-[var(--z-dock)] flex items-center gap-1.5 rounded-[14px] border border-border-subtle bg-white/95 backdrop-blur p-1.5 shadow-xl"
+          className="fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] end-3 sm:end-4 z-[var(--z-dock)] flex items-center gap-1.5 rounded-[12px] border border-border-subtle bg-white p-1 sm:p-1.5 shadow-xl"
         >
           {waHref ? (
             <a
@@ -79,7 +79,7 @@ export function FloatingConversionDock({
                   sourcePage: pathname,
                 })
               }
-              className="inline-flex items-center gap-2 min-h-10 px-3.5 rounded-[10px] bg-action-whatsapp text-white text-xs sm:text-sm font-bold hover:bg-[var(--action-whatsapp-hover)] transition-colors"
+              className="inline-flex items-center gap-1.5 sm:gap-2 min-h-9 sm:min-h-10 px-3 sm:px-3.5 rounded-[9px] bg-action-whatsapp text-white text-xs sm:text-sm font-bold hover:bg-[var(--action-whatsapp-hover)] transition-colors"
             >
               <MessageCircle className="w-4 h-4 shrink-0" aria-hidden="true" />
               <span>WhatsApp সহায়তা</span>
@@ -87,7 +87,7 @@ export function FloatingConversionDock({
           ) : (
             <Link
               href="/consultancy"
-              className="inline-flex items-center gap-2 min-h-10 px-3.5 rounded-[10px] bg-action-primary text-white text-xs sm:text-sm font-bold hover:bg-action-primary-hover transition-colors"
+              className="inline-flex items-center gap-1.5 sm:gap-2 min-h-9 sm:min-h-10 px-3 sm:px-3.5 rounded-[9px] bg-action-primary text-white text-xs sm:text-sm font-bold hover:bg-action-primary-hover transition-colors"
             >
               <MessageSquareText className="w-4 h-4 shrink-0" aria-hidden="true" />
               <span>দ্রুত পরামর্শ</span>
@@ -99,7 +99,7 @@ export function FloatingConversionDock({
             onClick={scrollToTop}
             aria-label="উপরে যান"
             title="উপরে যান"
-            className="inline-flex items-center justify-center w-10 h-10 rounded-[10px] border border-border-subtle bg-surface-lavender text-text-accent hover:bg-surface-lavender-muted transition-colors cursor-pointer"
+            className="inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-[9px] border border-border-subtle bg-surface-lavender text-text-accent hover:bg-surface-lavender-muted transition-colors cursor-pointer"
           >
             <ArrowUp className="w-4 h-4" aria-hidden="true" />
           </button>

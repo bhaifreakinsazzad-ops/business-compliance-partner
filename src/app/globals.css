@@ -292,7 +292,7 @@ body {
   border: 1px solid var(--border-subtle);
   border-radius: var(--ps-radius-card);
   box-shadow: 0 4px 16px rgba(81, 64, 111, 0.08);
-  transition: background-color var(--motion-fast) ease, border-color var(--motion-fast) ease, box-shadow var(--motion-fast) ease, transform var(--motion-fast) ease;
+  transition: background-color var(--motion-fast) ease, border-color var(--motion-fast) ease, box-shadow var(--motion-fast) ease;
 }
 
 .bcp-flagship-card:hover {

@@ -13,6 +13,7 @@ import {
   Settings,
   History,
   ExternalLink,
+  ShoppingBag,
 } from "lucide-react";
 import { getCurrentAdminSession } from "@/lib/security/session";
 import { hasPermission } from "@/lib/security/rbac";
@@ -46,6 +47,7 @@ export default async function AdminLayout({
   const canManageFaqs = hasPermission(admin.role, "faqs:manage");
   const canManageSettings = hasPermission(admin.role, "settings:manage");
   const canViewAudit = hasPermission(admin.role, "audit:view");
+  const canManageOrders = hasPermission(admin.role, "orders:manage");
 
   return (
     <div className="min-h-screen bg-ps-midnight text-ps-ivory font-bn flex flex-col md:flex-row">
@@ -133,6 +135,15 @@ export default async function AdminLayout({
             >
               <Settings className="w-4 h-4 text-ps-gold" aria-hidden="true" />
               <span>সাইট সেটিংস</span>
+            </Link>
+          )}
+          {canManageOrders && (
+            <Link
+              href="/admin/orders"
+              className="flex items-center gap-3 min-h-[44px] px-3.5 py-2.5 rounded-[12px] text-sm font-medium text-ps-ivory/90 hover:text-ps-white hover:bg-ps-midnight/70 transition-colors"
+            >
+              <ShoppingBag className="w-4 h-4 text-ps-gold" aria-hidden="true" />
+              <span>অর্ডার ব্যবস্থাপনা</span>
             </Link>
           )}
           {canViewAudit && (

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight, BookOpen } from "lucide-react";
 import type { PublicBookPreview } from "@/types/domain";
 import { BOOK_AVAILABILITY_BADGE_BN } from "@/lib/books/catalog";
+import { formatBdtFromPaisa } from "@/lib/commerce/payments";
 import { buildWhatsAppBookMessage } from "@/lib/contact/whatsapp";
 import { WhatsAppEnquiryButton } from "@/components/shared/WhatsAppEnquiryButton";
 
@@ -13,8 +14,7 @@ interface BookCardProps {
 }
 
 function formatVerifiedPriceBdt(pricePaisa: number): string {
-  const bdt = Math.round(pricePaisa / 100);
-  return `৳ ${bdt.toLocaleString("en-US")}`;
+  return formatBdtFromPaisa(pricePaisa, "en-US");
 }
 
 export function BookCard({

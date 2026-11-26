@@ -14,9 +14,11 @@ import {
 } from "lucide-react";
 import {
   attachContextLossRecovery,
+  awaitWebGLFrameFence,
   createAmbientLavenderShaderBackdrop,
   createBookSpineTexture,
   createContactShadowTexture,
+  createDeltaTimer,
   createDocumentCardTexture,
   createLaptopScreenTexture,
   createResizeObserver,
@@ -24,6 +26,7 @@ import {
   detectSoftwareWebGL,
   disposeObject3D,
   disposeRoomEnvironment,
+  resolveSlideYawOffset,
   type RoomEnvironmentResources,
 } from "@/components/three/threeUtils";
 
@@ -101,13 +104,17 @@ export function HeroKnowledgeStudio3D({
   const [hoveredPrompt, setHoveredPrompt] = useState<string | null>(null);
   const [isCinemaMode, setIsCinemaMode] = useState(false);
 
+  const requestRenderRef = useRef<(() => void) | null>(null);
+
   useEffect(() => {
     slideTargetRef.current = activeSlideIndex;
+    requestRenderRef.current?.();
   }, [activeSlideIndex]);
 
   const selectPreset = (preset: StudioViewPreset) => {
     setActivePreset(preset);
     activePresetRef.current = preset;
+    requestRenderRef.current?.();
   };
 
   useEffect(() => {
@@ -159,15 +166,13 @@ export function HeroKnowledgeStudio3D({
     _currentLookAt.set(0, 0.35, 0);
     camera.lookAt(_currentLookAt);
 
-    // Environment IBL
+    // Studio Environment IBL on all devices so metallic gold & slate reflections match
     let envResources: RoomEnvironmentResources | null = null;
-    if (!isSoftwareGl) {
-      try {
-        envResources = createRoomEnvironmentTexture(renderer);
-        scene.environment = envResources.envMap;
-      } catch {
-        envResources = null;
-      }
+    try {
+      envResources = createRoomEnvironmentTexture(renderer);
+      scene.environment = envResources.envMap;
+    } catch {
+      envResources = null;
     }
 
     // Lavender shader backdrop
@@ -337,7 +342,7 @@ export function HeroKnowledgeStudio3D({
         screenMat.emissiveMap = upgraded;
         screenMat.needsUpdate = true;
         oldMap?.dispose();
-        renderer.render(scene, camera);
+        requestRenderRef.current?.();
       };
       img.src = logoAssetPath;
     }
@@ -510,11 +515,22 @@ export function HeroKnowledgeStudio3D({
     let prevDragX = 0;
     let totalDragDistance = 0;
 
+    const timer = createDeltaTimer();
+    let isVisible = true;
+    let isTabActive = !document.hidden;
+    let contextLost = false;
+    let rafId = 0;
+    let renderBusy = false;
+    let renderDirty = false;
+    let cancelFence: (() => void) | null = null;
+    const bookResetTimeouts = new Set<number>();
+
     const onPointerDown = (e: PointerEvent) => {
       isDragging = true;
       prevDragX = e.clientX;
       totalDragDistance = 0;
       renderer.domElement.setPointerCapture?.(e.pointerId);
+      requestRender();
     };
 
     const handlePointerMove = (e: PointerEvent) => {
@@ -533,7 +549,7 @@ export function HeroKnowledgeStudio3D({
       pointerTargetX = THREE.MathUtils.clamp(nx * 0.24, -0.2, 0.2);
       pointerTargetY = THREE.MathUtils.clamp(ny * 0.1, -0.08, 0.08);
 
-      // Throttled Raycasting for hover inspection
+      // Raycasting for hover inspection
       _pointerCoords.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       _pointerCoords.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
       _raycaster.setFromCamera(_pointerCoords, camera);
@@ -546,12 +562,15 @@ export function HeroKnowledgeStudio3D({
         container.style.cursor = isDragging ? "grabbing" : "default";
         setHoveredPrompt(null);
       }
+
+      if (!prefersReducedMotion) {
+        requestRender();
+      }
     };
 
     const handlePointerUp = (e: PointerEvent) => {
       isDragging = false;
 
-      // If user merely tapped/clicked without substantial dragging (< 6px), process click
       if (totalDragDistance < 6) {
         const rect = container.getBoundingClientRect();
         _pointerCoords.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
@@ -571,16 +590,21 @@ export function HeroKnowledgeStudio3D({
             screenMat.emissiveMap = upgraded;
             screenMat.needsUpdate = true;
             oldMap?.dispose();
+            requestRender();
           } else if (hitData?.kind === "book") {
             const idx = hitData.index as number;
             const ctrl = bookControllers[idx];
             if (ctrl) {
               const isExtended = ctrl.targetZ > ctrl.baseZ + 0.1;
               ctrl.targetZ = isExtended ? ctrl.baseZ : ctrl.baseZ + 0.32;
+              requestRender();
               if (!isExtended) {
-                window.setTimeout(() => {
+                const tid = window.setTimeout(() => {
+                  bookResetTimeouts.delete(tid);
                   ctrl.targetZ = ctrl.baseZ;
+                  requestRender();
                 }, 2600);
+                bookResetTimeouts.add(tid);
               }
             }
           } else if (hitData?.kind === "card") {
@@ -595,7 +619,139 @@ export function HeroKnowledgeStudio3D({
       pointerTargetX = 0;
       pointerTargetY = 0;
       setHoveredPrompt(null);
+      if (!prefersReducedMotion) {
+        requestRender();
+      }
     };
+
+    const drawFrame = (): boolean => {
+      const { delta, elapsed } = timer.step();
+      const slideYawOffset = resolveSlideYawOffset(slideTargetRef.current);
+
+      if (shaderBackdrop) {
+        shaderBackdrop.uniforms.uTime.value = elapsed;
+      }
+
+      const presetKey = activePresetRef.current;
+      const currentSpec =
+        STUDIO_PRESETS.find((p) => p.id === presetKey) || STUDIO_PRESETS[0]!;
+      _vecCamTarget.set(...currentSpec.camPos);
+      _vecLookTarget.set(...currentSpec.lookAt);
+
+      let keepAnimating = false;
+
+      if (prefersReducedMotion || isSoftwareGl) {
+        // Under software WebGL & reduced motion, converge swiftly or cleanly step
+        if (prefersReducedMotion) {
+          camera.position.copy(_vecCamTarget);
+          _currentLookAt.copy(_vecLookTarget);
+          camera.lookAt(_currentLookAt);
+          studioRoot.rotation.y = slideYawOffset;
+          studioRoot.rotation.x = 0;
+          bookControllers.forEach((ctrl) => {
+            ctrl.currentZ = ctrl.targetZ;
+            ctrl.group.position.z = ctrl.currentZ;
+          });
+        } else {
+          camera.position.lerp(_vecCamTarget, 0.25);
+          _currentLookAt.lerp(_vecLookTarget, 0.25);
+          camera.lookAt(_currentLookAt);
+          dragVelocityX *= 0.84;
+          manualOrbitAngle += dragVelocityX;
+          currentYaw += (pointerTargetX + slideYawOffset - currentYaw) * 0.22;
+          currentPitch += (pointerTargetY - currentPitch) * 0.22;
+          studioRoot.rotation.y = manualOrbitAngle + currentYaw;
+          studioRoot.rotation.x = currentPitch;
+
+          bookControllers.forEach((ctrl) => {
+            ctrl.currentZ = THREE.MathUtils.damp(
+              ctrl.currentZ,
+              ctrl.targetZ,
+              10,
+              Math.max(delta, 0.03),
+            );
+            ctrl.group.position.z = ctrl.currentZ;
+            if (Math.abs(ctrl.currentZ - ctrl.targetZ) > 0.002) {
+              keepAnimating = true;
+            }
+          });
+
+          if (
+            camera.position.distanceTo(_vecCamTarget) > 0.015 ||
+            Math.abs(dragVelocityX) > 0.001 ||
+            Math.abs(pointerTargetX + slideYawOffset - currentYaw) > 0.005 ||
+            Math.abs(pointerTargetY - currentPitch) > 0.005 ||
+            isDragging
+          ) {
+            keepAnimating = true;
+          }
+        }
+      } else {
+        camera.position.lerp(_vecCamTarget, 0.08);
+        _currentLookAt.lerp(_vecLookTarget, 0.08);
+        camera.lookAt(_currentLookAt);
+
+        dragVelocityX *= 0.92;
+        manualOrbitAngle += dragVelocityX;
+
+        currentYaw += (pointerTargetX + slideYawOffset - currentYaw) * 0.06;
+        currentPitch += (pointerTargetY - currentPitch) * 0.06;
+
+        studioRoot.rotation.y =
+          manualOrbitAngle + currentYaw + Math.sin(elapsed * 0.45) * 0.04;
+        studioRoot.rotation.x = currentPitch;
+
+        floatingPanels.forEach((panel, idx) => {
+          const baseY = cardSpecs[idx]?.pos[1] ?? 1.2;
+          panel.position.y =
+            baseY + Math.sin(elapsed * 1.1 + idx * 1.4) * 0.045;
+        });
+
+        bookControllers.forEach((ctrl) => {
+          ctrl.currentZ = THREE.MathUtils.damp(
+            ctrl.currentZ,
+            ctrl.targetZ,
+            8.5,
+            delta,
+          );
+          ctrl.group.position.z = ctrl.currentZ;
+        });
+
+        keepAnimating = isVisible && isTabActive;
+      }
+
+      renderer.render(scene, camera);
+      return keepAnimating;
+    };
+
+    const requestRender = () => {
+      if (cancelled || contextLost || !isVisible || !isTabActive) return;
+      if (renderBusy) {
+        renderDirty = true;
+        return;
+      }
+      renderBusy = true;
+      rafId = window.requestAnimationFrame(() => {
+        if (cancelled) return;
+        renderDirty = false;
+        const shouldContinue = drawFrame();
+        const finishFrame = () => {
+          renderBusy = false;
+          if (cancelled) return;
+          if (renderDirty || shouldContinue) {
+            requestRender();
+          }
+        };
+        if (isSoftwareGl) {
+          cancelFence?.();
+          cancelFence = awaitWebGLFrameFence(renderer, finishFrame, 80);
+        } else {
+          finishFrame();
+        }
+      });
+    };
+
+    requestRenderRef.current = requestRender;
 
     renderer.domElement.addEventListener("pointerdown", onPointerDown);
     window.addEventListener("pointermove", handlePointerMove, { passive: true });
@@ -606,14 +762,8 @@ export function HeroKnowledgeStudio3D({
       camera.aspect = newW / newH;
       camera.updateProjectionMatrix();
       renderer.setSize(newW, newH);
-      renderer.render(scene, camera);
+      requestRender();
     });
-
-    let isVisible = true;
-    let isTabActive = !document.hidden;
-    let contextLost = false;
-    let rafId = 0;
-    let timeoutId = 0;
 
     const stopContextLoss = attachContextLossRecovery(
       renderer.domElement,
@@ -624,13 +774,15 @@ export function HeroKnowledgeStudio3D({
       () => {
         contextLost = false;
         setWebglReady(true);
-        renderer.render(scene, camera);
+        requestRender();
       },
     );
 
     const observer = new IntersectionObserver(
       (entries) => {
-        isVisible = entries.some((entry) => entry.isIntersecting);
+        const nextVisible = entries.some((entry) => entry.isIntersecting);
+        isVisible = nextVisible;
+        if (nextVisible) requestRender();
       },
       { threshold: 0.1 },
     );
@@ -638,101 +790,32 @@ export function HeroKnowledgeStudio3D({
 
     const handleVisibilityChange = () => {
       isTabActive = !document.hidden;
+      if (isTabActive) {
+        timer.step();
+        requestRender();
+      }
     };
     document.addEventListener("visibilitychange", handleVisibilityChange);
 
-    const clock = new THREE.Clock();
+    if (!isSoftwareGl) {
+      try {
+        renderer.compile(scene, camera);
+      } catch {
+        // Non-fatal shader warmup fallback
+      }
+    }
 
-    const tick = () => {
-      if (cancelled) return;
-
-      const renderFrame = () => {
-        if (contextLost || !isVisible || !isTabActive) {
-          scheduleNext();
-          return;
-        }
-
-        const delta = Math.min(clock.getDelta(), 0.08);
-        const elapsed = clock.getElapsedTime();
-        const slideIdx = slideTargetRef.current;
-
-        if (shaderBackdrop) {
-          shaderBackdrop.uniforms.uTime.value = elapsed;
-        }
-
-        const slideYawOffset =
-          slideIdx === 4 ? -0.14 : slideIdx === 1 ? 0.06 : 0;
-
-        // Smooth Camera Presets Navigation
-        const presetKey = activePresetRef.current;
-        const currentSpec =
-          STUDIO_PRESETS.find((p) => p.id === presetKey) || STUDIO_PRESETS[0]!;
-        _vecCamTarget.set(...currentSpec.camPos);
-        _vecLookTarget.set(...currentSpec.lookAt);
-
-        if (!prefersReducedMotion) {
-          camera.position.lerp(_vecCamTarget, 0.08);
-          _currentLookAt.lerp(_vecLookTarget, 0.08);
-          camera.lookAt(_currentLookAt);
-
-          // Drag inertia and rotational physics
-          dragVelocityX *= 0.92;
-          manualOrbitAngle += dragVelocityX;
-
-          currentYaw += (pointerTargetX + slideYawOffset - currentYaw) * 0.06;
-          currentPitch += (pointerTargetY - currentPitch) * 0.06;
-
-          studioRoot.rotation.y =
-            manualOrbitAngle + currentYaw + Math.sin(elapsed * 0.45) * 0.04;
-          studioRoot.rotation.x = currentPitch;
-
-          // Floating cards gentle float
-          floatingPanels.forEach((panel, idx) => {
-            const baseY = cardSpecs[idx]?.pos[1] ?? 1.2;
-            panel.position.y =
-              baseY + Math.sin(elapsed * 1.1 + idx * 1.4) * 0.045;
-          });
-
-          // Books dynamic spring pull-out
-          bookControllers.forEach((ctrl) => {
-            ctrl.currentZ = THREE.MathUtils.damp(
-              ctrl.currentZ,
-              ctrl.targetZ,
-              8.5,
-              delta,
-            );
-            ctrl.group.position.z = ctrl.currentZ;
-          });
-        } else {
-          camera.position.set(...currentSpec.camPos);
-          camera.lookAt(...currentSpec.lookAt);
-          studioRoot.rotation.y = slideYawOffset;
-        }
-
-        renderer.render(scene, camera);
-        scheduleNext();
-      };
-
-      const scheduleNext = () => {
-        if (cancelled || prefersReducedMotion) return;
-        if (isSoftwareGl) {
-          timeoutId = window.setTimeout(() => {
-            rafId = window.requestAnimationFrame(renderFrame);
-          }, 48);
-        } else {
-          rafId = window.requestAnimationFrame(renderFrame);
-        }
-      };
-
-      renderFrame();
-    };
-
-    tick();
+    requestRender();
 
     return () => {
       cancelled = true;
+      requestRenderRef.current = null;
       window.cancelAnimationFrame(rafId);
-      window.clearTimeout(timeoutId);
+      cancelFence?.();
+      for (const tid of bookResetTimeouts) {
+        window.clearTimeout(tid);
+      }
+      bookResetTimeouts.clear();
       observer.disconnect();
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       renderer.domElement.removeEventListener("pointerdown", onPointerDown);
@@ -754,7 +837,11 @@ export function HeroKnowledgeStudio3D({
 
   if (!webglReady) {
     return (
-      <div className="w-full h-[220px] sm:h-[260px] rounded-[16px] border border-[#D4CCE3] bg-gradient-to-br from-white via-[#F2EFF8] to-[#DDD6EB] p-5 flex items-center justify-between gap-4 shadow-sm">
+      <div
+        data-testid="hero-studio-3d"
+        data-webgl-state="fallback"
+        className="w-full h-[220px] sm:h-[260px] rounded-[16px] border border-[#D4CCE3] bg-gradient-to-br from-white via-[#F2EFF8] to-[#DDD6EB] p-5 flex items-center justify-between gap-4 shadow-sm"
+      >
         <div className="space-y-2.5">
           {logoAssetPath ? (
             <Image
@@ -777,7 +864,7 @@ export function HeroKnowledgeStudio3D({
           {HERO_BOOK_SPINES.map((book) => (
             <div
               key={book.title}
-              className="px-3 py-1.5 rounded-[6px] text-[10px] font-semibold text-white border-l-2 border-[#C59028] shadow-xs truncate"
+              className="px-3 py-1.5 rounded-[6px] text-[10px] font-semibold text-white border border-[#C59028]/50 shadow-xs truncate"
               style={{ backgroundColor: book.bg }}
             >
               {book.title}
@@ -789,7 +876,12 @@ export function HeroKnowledgeStudio3D({
   }
 
   return (
-    <div className="w-full relative select-none rounded-[18px] overflow-hidden group">
+    <div
+      data-testid="hero-studio-3d"
+      data-webgl-state="ready"
+      data-active-preset={activePreset}
+      className="w-full relative select-none rounded-[18px] overflow-hidden group"
+    >
       {/* 3D WebGL Canvas Container */}
       <div
         ref={containerRef}
@@ -798,20 +890,20 @@ export function HeroKnowledgeStudio3D({
         className="w-full h-[240px] sm:h-[280px] lg:h-[310px] relative cursor-grab active:cursor-grabbing"
       />
 
-      {/* Floating Dynamic Inspection Badge when hovering meshes */}
+      {/* Solid-surface Dynamic Inspection Readout when hovering meshes (no backdrop-blur or full pill) */}
       {hoveredPrompt && !isCinemaMode ? (
-        <div className="absolute top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-[#081838]/85 backdrop-blur-xs text-white text-[11px] font-medium border border-[#C59028]/40 shadow-md pointer-events-none transition-all animate-fade-in truncate max-w-[92%]">
+        <div className="absolute top-3 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-[10px] bg-[#081838]/95 text-white text-[11px] font-medium border border-[#C59028]/55 shadow-md pointer-events-none truncate max-w-[92%]">
           {hoveredPrompt}
         </div>
       ) : null}
 
-      {/* Unobstructed Unified Collapsible Bottom Dock (Skill Directive #5) */}
+      {/* Unobstructed Unified Collapsible Bottom Dock (no backdrop-filter over WebGL) */}
       <div
         className={`absolute bottom-2.5 left-1/2 -translate-x-1/2 w-[95%] max-w-[500px] transition-transform duration-300 pointer-events-auto ${
           isCinemaMode ? "translate-y-[calc(100%+8px)]" : "translate-y-0"
         }`}
       >
-        <div className="rounded-[12px] bg-white/92 backdrop-blur-md border border-[#D4CCE3] shadow-md px-2.5 py-1.5 flex items-center justify-between gap-1.5 text-xs">
+        <div className="rounded-[12px] bg-white/95 border border-[#D4CCE3] shadow-md px-2.5 py-1.5 flex items-center justify-between gap-1.5 text-xs">
           {/* Preset Buttons */}
           <div className="flex items-center gap-1 overflow-x-auto py-0.5 no-scrollbar">
             {STUDIO_PRESETS.map((preset) => {

@@ -12,7 +12,14 @@ export type AdminPermission =
   | "faqs:manage"
   | "settings:manage"
   | "users:manage"
-  | "audit:view";
+  | "audit:view"
+  | "documents:review"
+  | "documents:download"
+  | "documents:admin"
+  | "documents:delete"
+  | "documents:assign"
+  | "orders:manage"
+  | "orders:cancel";
 
 const ROLE_PERMISSIONS: Record<AdminRoleValue, ReadonlySet<AdminPermission>> = {
   ADMIN: new Set<AdminPermission>([
@@ -28,6 +35,13 @@ const ROLE_PERMISSIONS: Record<AdminRoleValue, ReadonlySet<AdminPermission>> = {
     "settings:manage",
     "users:manage",
     "audit:view",
+    "documents:review",
+    "documents:download",
+    "documents:admin",
+    "documents:delete",
+    "documents:assign",
+    "orders:manage",
+    "orders:cancel",
   ]),
   EDITOR: new Set<AdminPermission>([
     "dashboard:view",
@@ -42,6 +56,8 @@ const ROLE_PERMISSIONS: Record<AdminRoleValue, ReadonlySet<AdminPermission>> = {
     "leads:update",
     "leads:assign",
     "leads:export",
+    "documents:review",
+    "orders:manage",
   ]),
 };
 

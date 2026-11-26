@@ -56,6 +56,14 @@ enum PreferredContact {
   ANY
 }
 
+enum CourseEnrollmentModel {
+  FREE
+  PAID
+  ENQUIRY_ONLY
+  INVITATION_ONLY
+  UNAVAILABLE
+}
+
 model Category {
   id               String           @id @default(cuid())
   pillar           PillarType
@@ -110,6 +118,8 @@ model Course {
   deliveryMode       String?
   duration           String?
   feeDisplay         String?
+  enrollmentModel    CourseEnrollmentModel @default(ENQUIRY_ONLY)
+  pricePaisa         Int?
   instructorId       String?
   instructor         Instructor?        @relation(fields: [instructorId], references: [id], onDelete: SetNull)
   contentStatus      ContentStatus      @default(DRAFT)
@@ -123,6 +133,7 @@ model Course {
   sourceReference    String?
   modules            CourseModule[]
   enrollments        Enrollment[]
+  entitlements       CourseEntitlement[]
   createdAt          DateTime           @default(now())
   updatedAt          DateTime           @updatedAt
 
@@ -440,6 +451,7 @@ model Customer {
   orders              Order[]
   invoices            Invoice[]
   enrollments         Enrollment[]
+  courseEntitlements  CourseEntitlement[]
   certificates        Certificate[]
   complianceCases     ComplianceCase[]
   documents           Document[]
@@ -521,21 +533,25 @@ model ServiceRequest {
 }
 
 model Quote {
-  id                String          @id @default(cuid())
-  publicReference   String          @unique
-  requestId         String?
-  request           ServiceRequest? @relation(fields: [requestId], references: [id], onDelete: SetNull)
-  customerId        String?
-  customer          Customer?       @relation(fields: [customerId], references: [id], onDelete: SetNull)
-  totalAmountBdt    Float
-  govtFeeBdt        Float?          @default(0)
-  bcpServiceFeeBdt  Float?          @default(0)
-  status            String          @default("SENT")
-  validUntil        DateTime?
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
-  items             QuoteItem[]
-  orders            Order[]
+  id                  String          @id @default(cuid())
+  publicReference     String          @unique
+  requestId           String?
+  request             ServiceRequest? @relation(fields: [requestId], references: [id], onDelete: SetNull)
+  customerId          String?
+  customer            Customer?       @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  currency            String          @default("BDT")
+  totalAmountBdt      Float
+  totalAmountPaisa    Int?
+  govtFeeBdt          Float?          @default(0)
+  govtFeePaisa        Int?            @default(0)
+  bcpServiceFeeBdt    Float?          @default(0)
+  bcpServiceFeePaisa  Int?            @default(0)
+  status              String          @default("SENT")
+  validUntil          DateTime?
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  items               QuoteItem[]
+  orders              Order[]
 
   @@index([status])
   @@index([customerId])
@@ -543,35 +559,46 @@ model Quote {
 }
 
 model QuoteItem {
-  id           String @id @default(cuid())
-  quoteId      String
-  quote        Quote  @relation(fields: [quoteId], references: [id], onDelete: Cascade)
-  description  String
-  quantity     Int    @default(1)
-  unitPriceBdt Float
+  id             String @id @default(cuid())
+  quoteId        String
+  quote          Quote  @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  description    String
+  quantity       Int    @default(1)
+  unitPriceBdt   Float
+  unitPricePaisa Int?
 
   @@map("quote_items")
 }
 
 model Order {
-  id              String          @id @default(cuid())
-  publicReference String          @unique
-  idempotencyKey  String?         @unique
-  orderKind       String          @default("SERVICE_QUOTE")
-  quoteId         String?
-  quote           Quote?          @relation(fields: [quoteId], references: [id], onDelete: SetNull)
-  customerId      String?
-  customer        Customer?       @relation(fields: [customerId], references: [id], onDelete: SetNull)
-  totalBdt        Float
-  paymentStatus   String          @default("UNPAID")
-  status          String          @default("CONFIRMED")
-  shippingAddress String?
-  notes           String?
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  invoices        Invoice[]
-  payments        PaymentRecord[]
-  bookItems       BookOrderItem[]
+  id                 String              @id @default(cuid())
+  publicReference    String              @unique
+  idempotencyKey     String?             @unique
+  idempotencyHash    String?
+  orderKind          String              @default("SERVICE_QUOTE")
+  quoteId            String?             @unique
+  quote              Quote?              @relation(fields: [quoteId], references: [id], onDelete: SetNull)
+  customerId         String?
+  customer           Customer?           @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  currency           String              @default("BDT")
+  subtotalPaisa      Int?
+  shippingPaisa      Int?                @default(0)
+  discountPaisa      Int?                @default(0)
+  totalPaisa         Int?
+  totalBdt           Float
+  paymentStatus      String              @default("UNPAID")
+  status             String              @default("CONFIRMED")
+  shippingAddress    String?
+  notes              String?
+  reservedUntil      DateTime?
+  cancelledAt        DateTime?
+  cancellationReason String?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  invoices           Invoice[]
+  payments           PaymentRecord[]
+  bookItems          BookOrderItem[]
+  courseEntitlements CourseEntitlement[]
 
   @@index([paymentStatus, status])
   @@index([customerId])
@@ -585,6 +612,8 @@ model Invoice {
   order         Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
   customerId    String?
   customer      Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  currency      String    @default("BDT")
+  amountPaisa   Int?
   amountBdt     Float
   status        String    @default("DUE")
   issuedAt      DateTime  @default(now())
@@ -602,6 +631,8 @@ model PaymentRecord {
   orderId              String
   order                Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   method               String   @default("SANDBOX")
+  currency             String   @default("BDT")
+  amountPaisa          Int?
   amountBdt            Float
   status               String   @default("INITIATED")
   gatewayResponse      Json?
@@ -689,6 +720,26 @@ model Certificate {
   @@map("certificates")
 }
 
+model CourseEntitlement {
+  id               String    @id @default(cuid())
+  customerId       String
+  customer         Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  courseId         String
+  course           Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  sourceType       String    @default("ORDER")
+  orderId          String?
+  order            Order?    @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  status           String    @default("ACTIVE")
+  grantedByAdminId String?
+  expiresAt        DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@unique([customerId, courseId])
+  @@index([status])
+  @@map("course_entitlements")
+}
+
 // =============================================================================
 // WAVE 5: COMPLIANCE WORKSPACE, DOCUMENTS & NOTIFICATIONS
 // =============================================================================
@@ -730,29 +781,39 @@ model ComplianceMilestone {
 }
 
 model Document {
-  id              String          @id @default(cuid())
-  publicReference String          @unique
-  customerId      String?
-  customer        Customer?       @relation(fields: [customerId], references: [id], onDelete: SetNull)
-  organizationId  String?
-  organization    Organization?   @relation(fields: [organizationId], references: [id], onDelete: SetNull)
-  caseId          String?
-  complianceCase  ComplianceCase? @relation(fields: [caseId], references: [id], onDelete: SetNull)
-  requestId       String?
-  serviceRequest  ServiceRequest? @relation(fields: [requestId], references: [id], onDelete: SetNull)
-  title           String
-  category        String
-  fileKey         String
-  fileUrl         String
-  fileSizeBytes   Int?
-  mimeType        String?
-  status          String          @default("PENDING_REVIEW")
-  rejectionReason String?
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  id               String          @id @default(cuid())
+  publicReference  String          @unique
+  customerId       String?
+  customer         Customer?       @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  organizationId   String?
+  organization     Organization?   @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  caseId           String?
+  complianceCase   ComplianceCase? @relation(fields: [caseId], references: [id], onDelete: SetNull)
+  requestId        String?
+  serviceRequest   ServiceRequest? @relation(fields: [requestId], references: [id], onDelete: SetNull)
+  title            String
+  category         String
+  fileKey          String
+  fileUrl          String
+  fileSizeBytes    Int?
+  mimeType         String?
+  sha256           String?
+  storageProvider  String          @default("LOCAL")
+  storageBucket    String?
+  quarantineStatus String          @default("CLEAR")
+  status           String          @default("PENDING_REVIEW")
+  rejectionReason  String?
+  reviewedById     String?
+  reviewedAt       DateTime?
+  assignedAdminId  String?
+  deletedAt        DateTime?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
 
   @@index([customerId])
   @@index([status])
+  @@index([quarantineStatus])
+  @@index([assignedAdminId])
   @@map("documents")
 }
 
@@ -878,4 +939,23 @@ model BookOrderItem {
   @@index([bookId])
   @@map("book_order_items")
 }
+
+// =============================================================================
+// V7: AUTHORITATIVE SERVER-VERIFIED ANALYTICS EVENTS
+// =============================================================================
+
+model AnalyticsServerEvent {
+  id                String   @id @default(cuid())
+  eventName         String
+  verificationLevel String   @default("server_verified")
+  customerId        String?
+  entityType        String?
+  entityId          String?
+  payload           Json?
+  createdAt         DateTime @default(now())
+
+  @@index([eventName, createdAt])
+  @@map("analytics_server_events")
+}
+
 
