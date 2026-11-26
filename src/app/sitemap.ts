@@ -11,8 +11,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "",
     "/courses",
     "/services",
+    "/books",
     "/licensing",
     "/consultancy",
+    "/tools",
     "/about",
     "/faq",
     "/contact",
@@ -40,6 +42,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
+  const bookRoutes = manifest.books.map((slug) => ({
+    url: `${baseUrl}/books/${slug}`,
+    lastModified: now,
+    changeFrequency: "weekly" as const,
+    priority: 0.7,
+  }));
+
   const licensingRoutes = manifest.licensing.map((slug) => ({
     url: `${baseUrl}/licensing/${slug}`,
     lastModified: now,
@@ -51,6 +60,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...staticRoutes,
     ...courseRoutes,
     ...serviceRoutes,
+    ...bookRoutes,
     ...licensingRoutes,
   ];
 }

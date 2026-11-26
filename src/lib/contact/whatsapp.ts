@@ -143,6 +143,31 @@ export function buildWhatsAppCourseMessage(params: {
   return lines.join("\n");
 }
 
+export function buildWhatsAppBookMessage(params: {
+  bookTitle: string;
+  bookPath?: string;
+  canonicalBaseUrl?: string | null;
+}): string {
+  const cleanTitle = params.bookTitle.trim() || "প্রস্তাবিত প্রকাশনা";
+  const lines = [
+    "আসসালামু আলাইকুম।",
+    "",
+    `আমি Business Compliance Partner-এর "${cleanTitle}" বইটির আসন্ন প্রকাশনা সম্পর্কে আগ্রহী।`,
+    "",
+    "অনুগ্রহ করে বইটি প্রকাশিত হলে সংস্করণ ও সংগ্রহ প্রক্রিয়া সম্পর্কে আমাকে জানাবেন।",
+  ];
+
+  if (params.bookPath && isTrustedCanonicalUrl(params.canonicalBaseUrl)) {
+    const base = params.canonicalBaseUrl!.trim().replace(/\/+$/, "");
+    const path = params.bookPath.startsWith("/")
+      ? params.bookPath
+      : `/${params.bookPath}`;
+    lines.push("", `বইয়ের প্রিভিউ লিংক: ${base}${path}`);
+  }
+
+  return lines.join("\n");
+}
+
 export function buildWhatsAppInquiryMessage(params: {
   name?: string;
   mobile?: string;

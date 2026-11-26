@@ -44,21 +44,21 @@ export function SyllabusExplorer({ modules }: SyllabusExplorerProps) {
   };
 
   return (
-    <div className="rounded-[16px] border border-ps-border bg-ps-white p-6 space-y-4">
+    <div className="rounded-[16px] border border-[#D4CCE3] bg-white p-6 space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h2 className="text-xl font-bold text-ps-navy">
+          <h2 className="text-xl font-bold text-[#081838]">
             প্রস্তাবিত মডিউল ও সিলেবাস
           </h2>
-          <p className="text-xs text-ps-muted mt-0.5">
-            মোট {modules.length}টি মডিউল • {totalTopics}টি ব্যবহারিক বিষয়
+          <p className="text-xs text-[#596775] mt-0.5 tabular-nums">
+            মোট {modules.length}টি মডিউল · {totalTopics}টি ব্যবহারিক বিষয়
           </p>
         </div>
 
         <button
           type="button"
           onClick={toggleAll}
-          className="inline-flex items-center justify-center gap-1.5 min-h-10 px-3.5 rounded-[10px] border border-ps-border bg-ps-cool text-xs font-semibold text-ps-navy hover:bg-ps-ivory transition-colors cursor-pointer self-start sm:self-auto"
+          className="inline-flex items-center justify-center gap-1.5 min-h-10 px-3.5 rounded-[10px] border border-[#D4CCE3] bg-[#F2EFF8] text-xs font-semibold text-[#51406F] hover:bg-[#DDD6EB] transition-colors cursor-pointer self-start sm:self-auto"
         >
           <ChevronsUpDown className="w-3.5 h-3.5" aria-hidden="true" />
           <span>{allExpanded ? "সব সংকুচিত করুন" : "সব মডিউল খুলুন"}</span>
@@ -68,7 +68,7 @@ export function SyllabusExplorer({ modules }: SyllabusExplorerProps) {
       {modules.length > 2 ? (
         <div className="relative">
           <Search
-            className="w-4 h-4 text-ps-muted absolute start-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
+            className="w-4 h-4 text-[#51406F] absolute start-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
             aria-hidden="true"
           />
           <input
@@ -77,7 +77,7 @@ export function SyllabusExplorer({ modules }: SyllabusExplorerProps) {
             onChange={(e) => setFilterText(e.target.value)}
             placeholder="সিলেবাসের বিষয় খুঁজুন..."
             aria-label="সিলেবাসের বিষয় খুঁজুন"
-            className="w-full min-h-11 ps-10 pe-4 py-2 rounded-[10px] border border-ps-border bg-ps-ivory/40 text-sm text-ps-ink placeholder:text-ps-muted/75"
+            className="w-full min-h-11 ps-10 pe-4 py-2 rounded-[10px] border border-[#D4CCE3] bg-[#F2EFF8]/50 text-sm text-[#181D26] placeholder:text-[#596775]/75 focus:border-[#51406F]"
           />
         </div>
       ) : null}
@@ -102,16 +102,16 @@ export function SyllabusExplorer({ modules }: SyllabusExplorerProps) {
                     return next;
                   });
                 }}
-                className="ps-disclosure group rounded-[12px] border border-ps-border bg-ps-ivory/50 open:border-ps-navy/35"
+                className="ps-disclosure group rounded-[12px] border border-[#D4CCE3] bg-[#F2EFF8]/50 open:border-[#51406F]/55"
               >
-                <summary className="flex items-center justify-between gap-3 p-4 font-bold text-ps-navy text-sm sm:text-base">
+                <summary className="flex items-center justify-between gap-3 p-4 font-bold text-[#081838] text-sm sm:text-base cursor-pointer">
                   <span>{mod.titleBn}</span>
                   <ChevronDown
-                    className="w-4 h-4 text-ps-navy shrink-0 transition-transform duration-200 group-open:rotate-180"
+                    className="w-4 h-4 text-[#51406F] shrink-0 transition-transform duration-200 group-open:rotate-180"
                     aria-hidden="true"
                   />
                 </summary>
-                <ul className="px-4 pb-4 space-y-1.5 text-sm text-ps-ink/85 list-disc list-inside border-t border-ps-border/50 pt-3">
+                <ul className="px-4 pb-4 space-y-1.5 text-sm text-[#181D26]/85 list-disc list-inside border-t border-[#D4CCE3]/70 pt-3">
                   {mod.topicsBn.map((topic, tIdx) => (
                     <li key={tIdx}>{topic}</li>
                   ))}
@@ -121,7 +121,7 @@ export function SyllabusExplorer({ modules }: SyllabusExplorerProps) {
           })}
         </div>
       ) : (
-        <p className="text-sm text-ps-muted py-3">
+        <p className="text-sm text-[#596775] py-3">
           “{filterText.trim()}” এর সাথে মিলে এমন কোনো মডিউল পাওয়া যায়নি।
         </p>
       )}

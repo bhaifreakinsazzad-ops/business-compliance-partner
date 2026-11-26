@@ -92,7 +92,7 @@ export function StatCounters() {
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && !hasAnimated) {
+        if (entries[0]?.isIntersecting && !hasAnimated) {
           setHasAnimated(true);
           observer.disconnect();
 
@@ -108,7 +108,7 @@ export function StatCounters() {
             categories: 27,
             pillars: 4,
             independent: 100,
-            duration: 1800,
+            duration: 1400,
             ease: "outExpo",
             onUpdate: () => {
               setCounts({
@@ -121,7 +121,7 @@ export function StatCounters() {
           });
         }
       },
-      { threshold: 0.25 }
+      { threshold: 0.2 }
     );
 
     observer.observe(el);
@@ -135,29 +135,29 @@ export function StatCounters() {
     <section
       ref={containerRef}
       aria-label="প্ল্যাটফর্মের মূল পরিসংখ্যান"
-      className="bg-ps-navy/40 border-y border-ps-gold/25 py-8 sm:py-10 text-ps-white"
+      className="bg-white border-y border-[#D4CCE3] py-8 sm:py-10 text-[#081838]"
     >
       <div className="ps-container">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
           {STATS.map((stat) => {
             const Icon = stat.icon;
             const currentVal = counts[stat.id] || 0;
             return (
               <div
                 key={stat.id}
-                className="flex flex-col items-center sm:items-start text-center sm:text-left space-y-1.5 p-3 rounded-xl bg-white/[0.03] border border-white/5 hover:border-ps-gold/40 transition-colors"
+                className="flex flex-col items-center sm:items-start text-center sm:text-left space-y-1.5 p-4 rounded-[14px] bg-[#F2EFF8]/70 border border-[#D4CCE3] hover:border-[#51406F]/45 transition-colors"
               >
-                <div className="flex items-center gap-2 text-ps-gold mb-1">
+                <div className="flex items-center gap-2 text-[#51406F] mb-0.5">
                   <Icon className="w-5 h-5 shrink-0" aria-hidden="true" />
-                  <span className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight font-editorial">
+                  <span className="text-2xl sm:text-3xl lg:text-[2.1rem] font-extrabold tracking-tight tabular-nums text-[#081838]">
                     {toBengaliNumber(currentVal)}
                     {stat.suffix}
                   </span>
                 </div>
-                <p className="text-sm sm:text-base font-bold text-ps-ivory">
+                <p className="text-sm sm:text-base font-bold text-[#081838]">
                   {stat.labelBn}
                 </p>
-                <p className="text-xs text-white/70">{stat.sublabelBn}</p>
+                <p className="text-xs text-[#596775]">{stat.sublabelBn}</p>
               </div>
             );
           })}

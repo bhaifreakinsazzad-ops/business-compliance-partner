@@ -74,21 +74,20 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
       <AppHeader siteConfig={siteConfig} />
 
       <main id="main-content" tabIndex={-1} className="flex-1">
-        <section className="bg-ps-midnight text-ps-white py-10 sm:py-12 border-b border-ps-gold/30">
+        <section className="bg-gradient-to-br from-[#F2EFF8] via-[#ECE7F5] to-[#E5DDF2] text-[#081838] py-10 sm:py-12 border-b border-[#D4CCE3]">
           <div className="ps-container space-y-5">
             <Breadcrumbs
-              dark
               items={[{ labelBn: "হোম", href: "/" }, { labelBn: "পেশাদার সেবা" }]}
             />
             <div className="max-w-3xl space-y-2.5">
-              <span className="inline-flex items-center gap-2 rounded-full border border-ps-gold/40 bg-ps-navy px-3 py-1 text-xs font-medium text-ps-ivory">
-                <BriefcaseBusiness className="w-3.5 h-3.5 text-ps-gold" aria-hidden="true" />
-                <span lang="en">Professional Business Services • 11 Categories</span>
-              </span>
-              <h1 className="text-3xl sm:text-4xl font-bold leading-snug">
+              <p className="inline-flex items-center gap-2 text-xs font-en font-semibold uppercase tracking-[0.14em] text-[#51406F]">
+                <BriefcaseBusiness className="w-4 h-4 text-[#51406F]" aria-hidden="true" />
+                <span>Professional Business Services · 11 Categories</span>
+              </p>
+              <h1 className="text-3xl sm:text-4xl font-extrabold leading-snug text-[#081838]">
                 পেশাদার ব্যবসায়িক ও কমপ্লায়েন্স সেবাসমূহ
               </h1>
-              <p className="text-sm sm:text-base text-white/85 leading-relaxed">
+              <p className="text-sm sm:text-base text-[#181D26]/85 leading-relaxed">
                 ট্যাক্স, ভ্যাট, e-GP, কোম্পানি সেক্রেটারিয়াল, আমদানি-রপ্তানি ও
                 অ্যাকাউন্টিং বিষয়ে সুসংগঠিত সেবা ও সরাসরি WhatsApp সহায়তা।
               </p>
@@ -98,23 +97,23 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
               <Link
                 href="/services"
-                className="flex items-center gap-3 rounded-[12px] bg-ps-gold text-ps-midnight px-4 py-3 font-bold text-sm shadow-sm"
+                className="flex items-center gap-3 rounded-[12px] bg-[#51406F] text-white px-4 py-3 font-bold text-sm shadow-sm"
               >
                 <BriefcaseBusiness className="w-5 h-5 shrink-0" aria-hidden="true" />
                 <span>পেশাদার ব্যবসায়িক সেবা</span>
               </Link>
               <Link
                 href="/licensing"
-                className="flex items-center gap-3 rounded-[12px] bg-ps-navy border border-ps-gold/40 text-ps-white px-4 py-3 font-semibold text-sm hover:border-ps-gold transition-colors"
+                className="flex items-center gap-3 rounded-[12px] bg-white border border-[#D4CCE3] text-[#081838] px-4 py-3 font-semibold text-sm hover:border-[#51406F] transition-colors"
               >
-                <FileCheck2 className="w-5 h-5 text-ps-gold shrink-0" aria-hidden="true" />
+                <FileCheck2 className="w-5 h-5 text-[#51406F] shrink-0" aria-hidden="true" />
                 <span>লাইসেন্সিং ও নিবন্ধন</span>
               </Link>
               <Link
                 href="/consultancy"
-                className="flex items-center gap-3 rounded-[12px] bg-ps-navy border border-ps-gold/40 text-ps-white px-4 py-3 font-semibold text-sm hover:border-ps-gold transition-colors"
+                className="flex items-center gap-3 rounded-[12px] bg-white border border-[#D4CCE3] text-[#081838] px-4 py-3 font-semibold text-sm hover:border-[#51406F] transition-colors"
               >
-                <MessageSquareText className="w-5 h-5 text-ps-gold shrink-0" aria-hidden="true" />
+                <MessageSquareText className="w-5 h-5 text-[#51406F] shrink-0" aria-hidden="true" />
                 <span>বিশেষজ্ঞ কনসালটেন্সি</span>
               </Link>
             </div>
@@ -123,7 +122,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
 
         <section className="py-8 sm:py-12">
           <div className="ps-container space-y-8">
-            <div className="rounded-[16px] bg-ps-white border border-ps-border p-5 sm:p-6 space-y-4 shadow-sm">
+            <div className="rounded-[16px] bg-white border border-[#D4CCE3] p-5 sm:p-6 space-y-4 shadow-sm">
               <SearchBox
                 action="/services"
                 defaultValue={q}
@@ -134,7 +133,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
 
               {(category || q) ? (
                 <div className="flex flex-wrap items-center justify-between gap-3 pt-1 text-xs sm:text-sm">
-                  <p className="text-ps-ink/85">
+                  <p className="text-[#181D26]/85">
                     মোট <strong>{items.length}</strong>টি প্রকাশিত সেবা পাওয়া গেছে
                     {activeCategory ? (
                       <>
@@ -145,7 +144,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
                   </p>
                   <Link
                     href="/services"
-                    className="inline-flex items-center gap-1.5 rounded-full border border-ps-border bg-ps-cool px-3 py-1.5 text-xs font-semibold text-ps-navy hover:bg-ps-ivory"
+                    className="inline-flex items-center gap-1.5 rounded-[8px] border border-[#D4CCE3] bg-[#F2EFF8] px-3 py-1.5 text-xs font-semibold text-[#51406F] hover:bg-[#DDD6EB]"
                   >
                     <X className="w-3.5 h-3.5" aria-hidden="true" />
                     <span>ফিল্টার মুছুন</span>
@@ -156,10 +155,10 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
 
             <div className="space-y-4">
               <div>
-                <h2 className="text-xl sm:text-2xl font-bold text-ps-navy">
+                <h2 className="text-xl sm:text-2xl font-bold text-[#081838]">
                   সেবা বিভাগ নির্বাচন করুন
                 </h2>
-                <p className="text-xs sm:text-sm text-ps-muted">
+                <p className="text-xs sm:text-sm text-[#596775]">
                   আপনার প্রয়োজনীয় বিভাগ নির্বাচন করে সরাসরি WhatsApp বা অনলাইন অনুরোধ পাঠান।
                 </p>
               </div>
@@ -172,20 +171,20 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
                 ariaLabel="সেবা ক্যাটাগরি"
                 showAllCard
                 allLabelBn="সব বিভাগ"
-                accent="emerald"
+                accent="lavender"
                 columns={3}
               />
             </div>
 
             {paginatedItems.length > 0 ? (
               <div className="space-y-6">
-                <div className="flex items-center justify-between gap-3 border-b border-ps-border pb-3">
-                  <h2 className="text-lg sm:text-xl font-bold text-ps-navy">
+                <div className="flex items-center justify-between gap-3 border-b border-[#D4CCE3] pb-3">
+                  <h2 className="text-lg sm:text-xl font-bold text-[#081838]">
                     {activeCategory
                       ? `${activeCategory.nameBn} — সেবাসমূহ`
                       : "প্রকাশিত পেশাদার সেবাসমূহ"}
                   </h2>
-                  <span className="text-xs sm:text-sm font-medium text-ps-muted">
+                  <span className="text-xs sm:text-sm font-medium text-[#596775] tabular-nums">
                     মোট {items.length}টি সেবা
                   </span>
                 </div>
@@ -209,19 +208,19 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
                     {currentPage > 1 ? (
                       <Link
                         href={buildPageHref(currentPage - 1)}
-                        className="inline-flex items-center gap-1 min-h-11 px-4 rounded-[10px] border border-ps-border bg-ps-white text-sm font-semibold text-ps-navy hover:bg-ps-cool"
+                        className="inline-flex items-center gap-1 min-h-11 px-4 rounded-[10px] border border-[#D4CCE3] bg-white text-sm font-semibold text-[#51406F] hover:bg-[#F2EFF8]"
                       >
                         <ChevronLeft className="w-4 h-4" aria-hidden="true" />
                         <span>পূর্ববর্তী</span>
                       </Link>
                     ) : null}
-                    <span className="px-3 text-sm font-medium text-ps-muted">
+                    <span className="px-3 text-sm font-medium text-[#596775] tabular-nums">
                       পৃষ্ঠা {currentPage} / {totalPages}
                     </span>
                     {currentPage < totalPages ? (
                       <Link
                         href={buildPageHref(currentPage + 1)}
-                        className="inline-flex items-center gap-1 min-h-11 px-4 rounded-[10px] border border-ps-border bg-ps-white text-sm font-semibold text-ps-navy hover:bg-ps-cool"
+                        className="inline-flex items-center gap-1 min-h-11 px-4 rounded-[10px] border border-[#D4CCE3] bg-white text-sm font-semibold text-[#51406F] hover:bg-[#F2EFF8]"
                       >
                         <span>পরবর্তী</span>
                         <ChevronRight className="w-4 h-4" aria-hidden="true" />

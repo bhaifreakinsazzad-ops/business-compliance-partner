@@ -78,7 +78,7 @@ export function ToolsHub() {
       <div
         role="tablist"
         aria-label="ব্যবসায়িক টুলস"
-        className="flex flex-wrap gap-2 rounded-xl bg-ps-white p-2 border border-ps-border shadow-sm"
+        className="flex flex-wrap gap-2 rounded-xl bg-white p-2 border border-[#D4CCE3] shadow-sm"
       >
         <button
           type="button"
@@ -87,10 +87,10 @@ export function ToolsHub() {
           aria-selected={activeTab === "readiness"}
           aria-controls={`${baseId}-panel-readiness`}
           onClick={() => setActiveTab("readiness")}
-          className={`flex items-center gap-2 px-5 py-3 rounded-lg text-sm font-semibold transition-colors ${
+          className={`flex items-center gap-2 px-5 py-3 rounded-lg text-sm font-semibold transition-colors cursor-pointer ${
             activeTab === "readiness"
-              ? "bg-ps-navy text-ps-white shadow-sm"
-              : "text-ps-muted hover:text-ps-navy hover:bg-ps-ivory"
+              ? "bg-[#51406F] text-white shadow-sm"
+              : "text-[#596775] hover:text-[#081838] hover:bg-[#F2EFF8]"
           }`}
         >
           <Sparkles className="w-4 h-4" aria-hidden="true" />
@@ -104,10 +104,10 @@ export function ToolsHub() {
           aria-selected={activeTab === "checklists"}
           aria-controls={`${baseId}-panel-checklists`}
           onClick={() => setActiveTab("checklists")}
-          className={`flex items-center gap-2 px-5 py-3 rounded-lg text-sm font-semibold transition-colors ${
+          className={`flex items-center gap-2 px-5 py-3 rounded-lg text-sm font-semibold transition-colors cursor-pointer ${
             activeTab === "checklists"
-              ? "bg-ps-navy text-ps-white shadow-sm"
-              : "text-ps-muted hover:text-ps-navy hover:bg-ps-ivory"
+              ? "bg-[#51406F] text-white shadow-sm"
+              : "text-[#596775] hover:text-[#081838] hover:bg-[#F2EFF8]"
           }`}
         >
           <CheckSquare className="w-4 h-4" aria-hidden="true" />
@@ -121,10 +121,10 @@ export function ToolsHub() {
           aria-selected={activeTab === "roadmap"}
           aria-controls={`${baseId}-panel-roadmap`}
           onClick={() => setActiveTab("roadmap")}
-          className={`flex items-center gap-2 px-5 py-3 rounded-lg text-sm font-semibold transition-colors ${
+          className={`flex items-center gap-2 px-5 py-3 rounded-lg text-sm font-semibold transition-colors cursor-pointer ${
             activeTab === "roadmap"
-              ? "bg-ps-navy text-ps-white shadow-sm"
-              : "text-ps-muted hover:text-ps-navy hover:bg-ps-ivory"
+              ? "bg-[#51406F] text-white shadow-sm"
+              : "text-[#596775] hover:text-[#081838] hover:bg-[#F2EFF8]"
           }`}
         >
           <Compass className="w-4 h-4" aria-hidden="true" />
@@ -141,13 +141,13 @@ export function ToolsHub() {
         hidden={activeTab !== "readiness"}
         className="space-y-6"
       >
-        <div className="bg-ps-white rounded-2xl border border-ps-border p-6 sm:p-8 shadow-sm">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-ps-border pb-6">
+        <div className="bg-white rounded-2xl border border-[#D4CCE3] p-6 sm:p-8 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#D4CCE3] pb-6">
             <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-ps-navy">
+              <h2 className="text-xl sm:text-2xl font-bold text-[#081838]">
                 ব্যবসায়িক কমপ্লায়েন্স ও প্রস্তুতি মূল্যায়ন
               </h2>
-              <p className="text-sm text-ps-muted mt-1">
+              <p className="text-sm text-[#596775] mt-1">
                 ৬টি প্রাথমিক প্রশ্নের মাধ্যমে আপনার ব্যবসার ডকুমেন্টেশন ও দায়িত্ব পর্যালোচনার ক্ষেত্র চিহ্নিত করুন।
               </p>
             </div>
@@ -155,7 +155,7 @@ export function ToolsHub() {
               <button
                 type="button"
                 onClick={resetReadiness}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-ps-muted hover:text-ps-navy transition-colors self-start"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#596775] hover:text-[#51406F] transition-colors self-start cursor-pointer"
               >
                 <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />
                 <span>পুনরায় শুরু করুন</span>
@@ -169,9 +169,9 @@ export function ToolsHub() {
               return (
                 <div
                   key={question.id}
-                  className="p-5 rounded-xl border border-ps-border bg-ps-ivory/40 space-y-3"
+                  className="p-5 rounded-xl border border-[#D4CCE3] bg-[#F2EFF8]/50 space-y-3"
                 >
-                  <p className="text-sm sm:text-base font-semibold text-ps-navy">
+                  <p className="text-sm sm:text-base font-semibold text-[#081838]">
                     {index + 1}. {question.promptBn}
                   </p>
                   <div className="flex flex-wrap gap-2 pt-1">
@@ -186,10 +186,10 @@ export function ToolsHub() {
                         key={option.value}
                         type="button"
                         onClick={() => handleReadinessAnswer(question.id, option.value)}
-                        className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors border ${
+                        className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors border cursor-pointer ${
                           currentAnswer === option.value
-                            ? "bg-ps-navy text-ps-white border-ps-navy shadow-xs"
-                            : "bg-ps-white text-ps-ink border-ps-border hover:bg-ps-ivory"
+                            ? "bg-[#51406F] text-white border-[#51406F] shadow-xs"
+                            : "bg-white text-[#181D26] border-[#D4CCE3] hover:bg-[#F2EFF8]"
                         }`}
                       >
                         {option.label}
@@ -202,39 +202,39 @@ export function ToolsHub() {
           </div>
 
           {/* Assessment Summary & Recommendations */}
-          <div className="mt-8 pt-6 border-t border-ps-border">
-            <div className="flex items-center justify-between gap-4 text-xs font-semibold text-ps-muted uppercase tracking-wider mb-2">
+          <div className="mt-8 pt-6 border-t border-[#D4CCE3]">
+            <div className="flex items-center justify-between gap-4 text-xs font-semibold text-[#596775] uppercase tracking-wider mb-2 tabular-nums">
               <span>অগ্রগতি: {readinessResult.answered}/{readinessResult.total} টি সম্পন্ন</span>
               <span>{readinessResult.progressPercent}%</span>
             </div>
-            <div className="h-2 w-full bg-ps-border/50 rounded-full overflow-hidden">
+            <div className="h-2 w-full bg-[#DDD6EB] rounded-full overflow-hidden">
               <div
-                className="h-full bg-ps-gold transition-all duration-300"
+                className="h-full bg-[#00865A] transition-all duration-300"
                 style={{ width: `${readinessResult.progressPercent}%` }}
               />
             </div>
 
-            <p className="text-sm text-ps-navy font-medium mt-4">
+            <p className="text-sm text-[#081838] font-medium mt-4">
               {readinessResult.summaryBn}
             </p>
 
             {readinessResult.recommendations.length > 0 && (
               <div className="mt-5 space-y-3">
-                <h3 className="text-xs font-bold text-ps-muted uppercase tracking-wider">
+                <h3 className="text-xs font-bold text-[#596775] uppercase tracking-wider">
                   প্রস্তাবিত পর্যালোচনার ক্ষেত্রসমূহ:
                 </h3>
                 <div className="grid gap-3 sm:grid-cols-2">
                   {readinessResult.recommendations.map((rec) => (
                     <div
                       key={rec.id}
-                      className="p-4 rounded-xl border border-ps-gold/30 bg-ps-ivory/60 flex flex-col justify-between gap-3"
+                      className="p-4 rounded-xl border border-[#D4CCE3] bg-[#F2EFF8]/65 flex flex-col justify-between gap-3"
                     >
-                      <p className="text-xs sm:text-sm text-ps-ink leading-relaxed">
+                      <p className="text-xs sm:text-sm text-[#181D26] leading-relaxed">
                         {rec.reviewBn}
                       </p>
                       <Link
                         href={rec.href}
-                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-ps-gold hover:text-ps-navy transition-colors self-start"
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#51406F] hover:text-[#081838] transition-colors self-start"
                       >
                         <span>সম্পর্কিত সেবা দেখুন</span>
                         <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
@@ -256,13 +256,13 @@ export function ToolsHub() {
         hidden={activeTab !== "checklists"}
         className="space-y-6"
       >
-        <div className="bg-ps-white rounded-2xl border border-ps-border p-6 sm:p-8 shadow-sm">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-ps-border pb-6">
+        <div className="bg-white rounded-2xl border border-[#D4CCE3] p-6 sm:p-8 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#D4CCE3] pb-6">
             <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-ps-navy">
+              <h2 className="text-xl sm:text-2xl font-bold text-[#081838]">
                 স্মার্ট ডকুমেন্টেশন ও প্রস্তুতি চেকলিস্ট
               </h2>
-              <p className="text-sm text-ps-muted mt-1">
+              <p className="text-sm text-[#596775] mt-1">
                 বিভিন্ন ব্যবসায়িক পদক্ষেপের আগে প্রয়োজনীয় নথি ও প্রাথমিক বিষয়গুলো টিক দিয়ে গুছিয়ে রাখুন।
               </p>
             </div>
@@ -270,7 +270,7 @@ export function ToolsHub() {
               <button
                 type="button"
                 onClick={resetChecklist}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-ps-muted hover:text-ps-navy transition-colors self-start"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#596775] hover:text-[#51406F] transition-colors self-start cursor-pointer"
               >
                 <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />
                 <span>চেকলিস্ট রিসেট</span>
@@ -285,10 +285,10 @@ export function ToolsHub() {
                 key={tpl.id}
                 type="button"
                 onClick={() => setSelectedTemplateId(tpl.id)}
-                className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-colors border ${
+                className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-colors border cursor-pointer ${
                   selectedTemplateId === tpl.id
-                    ? "bg-ps-navy text-ps-white border-ps-navy"
-                    : "bg-ps-ivory/60 text-ps-ink border-ps-border hover:bg-ps-ivory"
+                    ? "bg-[#51406F] text-white border-[#51406F]"
+                    : "bg-[#F2EFF8]/60 text-[#181D26] border-[#D4CCE3] hover:bg-[#DDD6EB]/50"
                 }`}
               >
                 {tpl.titleBn}
@@ -296,20 +296,20 @@ export function ToolsHub() {
             ))}
           </div>
 
-          <div className="mt-6 p-4 rounded-xl bg-ps-ivory/40 border border-ps-border flex items-center justify-between gap-4">
+          <div className="mt-6 p-4 rounded-xl bg-[#F2EFF8]/60 border border-[#D4CCE3] flex items-center justify-between gap-4">
             <div>
-              <h3 className="font-semibold text-ps-navy text-sm sm:text-base">
+              <h3 className="font-semibold text-[#081838] text-sm sm:text-base">
                 {currentTemplate.titleBn}
               </h3>
-              <p className="text-xs text-ps-muted mt-0.5">
+              <p className="text-xs text-[#596775] mt-0.5">
                 {currentTemplate.descriptionBn}
               </p>
             </div>
-            <div className="text-right shrink-0">
-              <span className="text-xs font-bold text-ps-navy">
+            <div className="text-right shrink-0 tabular-nums">
+              <span className="text-xs font-bold text-[#081838]">
                 {checklistProgress.completed}/{checklistProgress.total} সম্পন্ন
               </span>
-              <span className="block text-[11px] text-ps-gold font-semibold">
+              <span className="block text-[11px] text-[#51406F] font-semibold">
                 {checklistProgress.percent}%
               </span>
             </div>
@@ -324,26 +324,26 @@ export function ToolsHub() {
                   key={item.id}
                   className={`flex items-start gap-3 p-4 rounded-xl border transition-colors cursor-pointer ${
                     isChecked
-                      ? "bg-ps-ivory/50 border-ps-gold/40"
-                      : "bg-ps-white border-ps-border hover:bg-ps-ivory/20"
+                      ? "bg-[#F2EFF8]/70 border-[#51406F]/45"
+                      : "bg-white border-[#D4CCE3] hover:bg-[#F2EFF8]/35"
                   }`}
                 >
                   <input
                     type="checkbox"
                     checked={isChecked}
                     onChange={() => toggleChecklistItem(item.id)}
-                    className="mt-1 h-4 w-4 rounded border-ps-border text-ps-gold focus:ring-ps-gold"
+                    className="mt-1 h-4 w-4 rounded border-[#D4CCE3] accent-[#51406F]"
                   />
                   <div className="min-w-0 flex-1">
                     <p
                       className={`text-sm font-medium ${
-                        isChecked ? "line-through text-ps-muted" : "text-ps-ink"
+                        isChecked ? "line-through text-[#596775]" : "text-[#181D26]"
                       }`}
                     >
                       {item.labelBn}
                     </p>
                     {item.noteBn && (
-                      <p className="text-xs text-ps-muted mt-1">{item.noteBn}</p>
+                      <p className="text-xs text-[#596775] mt-1">{item.noteBn}</p>
                     )}
                   </div>
                 </label>
@@ -351,13 +351,13 @@ export function ToolsHub() {
             })}
           </div>
 
-          <div className="mt-8 pt-6 border-t border-ps-border flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-xs text-ps-muted">
+          <div className="mt-8 pt-6 border-t border-[#D4CCE3] flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-xs text-[#596775]">
               নোট: এই চেকলিস্ট আপনার ব্রাউজারে সুরক্ষিত থাকে। কোনো ব্যক্তিগত বা গোপনীয় তথ্য সংরক্ষণ করা হয় না।
             </p>
             <Link
               href="/consultancy"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-ps-navy text-ps-white text-xs sm:text-sm font-semibold hover:bg-ps-midnight transition-colors shrink-0"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#51406F] text-white text-xs sm:text-sm font-semibold hover:bg-[#3F315A] transition-colors shrink-0"
             >
               <span>পেশাদার পরামর্শের অনুরোধ পাঠান</span>
               <ArrowRight className="w-4 h-4" aria-hidden="true" />
@@ -374,12 +374,12 @@ export function ToolsHub() {
         hidden={activeTab !== "roadmap"}
         className="space-y-6"
       >
-        <div className="bg-ps-white rounded-2xl border border-ps-border p-6 sm:p-8 shadow-sm">
-          <div className="border-b border-ps-border pb-6">
-            <h2 className="text-xl sm:text-2xl font-bold text-ps-navy">
+        <div className="bg-white rounded-2xl border border-[#D4CCE3] p-6 sm:p-8 shadow-sm">
+          <div className="border-b border-[#D4CCE3] pb-6">
+            <h2 className="text-xl sm:text-2xl font-bold text-[#081838]">
               ব্যবসায়িক রোডম্যাপ ও ধারাবাহিক পরিকল্পনা
             </h2>
-            <p className="text-sm text-ps-muted mt-1">
+            <p className="text-sm text-[#596775] mt-1">
               আপনার বর্তমান পর্যায় ও প্রধান লক্ষ্যের ভিত্তিতে কাজের যৌক্তিক ধারাবাহিকতা দেখুন।
             </p>
           </div>
@@ -387,13 +387,13 @@ export function ToolsHub() {
           {/* Selectors */}
           <div className="mt-6 grid gap-4 sm:grid-cols-2">
             <div>
-              <label className="block text-xs font-bold text-ps-navy uppercase tracking-wider mb-2">
+              <label className="block text-xs font-bold text-[#081838] uppercase tracking-wider mb-2">
                 প্রধান লক্ষ্য
               </label>
               <select
                 value={roadmapGoal}
                 onChange={(e) => setRoadmapGoal(e.target.value as RoadmapGoal)}
-                className="w-full min-h-12 rounded-xl border border-ps-border bg-ps-white px-3 text-sm text-ps-ink focus:border-ps-gold focus:outline-none"
+                className="w-full min-h-12 rounded-xl border border-[#D4CCE3] bg-white px-3 text-sm text-[#181D26] focus:border-[#51406F] focus:outline-none focus:ring-2 focus:ring-[#51406F]/20"
               >
                 <option value="start">নতুন ব্যবসা শুরু (Start)</option>
                 <option value="comply">নিয়মিত কমপ্লায়েন্স ও ট্যাক্স (Comply)</option>
@@ -404,13 +404,13 @@ export function ToolsHub() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-ps-navy uppercase tracking-wider mb-2">
+              <label className="block text-xs font-bold text-[#081838] uppercase tracking-wider mb-2">
                 বর্তমান ব্যবসার পর্যায়
               </label>
               <select
                 value={roadmapStage}
                 onChange={(e) => setRoadmapStage(e.target.value as BusinessStage)}
-                className="w-full min-h-12 rounded-xl border border-ps-border bg-ps-white px-3 text-sm text-ps-ink focus:border-ps-gold focus:outline-none"
+                className="w-full min-h-12 rounded-xl border border-[#D4CCE3] bg-white px-3 text-sm text-[#181D26] focus:border-[#51406F] focus:outline-none focus:ring-2 focus:ring-[#51406F]/20"
               >
                 <option value="idea">পরিকল্পনা / আইডিয়া পর্যায় (Idea)</option>
                 <option value="starting">শুরুর প্রস্তুতি চলছে (Starting)</option>
@@ -422,7 +422,7 @@ export function ToolsHub() {
 
           {/* Sequenced Steps */}
           <div className="mt-8 space-y-4">
-            <h3 className="text-xs font-bold text-ps-muted uppercase tracking-wider">
+            <h3 className="text-xs font-bold text-[#596775] uppercase tracking-wider">
               ধারাবাহিক পদক্ষেপসমূহ:
             </h3>
 
@@ -430,17 +430,17 @@ export function ToolsHub() {
               {roadmapSteps.map((step, index) => (
                 <div
                   key={step.id}
-                  className="p-5 rounded-xl border border-ps-border bg-ps-ivory/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                  className="p-5 rounded-xl border border-[#D4CCE3] bg-[#F2EFF8]/45 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
                 >
                   <div className="flex items-start gap-4">
-                    <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ps-navy text-xs font-bold text-ps-white">
+                    <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#51406F] text-xs font-bold text-white tabular-nums">
                       {index + 1}
                     </span>
                     <div>
-                      <h4 className="text-sm sm:text-base font-bold text-ps-navy">
+                      <h4 className="text-sm sm:text-base font-bold text-[#081838]">
                         {step.titleBn}
                       </h4>
-                      <p className="text-xs sm:text-sm text-ps-muted mt-1 leading-relaxed">
+                      <p className="text-xs sm:text-sm text-[#596775] mt-1 leading-relaxed">
                         {step.reasonBn}
                       </p>
                     </div>
@@ -448,7 +448,7 @@ export function ToolsHub() {
 
                   <Link
                     href={step.href}
-                    className="inline-flex items-center justify-center gap-1.5 min-h-10 px-4 py-2 rounded-lg bg-ps-white border border-ps-border text-xs sm:text-sm font-semibold text-ps-navy hover:bg-ps-ivory transition-colors shrink-0 self-start sm:self-center"
+                    className="inline-flex items-center justify-center gap-1.5 min-h-10 px-4 py-2 rounded-lg bg-white border border-[#D4CCE3] text-xs sm:text-sm font-semibold text-[#51406F] hover:bg-[#DDD6EB]/50 hover:border-[#51406F] transition-colors shrink-0 self-start sm:self-center"
                   >
                     <span>{step.ctaBn}</span>
                     <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />

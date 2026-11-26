@@ -1,6 +1,7 @@
 import Link from "next/link";
 import {
   ArrowRight,
+  BookOpen,
   BookOpenCheck,
   Briefcase,
   Building2,
@@ -30,6 +31,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Landmark,
   Globe,
   BookOpenCheck,
+  BookOpen,
   Building2,
   Compass,
   Users,
@@ -47,26 +49,15 @@ function resolveCategoryIcon(iconName: string | null): LucideIcon {
   return ICON_MAP[iconName] ?? Layers;
 }
 
-const LUMINOUS_GOLD_SLUGS = new Set([
-  "income-tax",
-  "egp-and-tender",
-  "company-secretarial",
-]);
-
-const LUMINOUS_EMERALD_SLUGS = new Set([
-  "vat-and-mushak",
-  "digital-business-ecommerce",
-]);
-
 interface CategoryGridProps {
   categories: PublicCategoryDTO[];
-  basePath: "/courses" | "/services" | "/licensing";
+  basePath: "/courses" | "/services" | "/licensing" | "/books";
   activeSlug?: string;
   query?: string;
   ariaLabel: string;
   showAllCard?: boolean;
   allLabelBn?: string;
-  accent?: "gold" | "navy" | "emerald";
+  accent?: "lavender" | "gold" | "navy" | "emerald";
   columns?: 3 | 4 | 5;
   highlightCount?: number;
   luminousPriority?: boolean;
@@ -80,7 +71,6 @@ export function CategoryGrid({
   ariaLabel,
   showAllCard = false,
   allLabelBn = "সব ক্যাটাগরি",
-  accent = "gold",
   columns = 3,
   highlightCount = 0,
   luminousPriority = false,
@@ -104,6 +94,15 @@ export function CategoryGrid({
         ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
         : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
 
+  const countSuffix =
+    basePath === "/courses"
+      ? "টি কোর্স"
+      : basePath === "/services"
+        ? "টি সেবা"
+        : basePath === "/books"
+          ? "টি বই"
+          : "টি";
+
   return (
     <div
       role="navigation"
@@ -115,40 +114,39 @@ export function CategoryGrid({
           href={buildHref()}
           aria-current={!activeSlug ? "page" : undefined}
           className={cn(
-            "group rounded-[20px] border-2 p-5 sm:p-6 flex flex-col justify-between gap-3 transition-[transform,box-shadow,border-color] duration-200 focus-visible:outline-3 focus-visible:outline-ps-gold focus-visible:outline-offset-2",
-            luminousPriority ? "min-h-[168px]" : "min-h-[132px]",
+            "group rounded-[16px] border p-5 flex flex-col justify-between gap-3 transition-[transform,box-shadow,border-color,background-color] duration-200 min-h-[132px] focus-visible:outline-3 focus-visible:outline-[#C59028] focus-visible:outline-offset-2",
             !activeSlug
-              ? "bg-ps-midnight text-ps-white border-ps-gold shadow-md"
-              : "bg-ps-white text-ps-navy border-ps-border hover:border-ps-navy/50 hover:-translate-y-0.5 hover:shadow-md",
+              ? "bg-[#51406F] text-white border-[#51406F] shadow-sm"
+              : "bg-white text-[#081838] border-[#D4CCE3] hover:border-[#51406F]/55 hover:-translate-y-0.5 hover:shadow-md",
           )}
         >
           <div className="flex items-start justify-between gap-3">
             <span
               className={cn(
-                "inline-flex items-center justify-center w-13 h-13 rounded-[14px] shrink-0",
+                "inline-flex items-center justify-center w-11 h-11 rounded-[12px] shrink-0",
                 !activeSlug
-                  ? "bg-ps-gold text-ps-midnight"
-                  : "bg-ps-ivory text-ps-navy border border-ps-border",
+                  ? "bg-white/15 text-white"
+                  : "bg-[#F2EFF8] text-[#51406F] border border-[#D4CCE3]",
               )}
             >
-              <Layers className="w-6 h-6" aria-hidden="true" />
+              <Layers className="w-5 h-5" aria-hidden="true" />
             </span>
             <ArrowRight
               className={cn(
-                "w-5 h-5 shrink-0 transition-transform duration-200 group-hover:translate-x-1",
-                !activeSlug ? "text-ps-gold" : "text-ps-muted",
+                "w-4 h-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1",
+                !activeSlug ? "text-white" : "text-[#596775]",
               )}
               aria-hidden="true"
             />
           </div>
           <div className="space-y-1">
-            <p className="text-lg sm:text-xl font-extrabold leading-snug">
+            <p className="text-base sm:text-lg font-extrabold leading-snug">
               {allLabelBn}
             </p>
             <p
               className={cn(
-                "text-xs sm:text-sm",
-                !activeSlug ? "text-white/85" : "text-ps-muted",
+                "text-xs",
+                !activeSlug ? "text-white/85" : "text-[#596775]",
               )}
             >
               সকল প্রকাশিত আইটেম দেখুন
@@ -161,12 +159,7 @@ export function CategoryGrid({
         const Icon = resolveCategoryIcon(cat.iconName);
         const isActive = cat.slug === activeSlug;
         const isPriority = highlightCount > 0 && idx < highlightCount;
-        const isLuminous = luminousPriority && isPriority;
-        const isLuminousGold =
-          isLuminous &&
-          (LUMINOUS_GOLD_SLUGS.has(cat.slug) ||
-            (!LUMINOUS_EMERALD_SLUGS.has(cat.slug) && idx % 2 === 0));
-        const isLuminousEmerald = isLuminous && !isLuminousGold;
+        const isFeaturedShowcase = luminousPriority && isPriority;
 
         const showcaseSpanClass = isFiveTileShowcase
           ? idx < 3
@@ -181,60 +174,35 @@ export function CategoryGrid({
             key={cat.slug}
             href={buildHref(cat.slug)}
             data-category-card={cat.slug}
-            data-priority-tile={isLuminous ? "true" : undefined}
-            data-luminous-tone={
-              isLuminousGold ? "gold" : isLuminousEmerald ? "emerald" : undefined
-            }
+            data-priority-tile={isFeaturedShowcase ? "true" : undefined}
             aria-current={isActive ? "page" : undefined}
             className={cn(
-              "group relative overflow-hidden rounded-[20px] border-2 flex flex-col justify-between gap-5 transition-[transform,box-shadow,border-color] duration-200 focus-visible:outline-3 focus-visible:outline-ps-gold focus-visible:outline-offset-2",
+              "group relative overflow-hidden rounded-[16px] border flex flex-col justify-between gap-4 transition-[transform,box-shadow,border-color,background-color] duration-200 focus-visible:outline-3 focus-visible:outline-[#C59028] focus-visible:outline-offset-2",
               showcaseSpanClass,
-              isLuminous
-                ? "p-6 sm:p-7 min-h-[176px] sm:min-h-[192px]"
-                : "p-5 min-h-[136px]",
+              isFeaturedShowcase
+                ? "p-5 sm:p-6 min-h-[154px]"
+                : "p-5 min-h-[132px]",
               isActive
-                ? "bg-ps-midnight text-ps-white border-ps-gold ring-2 ring-ps-gold/40 shadow-lg"
-                : isLuminousGold
-                  ? "bg-gradient-to-br from-[#fde49b] via-[#ebb949] to-[#c9901f] text-ps-midnight border-[#946610] shadow-[0_10px_28px_rgba(197,144,40,0.3)] hover:shadow-[0_16px_36px_rgba(197,144,40,0.42)] hover:-translate-y-1"
-                  : isLuminousEmerald
-                    ? "bg-gradient-to-br from-[#0ea572] via-[#00865a] to-[#005f3f] text-ps-white border-[#004c32] shadow-[0_10px_28px_rgba(0,134,90,0.3)] hover:shadow-[0_16px_36px_rgba(0,134,90,0.42)] hover:-translate-y-1"
-                    : isPriority
-                      ? "bg-gradient-to-br from-ps-white to-ps-ivory text-ps-navy border-ps-gold/60 hover:border-ps-gold hover:-translate-y-0.5 hover:shadow-md"
-                      : "bg-ps-white text-ps-navy border-ps-border hover:border-ps-navy/45 hover:-translate-y-0.5 hover:shadow-md",
+                ? "bg-[#51406F] text-white border-[#51406F] shadow-md"
+                : isFeaturedShowcase
+                  ? "bg-gradient-to-br from-white via-[#F9F7FC] to-[#F2EFF8] text-[#081838] border-[#D4CCE3] hover:border-[#51406F]/55 hover:-translate-y-0.5 hover:shadow-md"
+                  : isPriority
+                    ? "bg-[#F2EFF8]/65 text-[#081838] border-[#D4CCE3] hover:border-[#51406F]/50 hover:-translate-y-0.5 hover:shadow-sm"
+                    : "bg-white text-[#081838] border-[#D4CCE3] hover:border-[#51406F]/50 hover:-translate-y-0.5 hover:shadow-sm",
             )}
           >
-            {isLuminous && !isActive ? (
-              <span
-                aria-hidden="true"
-                className={cn(
-                  "pointer-events-none absolute inset-0",
-                  isLuminousGold
-                    ? "bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.45),transparent_56%)]"
-                    : "bg-[radial-gradient(circle_at_top_right,rgba(167,243,208,0.28),transparent_56%)]",
-                )}
-              />
-            ) : null}
-
             <div className="relative flex items-start justify-between gap-3">
               <span
                 className={cn(
-                  "inline-flex items-center justify-center rounded-[15px] shrink-0 transition-transform duration-200 group-hover:scale-105",
-                  isLuminous ? "w-14 h-14" : "w-11 h-11",
+                  "inline-flex items-center justify-center rounded-[12px] shrink-0 transition-colors duration-200",
+                  isFeaturedShowcase ? "w-12 h-12" : "w-11 h-11",
                   isActive
-                    ? "bg-ps-gold text-ps-midnight shadow-sm"
-                    : isLuminousGold
-                      ? "bg-ps-midnight text-[#fde49b] shadow-md"
-                      : isLuminousEmerald
-                        ? "bg-ps-ivory text-[#005f3f] shadow-md"
-                        : accent === "gold"
-                          ? "bg-ps-gold/15 text-ps-midnight border border-ps-gold/40 group-hover:bg-ps-gold"
-                          : accent === "emerald"
-                            ? "bg-ps-success/10 text-ps-success border border-ps-success/30 group-hover:bg-ps-success group-hover:text-ps-white"
-                            : "bg-ps-navy/10 text-ps-navy border border-ps-navy/20 group-hover:bg-ps-navy group-hover:text-ps-white",
+                    ? "bg-white/15 text-white"
+                    : "bg-[#F2EFF8] text-[#51406F] border border-[#D4CCE3] group-hover:bg-[#51406F] group-hover:text-white group-hover:border-[#51406F]",
                 )}
               >
                 <Icon
-                  className={cn(isLuminous ? "w-7 h-7" : "w-5 h-5")}
+                  className={cn(isFeaturedShowcase ? "w-6 h-6" : "w-5 h-5")}
                   aria-hidden="true"
                 />
               </span>
@@ -243,48 +211,30 @@ export function CategoryGrid({
                 {typeof cat.publishedCount === "number" ? (
                   <span
                     className={cn(
-                      "font-extrabold tabular-nums",
-                      isLuminous ? "text-sm" : "text-xs",
-                      isActive
-                        ? "text-[#f0cf7b]"
-                        : isLuminousGold
-                          ? "text-ps-midnight"
-                          : isLuminousEmerald
-                            ? "text-ps-ivory"
-                            : "text-ps-muted",
+                      "text-xs font-semibold tabular-nums",
+                      isActive ? "text-white/90" : "text-[#596775]",
                     )}
                   >
-                    {basePath === "/courses"
-                      ? `${cat.publishedCount}টি কোর্স`
-                      : basePath === "/services"
-                        ? `${cat.publishedCount}টি সেবা`
-                        : `${cat.publishedCount}টি`}
+                    {cat.publishedCount}
+                    {countSuffix}
                   </span>
                 ) : null}
-                <span
+                <ArrowRight
                   className={cn(
-                    "inline-flex items-center justify-center rounded-full transition-transform duration-200 group-hover:translate-x-1",
-                    isLuminous ? "w-9 h-9" : "w-6 h-6",
-                    isActive
-                      ? "bg-white/10 text-ps-gold"
-                      : isLuminousGold
-                        ? "bg-ps-midnight/12 text-ps-midnight"
-                        : isLuminousEmerald
-                          ? "bg-white/15 text-ps-white"
-                          : "text-ps-muted",
+                    "w-4 h-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1",
+                    isActive ? "text-white" : "text-[#51406F]",
                   )}
-                >
-                  <ArrowRight className="w-4 h-4 shrink-0" aria-hidden="true" />
-                </span>
+                  aria-hidden="true"
+                />
               </div>
             </div>
 
-            <div className="relative space-y-1.5">
+            <div className="relative space-y-1">
               <p
                 className={cn(
                   "font-extrabold leading-snug",
-                  isLuminous
-                    ? "text-xl sm:text-[1.3rem]"
+                  isFeaturedShowcase
+                    ? "text-lg sm:text-[1.15rem]"
                     : "text-base sm:text-lg",
                 )}
               >
@@ -292,15 +242,8 @@ export function CategoryGrid({
               </p>
               <p
                 className={cn(
-                  "font-en font-bold tracking-wide",
-                  isLuminous ? "text-xs sm:text-[13px]" : "text-xs",
-                  isActive
-                    ? "text-ps-gold"
-                    : isLuminousGold
-                      ? "text-ps-midnight/85"
-                      : isLuminousEmerald
-                        ? "text-emerald-100"
-                        : "text-ps-muted",
+                  "font-en font-semibold tracking-wide text-xs",
+                  isActive ? "text-white/80" : "text-[#51406F]",
                 )}
                 lang="en"
               >
@@ -309,15 +252,8 @@ export function CategoryGrid({
               {cat.shortDescBn ? (
                 <p
                   className={cn(
-                    "leading-relaxed line-clamp-2 pt-0.5",
-                    isLuminous ? "text-xs sm:text-sm" : "text-xs",
-                    isActive
-                      ? "text-white/85"
-                      : isLuminousGold
-                        ? "text-ps-midnight/90 font-medium"
-                        : isLuminousEmerald
-                          ? "text-white/95"
-                          : "text-ps-ink/75",
+                    "text-xs leading-relaxed line-clamp-2 pt-0.5",
+                    isActive ? "text-white/85" : "text-[#596775]",
                   )}
                 >
                   {cat.shortDescBn}

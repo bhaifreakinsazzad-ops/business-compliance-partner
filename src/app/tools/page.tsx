@@ -28,17 +28,21 @@ export default async function ToolsPage() {
       <JsonLd data={breadcrumbs} id="tools-breadcrumbs-jsonld" />
       <AppHeader siteConfig={siteConfig} />
 
-      <main id="main-content" tabIndex={-1} className="flex-1 py-10 sm:py-14">
-        <div className="ps-container space-y-8">
-          <SectionHeading
-            eyebrowEn="Interactive Business Tools"
-            titleBn="ব্যবসার সঠিক পথ ও প্রস্তুতি নির্ধারণ করুন"
-            descriptionBn="কোনো ব্যক্তিগত তথ্য ছাড়াই আপনার ব্যবসার বর্তমান অবস্থা মূল্যায়ন করুন, দরকারি চেকলিস্ট গুছিয়ে রাখুন এবং যৌক্তিক ধারাবাহিকতা দেখুন।"
-            align="center"
-          />
+      <main id="main-content" tabIndex={-1} className="flex-1">
+        <section className="bg-gradient-to-br from-[#F2EFF8] via-[#ECE7F5] to-[#E5DDF2] border-b border-[#D4CCE3] py-10 sm:py-12">
+          <div className="ps-container">
+            <SectionHeading
+              eyebrowEn="Interactive Business Tools"
+              titleBn="ব্যবসার সঠিক পথ ও প্রস্তুতি নির্ধারণ করুন"
+              descriptionBn="কোনো ব্যক্তিগত তথ্য ছাড়াই আপনার ব্যবসার বর্তমান অবস্থা মূল্যায়ন করুন, দরকারি চেকলিস্ট গুছিয়ে রাখুন এবং যৌক্তিক ধারাবাহিকতা দেখুন।"
+              align="center"
+            />
+          </div>
+        </section>
 
+        <section className="ps-container py-8 sm:py-10">
           <ToolsHub />
-        </div>
+        </section>
       </main>
 
       <Footer siteConfig={siteConfig} />
