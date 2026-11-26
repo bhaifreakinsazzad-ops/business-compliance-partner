@@ -96,7 +96,7 @@ export function HeroKnowledgeStudio3D({
   // Interactive UI State
   const [activePreset, setActivePreset] = useState<StudioViewPreset>("studio");
   const activePresetRef = useRef<StudioViewPreset>("studio");
-  const [screenMode, setScreenMode] = useState(0);
+  const [, setScreenMode] = useState(0);
   const screenModeRef = useRef(0);
   const [hoveredPrompt, setHoveredPrompt] = useState<string | null>(null);
   const [isCinemaMode, setIsCinemaMode] = useState(false);

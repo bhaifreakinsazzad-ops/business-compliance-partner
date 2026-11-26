@@ -15,7 +15,7 @@ const sandboxPaymentSchema = z.object({
   transactionReference: z.string().trim().min(4).max(120).optional(),
 });
 
-export function isSandboxPaymentAllowed(): boolean {
+function isSandboxPaymentAllowed(): boolean {
   const appEnv = process.env.NEXT_PUBLIC_APP_ENV?.toLowerCase();
   if (process.env.NODE_ENV === "production" || appEnv === "production") {
     return false;

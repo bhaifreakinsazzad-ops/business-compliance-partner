@@ -16,7 +16,6 @@ import {
   bookCoverPaletteSchema,
   bookUpsertSchema,
 } from "@/lib/validation/content";
-import type { PublicBookPreview } from "@/types/domain";
 
 describe("Cross-Division Recommendation Engine", () => {
   it("scores domain cluster keywords deterministically", () => {
@@ -67,16 +66,16 @@ describe("Cross-Division Recommendation Engine", () => {
   });
 
   it("safely handles empty or missing recommendation inputs", () => {
-    const emptyRank = rankRelatedBooks([], { titleBn: "টেস্ট" });
+    const emptyRank = rankRelatedBooks([], { titleBn: "টেস্ট", categorySlug: "general" });
     expect(emptyRank).toEqual([]);
 
-    const coursesRank = rankRelatedCourses([], { titleBn: "টেস্ট" });
+    const coursesRank = rankRelatedCourses([], { titleBn: "টেস্ট", categorySlug: "general" });
     expect(coursesRank).toEqual([]);
 
-    const servicesRank = rankRelatedServices([], { titleBn: "টেস্ট" });
+    const servicesRank = rankRelatedServices([], { titleBn: "টেস্ট", categorySlug: "general" });
     expect(servicesRank).toEqual([]);
 
-    const licensingRank = rankRelatedLicensing([], { titleBn: "টেস্ট" });
+    const licensingRank = rankRelatedLicensing([], { titleBn: "টেস্ট", categorySlug: "general" });
     expect(licensingRank).toEqual([]);
   });
 });
