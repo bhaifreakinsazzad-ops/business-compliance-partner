@@ -18,7 +18,8 @@ import {
   searchGovernedBooks,
 } from "@/lib/books/catalog";
 import { isPubliclyVisible, matchesSearchQuery } from "@/lib/content/helpers";
-import { isDatabaseConfigured, prisma } from "@/lib/db/prisma";
+import { prisma } from "@/lib/db/prisma";
+import { canUseCatalogueFixtures } from "@/lib/config/catalogue-policy";
 import { isPublicSchemaReady } from "@/lib/db/schema-ready";
 import { SEED_CATEGORIES } from "../../../prisma/seed-data/categories";
 import { SEED_COURSES } from "../../../prisma/seed-data/courses";
@@ -72,12 +73,7 @@ export function sortCourseCategoriesByClientPriority(
 }
 
 function canUseSeedFallback(): boolean {
-  if (process.env.DISABLE_SEED_FALLBACK === "true") {
-    return false;
-  }
-  // Support graceful fallback when database is unconfigured (e.g. build/preview)
-  // while avoiding silent seed overrides in strict live production DB mode.
-  return !isDatabaseConfigured() || process.env.NODE_ENV !== "production";
+  return canUseCatalogueFixtures();
 }
 
 function getSeedCategoriesByPillar(pillar: Pillar): PublicCategoryDTO[] {
@@ -117,12 +113,8 @@ export async function listPublishedCourses(filter?: {
         prisma.course.findMany({
           where: {
             contentStatus: "PUBLISHED",
-            availabilityStatus: filter?.availability
-              ? filter.availability
-              : { not: "INACTIVE" },
-            ...(filter?.categorySlug
-              ? { category: { slug: filter.categorySlug } }
-              : {}),
+            availabilityStatus: { not: "INACTIVE", ...(filter?.availability ? { equals: filter.availability } : {}) },
+            category: { isActive: true, ...(filter?.categorySlug ? { slug: filter.categorySlug } : {}) },
           },
           include: { category: true },
           orderBy: [{ featured: "desc" }, { sortOrder: "asc" }],
@@ -132,6 +124,7 @@ export async function listPublishedCourses(filter?: {
           where: {
             contentStatus: "PUBLISHED",
             availabilityStatus: { not: "INACTIVE" },
+            category: { isActive: true },
           },
           _count: { _all: true },
         }),
@@ -264,7 +257,7 @@ export async function getPublishedCourseBySlug(
       if (c) {
         if (
           c.contentStatus !== "PUBLISHED" ||
-          c.availabilityStatus === "INACTIVE"
+          c.availabilityStatus === "INACTIVE" || c.category.isActive === false
         ) {
           return null;
         }
@@ -367,9 +360,7 @@ export async function listPublishedServices(filter?: {
           where: {
             contentStatus: "PUBLISHED",
             availabilityStatus: { not: "INACTIVE" },
-            ...(resolvedCategorySlug
-              ? { category: { slug: resolvedCategorySlug } }
-              : {}),
+            category: { isActive: true, ...(resolvedCategorySlug ? { slug: resolvedCategorySlug } : {}) },
           },
           include: { category: true },
           orderBy: [{ featured: "desc" }, { sortOrder: "asc" }],
@@ -379,6 +370,7 @@ export async function listPublishedServices(filter?: {
           where: {
             contentStatus: "PUBLISHED",
             availabilityStatus: { not: "INACTIVE" },
+            category: { isActive: true },
           },
           _count: { _all: true },
         }),
@@ -508,7 +500,7 @@ export async function getPublishedServiceBySlug(
       if (s) {
         if (
           s.contentStatus !== "PUBLISHED" ||
-          s.availabilityStatus === "INACTIVE"
+          s.availabilityStatus === "INACTIVE" || s.category.isActive === false
         ) {
           return null;
         }
@@ -607,9 +599,7 @@ export async function listPublishedLicensing(filter?: {
           where: {
             contentStatus: "PUBLISHED",
             availabilityStatus: { not: "INACTIVE" },
-            ...(filter?.categorySlug
-              ? { category: { slug: filter.categorySlug } }
-              : {}),
+            category: { isActive: true, ...(filter?.categorySlug ? { slug: filter.categorySlug } : {}) },
           },
           include: { category: true },
           orderBy: [{ featured: "desc" }, { sortOrder: "asc" }],
@@ -619,6 +609,7 @@ export async function listPublishedLicensing(filter?: {
           where: {
             contentStatus: "PUBLISHED",
             availabilityStatus: { not: "INACTIVE" },
+            category: { isActive: true },
           },
           _count: { _all: true },
         }),
@@ -743,7 +734,7 @@ export async function getPublishedLicensingBySlug(
       if (l) {
         if (
           l.contentStatus !== "PUBLISHED" ||
-          l.availabilityStatus === "INACTIVE"
+          l.availabilityStatus === "INACTIVE" || l.category.isActive === false
         ) {
           return null;
         }

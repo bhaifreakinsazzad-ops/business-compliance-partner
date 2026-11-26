@@ -8,7 +8,7 @@ import {
 export interface ServerAnalyticsRecordInput {
   eventName: Extract<
     AnalyticsEventName,
-    "order_created" | "payment_verified" | "enrollment_completed"
+    "order_created" | "payment_verified" | "enrollment_created" | "enrollment_completed"
   >;
   customerId?: string | null;
   entityType?: string | null;

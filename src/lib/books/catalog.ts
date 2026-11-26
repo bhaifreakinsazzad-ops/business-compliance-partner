@@ -7,6 +7,7 @@ import { fromPaisa } from "@/lib/commerce/payments";
 import { matchesSearchQuery } from "@/lib/content/helpers";
 import { isDatabaseConfigured, prisma } from "@/lib/db/prisma";
 import { isBooksSchemaReady } from "@/lib/db/schema-ready";
+import { canUseCatalogueFixtures } from "@/lib/config/catalogue-policy";
 
 export const BOOK_AVAILABILITY_BADGE_BN = "প্রকাশনা আসন্ন";
 export const BOOK_PRICING_NOTICE_BN =
@@ -687,13 +688,13 @@ export async function loadBookCatalog(filter?: {
           orderBy: { sortOrder: "asc" },
           include: {
             books: {
-              where: { contentStatus: "PUBLISHED" },
+              where: { contentStatus: "PUBLISHED", availabilityStatus: { not: "INACTIVE" } },
               select: { id: true },
             },
           },
         }),
         prisma.book.findMany({
-          where: { contentStatus: "PUBLISHED" },
+          where: { contentStatus: "PUBLISHED", availabilityStatus: { not: "INACTIVE" }, category: { isActive: true } },
           orderBy: [{ featured: "desc" }, { sortOrder: "asc" }],
           include: {
             category: {
@@ -703,7 +704,7 @@ export async function loadBookCatalog(filter?: {
         }),
       ]);
 
-      if (dbBooks.length > 0) {
+      {
         const mapped = dbBooks.map(mapDbBookToPublicPreview);
         const catSlug = filter?.categorySlug?.trim() || "";
         const query = filter?.q?.trim() || "";
@@ -744,7 +745,7 @@ export async function loadBookCatalog(filter?: {
     }
   }
 
-  if (process.env.DISABLE_SEED_FALLBACK === "true") {
+  if (!canUseCatalogueFixtures()) {
     return { categories: [], items: [] };
   }
   return listBookCatalog(filter);
@@ -759,31 +760,28 @@ export async function getGovernedBookBySlug(
         where: { slug },
         include: {
           category: {
-            select: { slug: true, nameBn: true, nameEn: true },
+            select: { slug: true, nameBn: true, nameEn: true, isActive: true },
           },
         },
       });
       if (dbBook) {
         if (
           dbBook.contentStatus !== "PUBLISHED" ||
-          dbBook.availabilityStatus === "INACTIVE"
+          dbBook.availabilityStatus === "INACTIVE" || dbBook.category.isActive === false
         ) {
           return null;
         }
         return mapDbBookToPublicPreview(dbBook);
       }
 
-      const dbHasBooks = (await prisma.book.count()) > 0;
-      if (dbHasBooks) {
-        return null;
-      }
+      return null;
     } catch {
       if (process.env.NODE_ENV === "production") {
         return null;
       }
     }
   }
-  if (process.env.DISABLE_SEED_FALLBACK === "true") {
+  if (!canUseCatalogueFixtures()) {
     return null;
   }
   return getBookPreviewBySlug(slug);

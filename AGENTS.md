@@ -55,7 +55,7 @@ This document establishes permanent operating rules, brand constraints, architec
 
 1. **Stack:** Next.js 15 App Router, React 19, TypeScript, Tailwind CSS 4, PostgreSQL, Prisma ORM 6, Zod, Vitest.
 2. **Never expose secrets:** No passwords, database connection strings, private API keys, or personal customer information in code, logs, or public repositories.
-3. **Database Health:** Always support graceful in-memory and seed fallbacks so the site remains operational, responsive, and indexable when database connections are unconfigured or transitioning.
+3. **Database Health:** Never substitute demo catalogue records for production inventory. Fixtures are permitted only in isolated development/test or explicitly enabled non-production staging. Public routes remain truthful when inventory cannot be loaded.
 4. **Customer vs. Staff Isolation:** Customer sessions (`bcp_customer_session`) and Staff Admin sessions (`bcp_admin_session`) are strictly isolated with independent cookie names, tokens, and authorization middleware.
 5. **Private Document Protection:** Customer identity papers, financial records, and tax filings must never be stored in public directories or public CDNs. Use private server-authenticated endpoints.
 6. **No Floating-Point Money:** In commerce modules, always calculate monetary values safely in BDT using exact integer paisa arithmetic or validated decimal representations.
@@ -86,7 +86,7 @@ npm run build       # Next.js clean production build
    - The three flagship homepage cards (`Our Courses → Our Services → Our Books`) MUST remain in that exact DOM order and share the unified Muted Lavender (`#DDD6EB`) fill treatment (`rgb(221, 214, 235)`). Never restyle the homepage to predominantly navy-and-gold or assign unrelated colors per flagship card.
    - Maintain crisp mobile typography and flexible header sizing (`min-w-0 flex-1 lg:flex-initial`) so `320px` and `390px` viewports never suffer horizontal overflow (`scrollWidth <= clientWidth`).
 2. **Fail-Closed Durable Private Document Storage (`src/lib/storage/private-documents.ts`):**
-   - Production requires durable object storage (`PRIVATE_STORAGE_PROVIDER=S3|SUPABASE` with complete endpoint/bucket/credentials) and fails closed (`503 STORAGE_NOT_CONFIGURED`) unless `ALLOW_EPHEMERAL_PRIVATE_STORAGE=true` is explicitly set.
+   - Production requires durable object storage (`PRIVATE_STORAGE_PROVIDER=S3|SUPABASE` with complete endpoint/bucket/credentials) and fails closed (`503 STORAGE_NOT_CONFIGURED`) Local ephemeral overrides are restricted to non-live test environments. New uploads remain quarantined until an authorized safety review.
    - Enforce binary magic-byte verification, SHA-256 checksum persistence and verification on download (`422`), quarantine enforcement (`423`), traversal-safe storage key resolution, and sanitized `Content-Disposition` headers.
    - Least-privilege RBAC (`src/lib/security/rbac.ts`): `ADMIN` holds `documents:admin`, `documents:delete`, `documents:download`, and `orders:cancel`; `LEAD_MANAGER` holds `documents:review` and `orders:manage` without unredacted customer document download or order cancellation; `EDITOR` is restricted to content management.
 3. **Exact Integer-Paisa Commerce & Idempotency (`src/lib/commerce/`):**
@@ -96,7 +96,7 @@ npm run build       # Next.js clean production build
    - Quote acceptance and sandbox payment verification MUST execute atomic conditional `updateMany` state guards; order cancellations MUST restore book stock (`BookInventoryMovement` `ORDER_CANCELLED_RESTORE`) and void open `DUE` invoices inside a single Prisma transaction.
    - Sandbox payments MUST remain gated on BOTH non-production environment AND `SANDBOX_PAYMENTS_ENABLED=true`.
 4. **Authoritative LMS Entitlements:**
-   - Course enrollment and lesson progress (`/api/lms/enroll`, `/api/lms/progress`, `/api/lms/certificate`) MUST enforce `Course.enrollmentModel` (`OPEN` vs `PAID` vs `RESTRICTED`) and verify active `CourseEntitlement` records.
+   - Course enrollment and lesson progress (`/api/lms/enroll`, `/api/lms/progress`, `/api/lms/certificate`) MUST enforce `Course.enrollmentModel` (`FREE`, `PAID`, `ENQUIRY_ONLY`, `INVITATION_ONLY`, `UNAVAILABLE`) and verify active `CourseEntitlement` records.
 5. **Verified Analytics Separation:**
    - Browser `trackEvent()` (`src/lib/analytics/events.ts`) always emits `client_observed` and strips forbidden PII keys.
    - Authoritative conversions (`order_created`, `payment_verified`, `enrollment_completed`) are recorded exclusively server-side (`src/lib/analytics/server.ts`) as `server_verified` (`AnalyticsServerEvent`).

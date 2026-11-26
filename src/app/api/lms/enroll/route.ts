@@ -149,7 +149,7 @@ export async function POST(req: NextRequest) {
     });
 
     await recordServerVerifiedEvent({
-      eventName: "enrollment_completed",
+      eventName: "enrollment_created",
       customerId: customer.id,
       entityType: "Enrollment",
       entityId: enrollment.id,
