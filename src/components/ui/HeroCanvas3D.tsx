@@ -304,9 +304,29 @@ export function HeroCanvas3D({
       pointer.y = -((clientY - rect.top) / rect.height) * 2 + 1;
     };
 
+    let isDragging = false;
+    let prevDragX = 0;
+    let manualOrbitOffset = 0;
+    let dragVelocity = 0;
+    let dragDist = 0;
+
+    const handlePointerDown = (e: PointerEvent) => {
+      isDragging = true;
+      prevDragX = e.clientX;
+      dragDist = 0;
+      renderer.domElement.setPointerCapture?.(e.pointerId);
+    };
+
     const handlePointerMove = (e: PointerEvent) => {
+      if (isDragging) {
+        const dx = e.clientX - prevDragX;
+        prevDragX = e.clientX;
+        dragVelocity += dx * 0.004;
+        dragDist += Math.abs(dx);
+      }
+
       const now = performance.now();
-      if (now - lastRaycastTime < 40) return;
+      if (now - lastRaycastTime < 32) return;
       lastRaycastTime = now;
       updatePointer(e.clientX, e.clientY);
       raycaster.setFromCamera(pointer, camera);
@@ -315,25 +335,33 @@ export function HeroCanvas3D({
         (hits[0]?.object.userData.pillarId as EcosystemPillarId | undefined) ??
         null;
       hoveredPillar = hitId;
-      renderer.domElement.style.cursor = hitId ? "pointer" : "grab";
+      renderer.domElement.style.cursor = isDragging
+        ? "grabbing"
+        : hitId
+        ? "pointer"
+        : "grab";
     };
 
-    const handleClick = (e: MouseEvent) => {
-      updatePointer(e.clientX, e.clientY);
-      raycaster.setFromCamera(pointer, camera);
-      const hits = raycaster.intersectObjects(hitMeshes, false);
-      const hitId = hits[0]?.object.userData.pillarId as
-        | EcosystemPillarId
-        | undefined;
-      if (hitId) {
-        callbackRef.current?.(hitId);
+    const handlePointerUp = (e: PointerEvent) => {
+      isDragging = false;
+      if (dragDist < 6) {
+        updatePointer(e.clientX, e.clientY);
+        raycaster.setFromCamera(pointer, camera);
+        const hits = raycaster.intersectObjects(hitMeshes, false);
+        const hitId = hits[0]?.object.userData.pillarId as
+          | EcosystemPillarId
+          | undefined;
+        if (hitId) {
+          callbackRef.current?.(hitId);
+        }
       }
     };
 
+    renderer.domElement.addEventListener("pointerdown", handlePointerDown);
     renderer.domElement.addEventListener("pointermove", handlePointerMove, {
       passive: true,
     });
-    renderer.domElement.addEventListener("click", handleClick);
+    renderer.domElement.addEventListener("pointerup", handlePointerUp);
 
     const stopResize = createResizeObserver(container, (newW, newH) => {
       camera.aspect = newW / newH;
@@ -386,9 +414,13 @@ export function HeroCanvas3D({
 
       const elapsed = clock.getElapsedTime();
       if (!prefersReducedMotion) {
-        mainGroup.rotation.y = elapsed * 0.14;
+        dragVelocity *= 0.92;
+        manualOrbitOffset += dragVelocity;
+        mainGroup.rotation.y = manualOrbitOffset + elapsed * 0.14;
         coreMesh.rotation.y = -elapsed * 0.3;
         coreGoldRing.rotation.z = elapsed * 0.25;
+      } else {
+        mainGroup.rotation.y = manualOrbitOffset;
       }
 
       const activeId = selectedRef.current;
@@ -432,8 +464,9 @@ export function HeroCanvas3D({
       window.clearTimeout(timeoutId);
       observer.disconnect();
       document.removeEventListener("visibilitychange", handleVisibilityChange);
+      renderer.domElement.removeEventListener("pointerdown", handlePointerDown);
       renderer.domElement.removeEventListener("pointermove", handlePointerMove);
-      renderer.domElement.removeEventListener("click", handleClick);
+      renderer.domElement.removeEventListener("pointerup", handlePointerUp);
       stopResize();
       stopContextLoss();
 

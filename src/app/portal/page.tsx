@@ -9,9 +9,11 @@ import {
   FileCheck2,
   FileText,
   LogOut,
+  Package,
   PlusCircle,
   Shield,
   ShieldCheck,
+  ShoppingBag,
 } from "lucide-react";
 import { getCurrentCustomer } from "@/lib/customer/auth";
 import { isDatabaseConfigured, prisma } from "@/lib/db/prisma";
@@ -53,6 +55,23 @@ interface PortalDocument {
   status: string;
 }
 
+interface PortalBookOrder {
+  id: string;
+  publicReference: string;
+  totalBdt: number;
+  paymentStatus: string;
+  status: string;
+  shippingAddress: string | null;
+  createdAt: Date;
+  bookItems: {
+    id: string;
+    titleSnapshot: string;
+    quantity: number;
+    unitPricePaisa: number;
+    lineTotalPaisa: number;
+  }[];
+}
+
 export default async function CustomerPortalPage() {
   const customer = await getCurrentCustomer();
 
@@ -65,10 +84,11 @@ export default async function CustomerPortalPage() {
   let complianceCases: PortalComplianceCase[] = [];
   let enrollments: PortalEnrollment[] = [];
   let documents: PortalDocument[] = [];
+  let bookOrders: PortalBookOrder[] = [];
 
   if (isDatabaseConfigured()) {
     try {
-      [serviceRequests, complianceCases, enrollments, documents] = await Promise.all([
+      [serviceRequests, complianceCases, enrollments, documents, bookOrders] = await Promise.all([
         prisma.serviceRequest.findMany({
           where: { customerId: customer.id },
           include: { quotes: { include: { items: true } } },
@@ -89,6 +109,12 @@ export default async function CustomerPortalPage() {
         }),
         prisma.document.findMany({
           where: { customerId: customer.id },
+          orderBy: { createdAt: "desc" },
+          take: 10,
+        }),
+        prisma.order.findMany({
+          where: { customerId: customer.id, orderKind: "BOOKSTORE" },
+          include: { bookItems: true },
           orderBy: { createdAt: "desc" },
           take: 10,
         }),
@@ -408,6 +434,80 @@ export default async function CustomerPortalPage() {
             )}
           </div>
         </div>
+
+        {/* Section 3: Bookstore Orders */}
+        <section className="bg-white rounded-[16px] border border-[#D4CCE3] shadow-sm p-5 sm:p-6 space-y-4">
+          <div className="flex items-center justify-between border-b border-[#D4CCE3] pb-3">
+            <h2 className="text-base font-bold text-[#081838] flex items-center gap-2">
+              <ShoppingBag className="w-4 h-4 text-[#51406F]" aria-hidden="true" />
+              <span>আমার বই ক্রয়ের অর্ডারসমূহ</span>
+            </h2>
+            <Link href="/books" className="text-xs font-bold text-[#51406F] hover:text-[#3F315A] hover:underline">
+              বুকস্টোর দেখুন →
+            </Link>
+          </div>
+
+          {bookOrders.length > 0 ? (
+            <div className="space-y-3">
+              {bookOrders.map((order) => (
+                <div
+                  key={order.id}
+                  className="p-4 rounded-xl border border-[#D4CCE3] bg-[#F2EFF8]/40 space-y-3"
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <Package className="w-4 h-4 text-[#51406F]" aria-hidden="true" />
+                      <span className="font-mono text-xs font-bold text-[#081838]">
+                        #{order.publicReference}
+                      </span>
+                      <span className="text-xs text-[#596775]">
+                        ({new Date(order.createdAt).toLocaleDateString("bn-BD")})
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold px-2 py-0.5 rounded bg-[#DDD6EB] text-[#51406F]">
+                        {order.status === "CONFIRMED" ? "নিশ্চিতকৃত" : order.status}
+                      </span>
+                      <span className="text-sm font-bold text-[#081838]">
+                        ৳{order.totalBdt.toLocaleString("bn-BD")}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="divide-y divide-[#D4CCE3]/60 text-xs text-[#181D26]">
+                    {order.bookItems.map((item) => (
+                      <div key={item.id} className="py-2 flex items-center justify-between">
+                        <span className="font-medium text-[#081838]">{item.titleSnapshot}</span>
+                        <span className="text-[#596775]">
+                          {item.quantity}টি × ৳{Math.round(item.unitPricePaisa / 100).toLocaleString("bn-BD")} = ৳{Math.round(item.lineTotalPaisa / 100).toLocaleString("bn-BD")}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {order.shippingAddress ? (
+                    <div className="text-[11px] text-[#596775] bg-white p-2.5 rounded-lg border border-[#D4CCE3]/60">
+                      <strong>ডেলিভারি ঠিকানা:</strong> {order.shippingAddress}
+                    </div>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8 space-y-2">
+              <p className="text-xs text-[#596775]">
+                আপনার কোনো বই ক্রয়ের অর্ডার পাওয়া যায়নি।
+              </p>
+              <Link
+                href="/books"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#51406F] text-white text-xs font-bold hover:bg-[#3F315A] transition-colors"
+              >
+                <BookOpen className="w-3.5 h-3.5" aria-hidden="true" />
+                <span>প্রকাশিত বই ও প্রিভিউ দেখুন</span>
+              </Link>
+            </div>
+          )}
+        </section>
       </main>
     </div>
   );

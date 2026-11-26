@@ -398,12 +398,13 @@ export function listBookCategories(): PublicBookCategoryDTO[] {
 export function listBookCatalog(filter?: {
   categorySlug?: string;
   q?: string;
+  limit?: number;
 }): { categories: PublicBookCategoryDTO[]; items: PublicBookPreview[] } {
   const categories = listBookCategories();
   const catSlug = filter?.categorySlug?.trim() || "";
   const query = filter?.q?.trim() || "";
 
-  const items = BOOK_PREVIEW_CATALOG.filter((book) =>
+  let items = BOOK_PREVIEW_CATALOG.filter((book) =>
     catSlug ? book.categorySlug === catSlug : true,
   ).filter((book) =>
     query
@@ -418,6 +419,10 @@ export function listBookCatalog(filter?: {
         ])
       : true,
   );
+
+  if (typeof filter?.limit === "number" && filter.limit > 0) {
+    items = items.slice(0, filter.limit);
+  }
 
   return { categories, items };
 }
@@ -536,7 +541,8 @@ export function mapDbBookToPublicPreview(dbBook: {
 }): PublicBookPreview {
   const isPublishedPriced =
     dbBook.contentStatus === "PUBLISHED" &&
-    dbBook.availabilityStatus === "ACTIVE" &&
+    (dbBook.availabilityStatus === "ACTIVE" ||
+      dbBook.availabilityStatus === "AVAILABLE") &&
     typeof dbBook.pricePaisa === "number" &&
     dbBook.pricePaisa > 0;
 
@@ -560,6 +566,11 @@ export function mapDbBookToPublicPreview(dbBook: {
     languageBnEn: dbBook.languageBnEn,
     deliveryMode: dbBook.deliveryMode,
     pricePaisa: isPublishedPriced ? dbBook.pricePaisa : null,
+    priceBdt:
+      isPublishedPriced && typeof dbBook.pricePaisa === "number"
+        ? Math.round(dbBook.pricePaisa / 100)
+        : null,
+    inStock: isPublishedPriced ? dbBook.stockQuantity > 0 : false,
     stockQuantity: isPublishedPriced ? dbBook.stockQuantity : undefined,
     availabilityState: isPublishedPriced
       ? "PUBLISHED_PRICED"
@@ -583,6 +594,7 @@ export function mapDbBookToPublicPreview(dbBook: {
 export async function loadBookCatalog(filter?: {
   categorySlug?: string;
   q?: string;
+  limit?: number;
 }): Promise<{ categories: PublicBookCategoryDTO[]; items: PublicBookPreview[] }> {
   if (isDatabaseConfigured() && (await isBooksSchemaReady())) {
     try {
@@ -613,7 +625,7 @@ export async function loadBookCatalog(filter?: {
         const catSlug = filter?.categorySlug?.trim() || "";
         const query = filter?.q?.trim() || "";
 
-        const items = mapped
+        let items = mapped
           .filter((book) => (catSlug ? book.categorySlug === catSlug : true))
           .filter((book) =>
             query
@@ -628,6 +640,10 @@ export async function loadBookCatalog(filter?: {
                 ])
               : true,
           );
+
+        if (typeof filter?.limit === "number" && filter.limit > 0) {
+          items = items.slice(0, filter.limit);
+        }
 
         const categories: PublicBookCategoryDTO[] = dbCategories.map((cat) => ({
           slug: cat.slug,

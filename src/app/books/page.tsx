@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { BookOpen, Info, X } from "lucide-react";
 import { getCanonicalBaseUrl, getPublicSiteConfig } from "@/lib/config/site";
-import { BOOK_PRICING_NOTICE_BN, listBookCatalog } from "@/lib/books/catalog";
+import { BOOK_PRICING_NOTICE_BN, loadBookCatalog } from "@/lib/books/catalog";
 import type { PublicCategoryDTO } from "@/types/domain";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
@@ -29,7 +29,7 @@ export default async function BooksPage({ searchParams }: BooksPageProps) {
   const siteConfig = await getPublicSiteConfig();
   const canonicalBaseUrl = getCanonicalBaseUrl();
 
-  const { categories, items } = listBookCatalog({
+  const { categories, items } = await loadBookCatalog({
     categorySlug: category || undefined,
     q: q || undefined,
   });

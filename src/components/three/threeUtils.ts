@@ -209,6 +209,7 @@ export function createBookSpineTexture(params: {
 
 export function createLaptopScreenTexture(
   logoImage?: HTMLImageElement | null,
+  screenMode = 0,
 ): THREE.CanvasTexture {
   const canvas = document.createElement("canvas");
   canvas.width = 768;
@@ -216,62 +217,193 @@ export function createLaptopScreenTexture(
   const ctx = canvas.getContext("2d");
 
   if (ctx) {
-    const bg = ctx.createLinearGradient(0, 0, 768, 480);
-    bg.addColorStop(0, "#1D1536");
-    bg.addColorStop(0.55, "#51406F");
-    bg.addColorStop(1, "#081838");
-    ctx.fillStyle = bg;
-    ctx.fillRect(0, 0, 768, 480);
+    if (screenMode === 1) {
+      // Screen Mode 1: VAT & Mushak 9.1 Digital Return
+      const bg = ctx.createLinearGradient(0, 0, 768, 480);
+      bg.addColorStop(0, "#07241A");
+      bg.addColorStop(0.55, "#00865A");
+      bg.addColorStop(1, "#081838");
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, 768, 480);
 
-    const glow = ctx.createRadialGradient(384, 210, 20, 384, 210, 290);
-    glow.addColorStop(0, "rgba(221, 214, 235, 0.34)");
-    glow.addColorStop(1, "rgba(221, 214, 235, 0)");
-    ctx.fillStyle = glow;
-    ctx.fillRect(0, 0, 768, 480);
-
-    ctx.fillStyle = "rgba(255,255,255,0.08)";
-    ctx.fillRect(28, 24, 712, 34);
-    ctx.fillStyle = "#DFB15B";
-    ctx.beginPath();
-    ctx.arc(52, 41, 6, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = "rgba(255,255,255,0.75)";
-    ctx.font = "600 16px Inter, sans-serif";
-    ctx.textAlign = "left";
-    ctx.textBaseline = "middle";
-    ctx.fillText("BUSINESS COMPLIANCE PARTNER  •  KNOWLEDGE STUDIO", 74, 41);
-
-    if (logoImage && logoImage.complete && logoImage.naturalWidth > 0) {
-      ctx.save();
+      // Top title bar
+      ctx.fillStyle = "rgba(255,255,255,0.12)";
+      ctx.fillRect(28, 24, 712, 38);
+      ctx.fillStyle = "#00D690";
       ctx.beginPath();
-      ctx.arc(384, 194, 86, 0, Math.PI * 2);
-      ctx.closePath();
-      ctx.clip();
-      ctx.drawImage(logoImage, 298, 108, 172, 172);
-      ctx.restore();
-    } else {
-      ctx.strokeStyle = "#C59028";
-      ctx.lineWidth = 6;
-      ctx.beginPath();
-      ctx.arc(384, 194, 80, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.fillStyle = "#FFFFFF";
-      ctx.beginPath();
-      ctx.arc(384, 194, 74, 0, Math.PI * 2);
+      ctx.arc(52, 43, 7, 0, Math.PI * 2);
       ctx.fill();
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "700 16px Inter, sans-serif";
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
+      ctx.fillText("NBR MUSHAK 9.1  •  ONLINE VAT RETURN AUTO-AUDIT", 74, 43);
+
+      // Dashboard cards
+      ctx.fillStyle = "rgba(255,255,255,0.09)";
+      ctx.fillRect(48, 88, 320, 140);
+      ctx.fillRect(400, 88, 320, 140);
+
+      ctx.fillStyle = "#DFB15B";
+      ctx.font = "600 14px Inter, sans-serif";
+      ctx.fillText("INPUT TAX RECONCILIATION", 68, 118);
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "700 28px Georgia, serif";
+      ctx.fillText("৳ ৪,৮৫,২০০", 68, 160);
+      ctx.fillStyle = "#00D690";
+      ctx.font = "600 13px Inter, sans-serif";
+      ctx.fillText("✓ 100% Mushak 6.3 Validated", 68, 195);
+
+      ctx.fillStyle = "#DFB15B";
+      ctx.font = "600 14px Inter, sans-serif";
+      ctx.fillText("TREASURY CHALLAN STATUS", 420, 118);
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "700 24px Georgia, serif";
+      ctx.fillText("CHALLAN: TR-89412", 420, 160);
+      ctx.fillStyle = "#00D690";
+      ctx.font = "600 13px Inter, sans-serif";
+      ctx.fillText("✓ Verified with Sonali e-Challan", 420, 195);
+
+      // Big Status Banner
+      ctx.fillStyle = "rgba(0, 134, 90, 0.4)";
+      ctx.fillRect(48, 252, 672, 170);
+      ctx.strokeStyle = "#00D690";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(48, 252, 672, 170);
+
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "700 24px Georgia, serif";
+      ctx.textAlign = "center";
+      ctx.fillText("জাতীয় রাজস্ব বোর্ড (NBR) কমপ্লায়েন্স নিশ্চিতকরণ", 384, 305);
+      ctx.fillStyle = "#DFB15B";
+      ctx.font = "600 16px Inter, sans-serif";
+      ctx.fillText("Business Compliance Partner • Automated VAT Filing Suite", 384, 350);
+      ctx.fillStyle = "rgba(255,255,255,0.85)";
+      ctx.font = "500 14px Inter, sans-serif";
+      ctx.fillText("BIN: 002948192-0101 • ট্যাক্স মেয়াদ: চলতি করবর্ষ", 384, 388);
+    } else if (screenMode === 2) {
+      // Screen Mode 2: Smart RJSC & Corporate Registration
+      const bg = ctx.createLinearGradient(0, 0, 768, 480);
+      bg.addColorStop(0, "#0E224A");
+      bg.addColorStop(0.55, "#1B2E59");
+      bg.addColorStop(1, "#081838");
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, 768, 480);
+
+      // Top title bar
+      ctx.fillStyle = "rgba(255,255,255,0.12)";
+      ctx.fillRect(28, 24, 712, 38);
+      ctx.fillStyle = "#DFB15B";
+      ctx.beginPath();
+      ctx.arc(52, 43, 7, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "700 16px Inter, sans-serif";
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
+      ctx.fillText("SMART RJSC  •  COMPANY INCORPORATION & RETURNS", 74, 43);
+
+      // Dashboard cards
+      ctx.fillStyle = "rgba(255,255,255,0.08)";
+      ctx.fillRect(48, 88, 320, 140);
+      ctx.fillRect(400, 88, 320, 140);
+
+      ctx.fillStyle = "#DFB15B";
+      ctx.font = "600 14px Inter, sans-serif";
+      ctx.fillText("INCORPORATION STATUS", 68, 118);
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "700 22px Georgia, serif";
+      ctx.fillText("CERTIFICATE ISSUED", 68, 158);
+      ctx.fillStyle = "#00D690";
+      ctx.font = "600 13px Inter, sans-serif";
+      ctx.fillText("✓ Form XII & MoA Approved", 68, 195);
+
+      ctx.fillStyle = "#DFB15B";
+      ctx.font = "600 14px Inter, sans-serif";
+      ctx.fillText("ANNUAL RETURN FILING", 420, 118);
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "700 24px Georgia, serif";
+      ctx.fillText("SCHEDULE X & FORM IX", 420, 158);
+      ctx.fillStyle = "#DFB15B";
+      ctx.font = "600 13px Inter, sans-serif";
+      ctx.fillText("• Due Date Auto-Monitored", 420, 195);
+
+      // Big Status Banner
+      ctx.fillStyle = "rgba(197, 144, 40, 0.18)";
+      ctx.fillRect(48, 252, 672, 170);
+      ctx.strokeStyle = "#C59028";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(48, 252, 672, 170);
+
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "700 24px Georgia, serif";
+      ctx.textAlign = "center";
+      ctx.fillText("যৌথমূলধন কোম্পানি ও ফার্মসমূহের পরিদপ্তর (RJSC)", 384, 305);
+      ctx.fillStyle = "#DFB15B";
+      ctx.font = "600 16px Inter, sans-serif";
+      ctx.fillText("Business Compliance Partner • Corporate Secretarial Advisory", 384, 350);
+      ctx.fillStyle = "rgba(255,255,255,0.85)";
+      ctx.font = "500 14px Inter, sans-serif";
+      ctx.fillText("Entity: Private Limited Company • Digital Registry Verified", 384, 388);
+    } else {
+      // Default: Mode 0 - Brand Executive Command Center
+      const bg = ctx.createLinearGradient(0, 0, 768, 480);
+      bg.addColorStop(0, "#1D1536");
+      bg.addColorStop(0.55, "#51406F");
+      bg.addColorStop(1, "#081838");
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, 768, 480);
+
+      const glow = ctx.createRadialGradient(384, 210, 20, 384, 210, 290);
+      glow.addColorStop(0, "rgba(221, 214, 235, 0.34)");
+      glow.addColorStop(1, "rgba(221, 214, 235, 0)");
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, 768, 480);
+
+      ctx.fillStyle = "rgba(255,255,255,0.08)";
+      ctx.fillRect(28, 24, 712, 34);
+      ctx.fillStyle = "#DFB15B";
+      ctx.beginPath();
+      ctx.arc(52, 41, 6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "rgba(255,255,255,0.75)";
+      ctx.font = "600 16px Inter, sans-serif";
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
+      ctx.fillText("BUSINESS COMPLIANCE PARTNER  •  KNOWLEDGE STUDIO", 74, 41);
+
+      if (logoImage && logoImage.complete && logoImage.naturalWidth > 0) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(384, 194, 86, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(logoImage, 298, 108, 172, 172);
+        ctx.restore();
+      } else {
+        ctx.strokeStyle = "#C59028";
+        ctx.lineWidth = 6;
+        ctx.beginPath();
+        ctx.arc(384, 194, 80, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.fillStyle = "#FFFFFF";
+        ctx.beginPath();
+        ctx.arc(384, 194, 74, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "700 28px Georgia, serif";
+      ctx.textAlign = "center";
+      ctx.fillText("Business Compliance Partner", 384, 326);
+
+      ctx.fillStyle = "#DFB15B";
+      ctx.font = "600 16px Inter, sans-serif";
+      ctx.fillText("Courses  •  Services  •  Books  •  Advisory", 384, 362);
+
+      ctx.fillStyle = "rgba(197, 144, 40, 0.7)";
+      ctx.fillRect(224, 396, 320, 2);
     }
-
-    ctx.fillStyle = "#FFFFFF";
-    ctx.font = "700 28px Georgia, serif";
-    ctx.textAlign = "center";
-    ctx.fillText("Business Compliance Partner", 384, 326);
-
-    ctx.fillStyle = "#DFB15B";
-    ctx.font = "600 16px Inter, sans-serif";
-    ctx.fillText("Courses  •  Services  •  Books  •  Advisory", 384, 362);
-
-    ctx.fillStyle = "rgba(197, 144, 40, 0.7)";
-    ctx.fillRect(224, 396, 320, 2);
   }
 
   const texture = new THREE.CanvasTexture(canvas);

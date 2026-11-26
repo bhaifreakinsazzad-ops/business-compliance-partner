@@ -200,6 +200,8 @@ export interface PublicBookPreview {
   languageBnEn?: string | null;
   deliveryMode?: string | null;
   pricePaisa?: number | null;
+  priceBdt?: number | null;
+  inStock?: boolean;
   stockQuantity?: number;
   lastVerifiedAt?: string | null;
   verifiedBy?: string | null;

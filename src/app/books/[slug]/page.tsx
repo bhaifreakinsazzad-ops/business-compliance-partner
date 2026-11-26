@@ -5,10 +5,15 @@ import { ArrowRight, BookOpen, CheckCircle2, Info, Users } from "lucide-react";
 import { getCanonicalBaseUrl, getPublicSiteConfig } from "@/lib/config/site";
 import {
   BOOK_AVAILABILITY_BADGE_BN,
-  getBookPreviewBySlug,
-  listBookCatalog,
+  getGovernedBookBySlug,
+  loadBookCatalog,
 } from "@/lib/books/catalog";
 import { buildWhatsAppBookMessage } from "@/lib/contact/whatsapp";
+import {
+  rankRelatedBooks,
+  rankRelatedCourses,
+  rankRelatedServices,
+} from "@/lib/recommendations/cross-division";
 import {
   listPublishedCourses,
   listPublishedServices,
@@ -18,6 +23,7 @@ import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { Footer } from "@/components/layout/Footer";
 import { BookPreview3D } from "@/components/three/BookPreview3D";
 import { BookCard } from "@/components/books/BookCard";
+import { BookCheckoutPanel } from "@/components/books/BookCheckoutPanel";
 import { CourseCard } from "@/components/shared/CourseCard";
 import { ServiceCard } from "@/components/shared/ServiceCard";
 import { WhatsAppEnquiryButton } from "@/components/shared/WhatsAppEnquiryButton";
@@ -30,12 +36,12 @@ export async function generateMetadata({
   params,
 }: BookDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const book = getBookPreviewBySlug(slug);
+  const book = await getGovernedBookBySlug(slug);
   if (!book) {
     return { title: "বইটি পাওয়া যায়নি" };
   }
   return {
-    title: `${book.titleBn} | প্রকাশনা প্রিভিউ`,
+    title: `${book.titleBn} | ${book.availabilityState === "PUBLISHED_PRICED" ? "বই ও অর্ডার" : "প্রকাশনা প্রিভিউ"}`,
     description: book.summaryBn,
     alternates: { canonical: `/books/${book.slug}` },
   };
@@ -43,20 +49,18 @@ export async function generateMetadata({
 
 export default async function BookDetailPage({ params }: BookDetailPageProps) {
   const { slug } = await params;
-  const book = getBookPreviewBySlug(slug);
+  const book = await getGovernedBookBySlug(slug);
   if (!book) {
     notFound();
   }
 
-  const [siteConfig, relatedCoursesRes, relatedServicesRes] = await Promise.all([
-    getPublicSiteConfig(),
-    book.relatedCourseCategorySlug
-      ? listPublishedCourses({ categorySlug: book.relatedCourseCategorySlug })
-      : Promise.resolve({ items: [], categories: [] }),
-    book.relatedServiceCategorySlug
-      ? listPublishedServices({ categorySlug: book.relatedServiceCategorySlug })
-      : Promise.resolve({ items: [], categories: [] }),
-  ]);
+  const [siteConfig, allCoursesRes, allServicesRes, allBooksRes] =
+    await Promise.all([
+      getPublicSiteConfig(),
+      listPublishedCourses(),
+      listPublishedServices(),
+      loadBookCatalog(),
+    ]);
 
   const canonicalBaseUrl = getCanonicalBaseUrl();
   const bookPath = `/books/${book.slug}`;
@@ -69,11 +73,36 @@ export default async function BookDetailPage({ params }: BookDetailPageProps) {
     canonicalBaseUrl,
   });
 
-  const relatedCourses = relatedCoursesRes.items.slice(0, 2);
-  const relatedServices = relatedServicesRes.items.slice(0, 2);
-  const relatedBooks = listBookCatalog()
-    .items.filter((b) => b.slug !== book.slug)
-    .slice(0, 3);
+  const crossContext = {
+    titleBn: book.titleBn,
+    titleEn: book.titleEn,
+    categorySlug: book.categorySlug,
+    categoryNameBn: book.categoryNameBn,
+    summaryBn: book.summaryBn,
+    topics: book.topicsBn,
+    relatedCourseCategorySlug: book.relatedCourseCategorySlug,
+    relatedServiceCategorySlug: book.relatedServiceCategorySlug,
+    relatedLicensingCategorySlug: book.relatedLicensingCategorySlug,
+  };
+
+  const relatedCourses = rankRelatedCourses(
+    allCoursesRes.items,
+    crossContext,
+    undefined,
+    2,
+  );
+  const relatedServices = rankRelatedServices(
+    allServicesRes.items,
+    crossContext,
+    undefined,
+    2,
+  );
+  const relatedBooks = rankRelatedBooks(
+    allBooksRes.items,
+    crossContext,
+    book.slug,
+    3,
+  );
 
   return (
     <>
@@ -175,59 +204,65 @@ export default async function BookDetailPage({ params }: BookDetailPageProps) {
               </div>
             </div>
 
-            {/* Sticky Interest Sidebar */}
+            {/* Sticky Commercial Sidebar: Checkout for Priced Edition or Enquiry for Preview */}
             <aside className="lg:col-span-4 space-y-5 lg:sticky lg:top-24">
-              <div className="rounded-[16px] border border-[#D4CCE3] bg-white p-6 space-y-5 shadow-sm">
-                <div className="space-y-2">
-                  <h2 className="text-lg font-bold text-[#081838]">
-                    প্রকাশনা আগ্রহ নিবন্ধন
-                  </h2>
-                  <p className="text-xs sm:text-sm text-[#596775] leading-relaxed">
-                    বইটি প্রকাশিত হলে বা প্রি-অর্ডার শুরু হলে অগ্রাধিকার ভিত্তিতে তথ্য পেতে
-                    নিচের মাধ্যমগুলোতে যোগাযোগ করুন।
-                  </p>
-                </div>
+              {book.availabilityState === "PUBLISHED_PRICED" &&
+              typeof book.pricePaisa === "number" &&
+              book.pricePaisa > 0 ? (
+                <BookCheckoutPanel book={book} />
+              ) : (
+                <div className="rounded-[16px] border border-border-subtle bg-white p-6 space-y-5 shadow-sm">
+                  <div className="space-y-2">
+                    <h2 className="text-lg font-bold text-text-primary">
+                      প্রকাশনা আগ্রহ নিবন্ধন
+                    </h2>
+                    <p className="text-xs sm:text-sm text-text-muted leading-relaxed">
+                      বইটি প্রকাশিত হলে বা প্রি-অর্ডার শুরু হলে অগ্রাধিকার ভিত্তিতে তথ্য পেতে
+                      নিচের মাধ্যমগুলোতে যোগাযোগ করুন।
+                    </p>
+                  </div>
 
-                <dl className="space-y-3 text-sm border-y border-[#D4CCE3] py-4">
-                  <div className="flex justify-between gap-2">
-                    <dt className="text-[#596775]">বিভাগ</dt>
-                    <dd className="font-semibold text-[#081838] text-end">
-                      {book.categoryNameBn}
-                    </dd>
-                  </div>
-                  <div className="flex justify-between gap-2">
-                    <dt className="text-[#596775]">অবস্থা</dt>
-                    <dd className="font-semibold text-[#9A6300] text-end">
-                      {BOOK_AVAILABILITY_BADGE_BN}
-                    </dd>
-                  </div>
-                  <div className="flex justify-between gap-2">
-                    <dt className="text-[#596775]">সংস্করণ ও মূল্য</dt>
-                    <dd className="font-semibold text-[#51406F] text-end">
-                      অনুমোদন সাপেক্ষে প্রকাশিত হবে
-                    </dd>
-                  </div>
-                </dl>
+                  <dl className="space-y-3 text-sm border-y border-border-subtle py-4">
+                    <div className="flex justify-between gap-2">
+                      <dt className="text-text-muted">বিভাগ</dt>
+                      <dd className="font-semibold text-text-primary text-end">
+                        {book.categoryNameBn}
+                      </dd>
+                    </div>
+                    <div className="flex justify-between gap-2">
+                      <dt className="text-text-muted">অবস্থা</dt>
+                      <dd className="font-semibold text-[#8A5800] text-end">
+                        {BOOK_AVAILABILITY_BADGE_BN}
+                      </dd>
+                    </div>
+                    <div className="flex justify-between gap-2">
+                      <dt className="text-text-muted">সংস্করণ ও মূল্য</dt>
+                      <dd className="font-semibold text-text-accent text-end">
+                        অনুমোদন সাপেক্ষে প্রকাশিত হবে
+                      </dd>
+                    </div>
+                  </dl>
 
-                <div className="space-y-2.5">
-                  <WhatsAppEnquiryButton
-                    verifiedWhatsapp={siteConfig.verifiedWhatsapp}
-                    serviceName={book.titleBn}
-                    servicePath={bookPath}
-                    canonicalBaseUrl={canonicalBaseUrl}
-                    customMessage={bookWhatsAppMessage}
-                    fallbackHref={enquiryHref}
-                    labelBn="WhatsApp-এ আগ্রহ জানান"
-                    fallbackLabelBn="আগ্রহ নিবন্ধন করুন"
-                    size="lg"
-                    fullWidth
-                  />
-                  <Link href={enquiryHref} className="ps-secondary-button w-full">
-                    <span>অনলাইন ফর্মে আগ্রহ জানান</span>
-                    <ArrowRight className="w-4 h-4" aria-hidden="true" />
-                  </Link>
+                  <div className="space-y-2.5">
+                    <WhatsAppEnquiryButton
+                      verifiedWhatsapp={siteConfig.verifiedWhatsapp}
+                      serviceName={book.titleBn}
+                      servicePath={bookPath}
+                      canonicalBaseUrl={canonicalBaseUrl}
+                      customMessage={bookWhatsAppMessage}
+                      fallbackHref={enquiryHref}
+                      labelBn="WhatsApp-এ আগ্রহ জানান"
+                      fallbackLabelBn="আগ্রহ নিবন্ধন করুন"
+                      size="lg"
+                      fullWidth
+                    />
+                    <Link href={enquiryHref} className="ps-secondary-button w-full">
+                      <span>অনলাইন ফর্মে আগ্রহ জানান</span>
+                      <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                    </Link>
+                  </div>
                 </div>
-              </div>
+              )}
             </aside>
           </div>
         </section>

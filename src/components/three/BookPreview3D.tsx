@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { RotateCcw, RotateCw } from "lucide-react";
+import { BookOpen, RotateCcw, RotateCw } from "lucide-react";
 import type { PublicBookPreview } from "@/types/domain";
 import {
   attachContextLossRecovery,
@@ -184,11 +184,101 @@ function createBackCoverTexture(book: PublicBookPreview): THREE.CanvasTexture {
   return tex;
 }
 
+function createInsideSpreadTexture(book: PublicBookPreview): THREE.CanvasTexture {
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 720;
+  const ctx = canvas.getContext("2d");
+
+  if (ctx) {
+    ctx.fillStyle = "#F6F2E9";
+    ctx.fillRect(0, 0, 512, 720);
+
+    const paperGutter = ctx.createLinearGradient(0, 0, 48, 0);
+    paperGutter.addColorStop(0, "rgba(0,0,0,0.22)");
+    paperGutter.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = paperGutter;
+    ctx.fillRect(0, 0, 48, 720);
+
+    ctx.strokeStyle = "#C59028";
+    ctx.lineWidth = 1.8;
+    ctx.strokeRect(32, 32, 448, 656);
+
+    ctx.strokeStyle = "#D4CCE3";
+    ctx.lineWidth = 0.8;
+    ctx.strokeRect(38, 38, 436, 644);
+
+    ctx.fillStyle = "#51406F";
+    ctx.font = "700 13px Inter, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("BCP OFFICIAL REFERENCE • বিষয় সূচিপত্র", 256, 70);
+
+    ctx.fillStyle = "#C59028";
+    ctx.fillRect(150, 86, 212, 2);
+
+    ctx.fillStyle = "#081838";
+    ctx.font = "700 20px Georgia, serif";
+    wrapCanvasText(ctx, book.titleBn, 256, 112, 400, 26);
+
+    const chapters = [
+      { num: "০১", title: "আইনগত ভিত্তি ও সাধারণ নির্দেশনা", p: "১৫" },
+      { num: "০২", title: "ধাপে ধাপে কমপ্লায়েন্স ও আবেদন কার্যপ্রণালী", p: "৪৭" },
+      { num: "০৩", title: "সরকারি পোর্টাল অপারেশনস ও চালান প্রস্তুত", p: "৯২" },
+      { num: "০৪", title: "অডিট চেকলিস্ট, সতর্কতা ও আইনি সুরক্ষা", p: "১৪৮" },
+      { num: "০৫", title: "ব্যবহারিক কেস স্টাডি ও নমুনা ড্রাফটস", p: "১৯৫" },
+    ];
+
+    let currentY = 192;
+    ctx.textAlign = "left";
+    chapters.forEach((ch) => {
+      ctx.fillStyle = "#51406F";
+      ctx.font = "700 12px Inter, sans-serif";
+      ctx.fillText(`অধ্যায় ${ch.num}`, 54, currentY);
+
+      ctx.fillStyle = "#181D26";
+      ctx.font = "600 13px Inter, sans-serif";
+      ctx.fillText(ch.title, 54, currentY + 18);
+
+      ctx.fillStyle = "#C59028";
+      ctx.font = "700 12px Inter, sans-serif";
+      ctx.textAlign = "right";
+      ctx.fillText(`পৃষ্ঠা ${ch.p}`, 455, currentY + 18);
+      ctx.textAlign = "left";
+
+      ctx.strokeStyle = "#DDD6EB";
+      ctx.lineWidth = 1;
+      ctx.setLineDash([3, 4]);
+      ctx.beginPath();
+      ctx.moveTo(54, currentY + 34);
+      ctx.lineTo(455, currentY + 34);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      currentY += 56;
+    });
+
+    ctx.fillStyle = "#596775";
+    ctx.font = "500 11px Inter, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("যাচাইকৃত সংস্করণ • বিজনেস কমপ্লায়েন্স পার্টনার", 256, 626);
+    ctx.fillStyle = "#C59028";
+    ctx.font = "700 11px Inter, sans-serif";
+    ctx.fillText("OFFICIAL VERIFIED PRACTICE COMPENDIUM", 256, 646);
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 4;
+  return tex;
+}
+
 export function BookPreview3D({ book }: BookPreview3DProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const targetSideRef = useRef<"front" | "back">("front");
   const resetSignalRef = useRef(0);
   const [activeSide, setActiveSide] = useState<"front" | "back">("front");
+  const [isOpen, setIsOpen] = useState(false);
+  const isOpenRef = useRef(false);
   const [webglSupported, setWebglSupported] = useState(true);
 
   const flipToSide = (side: "front" | "back") => {
@@ -196,10 +286,24 @@ export function BookPreview3D({ book }: BookPreview3DProps) {
     setActiveSide(side);
   };
 
+  const toggleOpen = () => {
+    setIsOpen((prev) => {
+      const next = !prev;
+      isOpenRef.current = next;
+      if (next) {
+        targetSideRef.current = "front";
+        setActiveSide("front");
+      }
+      return next;
+    });
+  };
+
   const resetView = () => {
     targetSideRef.current = "front";
     resetSignalRef.current += 1;
     setActiveSide("front");
+    setIsOpen(false);
+    isOpenRef.current = false;
   };
 
   useEffect(() => {
@@ -305,12 +409,24 @@ export function BookPreview3D({ book }: BookPreview3DProps) {
       metalness: 0,
     });
 
+    const insideSpreadTex = createInsideSpreadTexture(book);
+    const insidePageMat = new THREE.MeshStandardMaterial({
+      map: insideSpreadTex,
+      roughness: 0.76,
+      metalness: 0.02,
+    });
+
+    // Hinged front cover pivot along the spine line
+    const frontCoverPivot = new THREE.Group();
+    frontCoverPivot.position.set(-bookW / 2 + 0.018, 0, bookD / 2);
+    bookGroup.add(frontCoverPivot);
+
     const frontBoard = new THREE.Mesh(
       new THREE.BoxGeometry(bookW, bookH, 0.032),
-      [spineMat, spineMat, spineMat, spineMat, frontMat, spineMat],
+      [spineMat, spineMat, spineMat, spineMat, frontMat, insidePageMat],
     );
-    frontBoard.position.z = bookD / 2 - 0.016;
-    bookGroup.add(frontBoard);
+    frontBoard.position.set(bookW / 2 - 0.018, 0, -0.016);
+    frontCoverPivot.add(frontBoard);
 
     const backBoard = new THREE.Mesh(
       new THREE.BoxGeometry(bookW, bookH, 0.032),
@@ -326,12 +442,27 @@ export function BookPreview3D({ book }: BookPreview3DProps) {
     spineWall.position.x = -bookW / 2 + 0.018;
     bookGroup.add(spineWall);
 
+    // Book block: on +Z face, display the inside spread so opening cover reveals page 1
     const pages = new THREE.Mesh(
       new THREE.BoxGeometry(bookW - 0.09, bookH - 0.09, bookD - 0.068),
-      pagesMat,
+      [pagesMat, pagesMat, pagesMat, pagesMat, insidePageMat, pagesMat],
     );
     pages.position.x = 0.018;
     bookGroup.add(pages);
+
+    // Silk bookmark ribbon draped from top
+    const ribbonMat = new THREE.MeshStandardMaterial({
+      color: 0xc59028,
+      roughness: 0.35,
+      metalness: 0.45,
+    });
+    const ribbon = new THREE.Mesh(
+      new THREE.BoxGeometry(0.06, 0.65, 0.008),
+      ribbonMat,
+    );
+    ribbon.position.set(0.12, bookH / 2 - 0.15, bookD / 2 - 0.02);
+    ribbon.rotation.z = -0.08;
+    bookGroup.add(ribbon);
 
     let cancelled = false;
     const logoImg = new window.Image();
@@ -446,6 +577,16 @@ export function BookPreview3D({ book }: BookPreview3DProps) {
       bookGroup.rotation.y = currentRotY;
       bookGroup.rotation.x = 0.06;
 
+      const targetCoverAngle = isOpenRef.current ? -Math.PI * 0.72 : 0;
+      frontCoverPivot.rotation.y = prefersReducedMotion
+        ? targetCoverAngle
+        : THREE.MathUtils.damp(frontCoverPivot.rotation.y, targetCoverAngle, 6.5, delta);
+
+      const targetBookX = isOpenRef.current ? 0.38 : 0;
+      bookGroup.position.x = prefersReducedMotion
+        ? targetBookX
+        : THREE.MathUtils.damp(bookGroup.position.x, targetBookX, 6.5, delta);
+
       renderer.render(scene, camera);
       scheduleNext();
     };
@@ -523,6 +664,19 @@ export function BookPreview3D({ book }: BookPreview3DProps) {
           ড্র্যাগ করে প্রচ্ছদ ঘোরান
         </span>
         <div className="flex flex-wrap items-center gap-1.5">
+          <button
+            type="button"
+            onClick={toggleOpen}
+            aria-pressed={isOpen}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] text-xs font-semibold border transition-colors cursor-pointer ${
+              isOpen
+                ? "bg-[#C59028] text-[#081838] border-[#C59028] font-bold shadow-xs"
+                : "bg-surface-lavender text-text-primary border-border-subtle hover:bg-surface-lavender-muted"
+            }`}
+          >
+            <BookOpen className="w-3.5 h-3.5" aria-hidden="true" />
+            <span>{isOpen ? "বই বন্ধ করুন" : "বই খুলুন"}</span>
+          </button>
           <button
             type="button"
             onClick={() => flipToSide("front")}
