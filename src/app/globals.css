@@ -1,12 +1,14 @@
 @import "tailwindcss";
 
-/* BUSINESS COMPLIANCE PARTNER | Executive Lavender V5.0 + Official Brand Tokens */
+/* BUSINESS COMPLIANCE PARTNER | V6.0 Executive Interactive Design System */
 :root {
+  /* Raw Brand & Executive Lavender Palette */
   --bcp-navy: #081838;
   --bcp-gold: #c59028;
   --bcp-gold-light: #dfb15b;
   --bcp-pearl: #f8f8f8;
   --bcp-emerald: #00865a;
+  --bcp-emerald-hover: #006d49;
   --bcp-champagne: #e9c46a;
   --bcp-ivory: #f5f1e8;
   --bcp-charcoal: #181d26;
@@ -16,19 +18,48 @@
   /* Executive Lavender System (iBOS-inspired) */
   --bcp-pearl-lavender: #f2eff8;
   --bcp-muted-lavender: #ddd6eb;
+  --bcp-muted-lavender-hover: #d5cce8;
   --bcp-dusty-purple: #a599c2;
   --bcp-deep-plum: #51406f;
   --bcp-deep-plum-hover: #3f315a;
   --bcp-lavender-border: #d4cce3;
   --bcp-lavender-tint: #ece7f5;
 
-  --color-background: var(--bcp-white);
-  --color-foreground: var(--bcp-charcoal);
-  --color-surface: var(--bcp-white);
-  --color-surface-elevated: var(--bcp-pearl-lavender);
-  --color-border: var(--bcp-lavender-border);
-  --color-muted: var(--bcp-slate);
-  --color-primary: var(--bcp-deep-plum);
+  /* Semantic Surface Tokens */
+  --surface-canvas: var(--bcp-white);
+  --surface-lavender: var(--bcp-pearl-lavender);
+  --surface-lavender-muted: var(--bcp-muted-lavender);
+  --surface-lavender-tint: var(--bcp-lavender-tint);
+  --surface-card: var(--bcp-white);
+  --surface-navy: var(--bcp-navy);
+  --surface-ivory: var(--bcp-ivory);
+
+  /* Semantic Text Tokens */
+  --text-primary: var(--bcp-navy);
+  --text-body: var(--bcp-charcoal);
+  --text-muted: var(--bcp-slate);
+  --text-accent: var(--bcp-deep-plum);
+  --text-inverse: var(--bcp-white);
+
+  /* Semantic Action Tokens */
+  --action-primary: var(--bcp-deep-plum);
+  --action-primary-hover: var(--bcp-deep-plum-hover);
+  --action-whatsapp: var(--bcp-emerald);
+  --action-whatsapp-hover: var(--bcp-emerald-hover);
+  --action-flagship: var(--bcp-muted-lavender);
+  --action-flagship-hover: var(--bcp-muted-lavender-hover);
+
+  /* Semantic Border & Status Tokens */
+  --border-subtle: var(--bcp-lavender-border);
+  --border-strong: var(--bcp-dusty-purple);
+  --border-gold: var(--bcp-gold);
+  --color-background: var(--surface-canvas);
+  --color-foreground: var(--text-body);
+  --color-surface: var(--surface-card);
+  --color-surface-elevated: var(--surface-lavender);
+  --color-border: var(--border-subtle);
+  --color-muted: var(--text-muted);
+  --color-primary: var(--action-primary);
   --color-secondary: var(--bcp-gold);
   --color-success: var(--bcp-emerald);
   --color-warning: #8a5800;
@@ -51,6 +82,24 @@
   --ps-warning: var(--color-warning);
   --ps-border: var(--bcp-lavender-border);
   --ps-muted: var(--bcp-slate);
+
+  /* Motion & Layering Tokens */
+  --motion-instant: 120ms;
+  --motion-fast: 180ms;
+  --motion-standard: 260ms;
+  --motion-reveal: 420ms;
+  --motion-ease-crisp: cubic-bezier(0.22, 1, 0.36, 1);
+  --z-sticky: 20;
+  --z-dock: 30;
+  --z-header: 40;
+  --z-dropdown: 50;
+  --z-modal: 60;
+  --z-toast: 70;
+
+  --font-noto-sans-bengali: "Noto Sans Bengali";
+  --font-noto-serif-bengali: "Noto Serif Bengali";
+  --font-inter: "Inter";
+  --font-cormorant: "Cormorant Garamond";
 
   --ps-font-bn: var(--font-noto-sans-bengali), "Noto Sans Bengali", sans-serif;
   --ps-font-en: var(--font-inter), "Inter", "Noto Sans", sans-serif;
@@ -87,6 +136,21 @@
   --color-bcp-border: var(--bcp-lavender-border);
   --color-bcp-tint: var(--bcp-lavender-tint);
 
+  --color-surface-canvas: var(--surface-canvas);
+  --color-surface-lavender: var(--surface-lavender);
+  --color-surface-lavender-muted: var(--surface-lavender-muted);
+  --color-surface-lavender-tint: var(--surface-lavender-tint);
+  --color-surface-card: var(--surface-card);
+  --color-surface-navy: var(--surface-navy);
+  --color-text-primary: var(--text-primary);
+  --color-text-body: var(--text-body);
+  --color-text-muted: var(--text-muted);
+  --color-text-accent: var(--text-accent);
+  --color-action-primary: var(--action-primary);
+  --color-action-primary-hover: var(--action-primary-hover);
+  --color-action-whatsapp: var(--action-whatsapp);
+  --color-border-subtle: var(--border-subtle);
+
   --font-bn: var(--ps-font-bn);
   --font-en: var(--ps-font-en);
   --font-editorial: var(--ps-font-editorial);
@@ -104,8 +168,8 @@ html {
 }
 
 body {
-  background-color: var(--bcp-white);
-  color: var(--bcp-charcoal);
+  background-color: var(--surface-canvas);
+  color: var(--text-body);
   font-family: var(--ps-font-bn);
   font-size: 1rem;
   line-height: 1.68;
@@ -119,13 +183,13 @@ body {
   inset-block-start: -9999px;
   inset-inline-start: 16px;
   z-index: 100;
-  background-color: var(--bcp-deep-plum);
-  color: var(--bcp-white);
+  background-color: var(--action-primary);
+  color: var(--text-inverse);
   padding: 12px 18px;
   border-radius: var(--ps-radius-button);
   font-weight: 600;
   text-decoration: none;
-  border: 2px solid var(--bcp-gold);
+  border: 2px solid var(--border-gold);
 }
 
 .skip-link:focus {
@@ -168,8 +232,8 @@ body {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background-color: var(--bcp-deep-plum);
-  color: var(--bcp-white);
+  background-color: var(--action-primary);
+  color: var(--text-inverse);
   min-height: var(--ps-button-min-h);
   padding: 12px 24px;
   border-radius: var(--ps-radius-button);
@@ -177,11 +241,11 @@ body {
   line-height: 1.3;
   cursor: pointer;
   box-shadow: 0 2px 10px rgba(81, 64, 111, 0.16);
-  transition: background-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+  transition: background-color var(--motion-fast) ease, transform var(--motion-fast) ease, box-shadow var(--motion-fast) ease;
 }
 
 .ps-primary-button:hover {
-  background-color: var(--bcp-deep-plum-hover);
+  background-color: var(--action-primary-hover);
   box-shadow: 0 6px 18px rgba(81, 64, 111, 0.22);
 }
 
@@ -190,26 +254,56 @@ body {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background-color: var(--bcp-white);
-  color: var(--bcp-deep-plum);
-  border: 1.5px solid var(--bcp-deep-plum);
+  background-color: var(--surface-card);
+  color: var(--text-accent);
+  border: 1.5px solid var(--action-primary);
   min-height: var(--ps-button-min-h);
   padding: 12px 24px;
   border-radius: var(--ps-radius-button);
   font-weight: 600;
   line-height: 1.3;
   cursor: pointer;
-  transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease;
+  transition: background-color var(--motion-fast) ease, border-color var(--motion-fast) ease, color var(--motion-fast) ease;
 }
 
 .ps-secondary-button:hover {
-  background-color: var(--bcp-pearl-lavender);
-  border-color: var(--bcp-deep-plum-hover);
-  color: var(--bcp-deep-plum-hover);
+  background-color: var(--surface-lavender);
+  border-color: var(--action-primary-hover);
+  color: var(--action-primary-hover);
+}
+
+/* Semantic Interactive Card & Flagship CTA Surfaces */
+.bcp-surface-card {
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--ps-radius-card);
+  box-shadow: 0 4px 16px rgba(81, 64, 111, 0.05);
+  transition: border-color var(--motion-fast) ease, box-shadow var(--motion-fast) ease, transform var(--motion-fast) ease;
+}
+
+.bcp-surface-card:hover {
+  border-color: rgb(81 64 111 / 42%);
+  box-shadow: 0 10px 26px rgba(81, 64, 111, 0.1);
+}
+
+.bcp-flagship-card {
+  background-color: var(--action-flagship);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--ps-radius-card);
+  box-shadow: 0 4px 16px rgba(81, 64, 111, 0.08);
+  transition: background-color var(--motion-fast) ease, border-color var(--motion-fast) ease, box-shadow var(--motion-fast) ease;
+}
+
+.bcp-flagship-card:hover {
+  background-color: var(--action-flagship-hover);
+  border-color: rgb(81 64 111 / 45%);
+  box-shadow: 0 10px 24px rgba(81, 64, 111, 0.14);
 }
 
 .ps-primary-button:focus-visible,
 .ps-secondary-button:focus-visible,
+.bcp-flagship-card:focus-visible,
 a:focus-visible,
 button:focus-visible,
 input:focus-visible,
@@ -222,7 +316,9 @@ summary:focus-visible {
 
 @media (prefers-reduced-motion: reduce) {
   .ps-primary-button,
-  .ps-secondary-button {
+  .ps-secondary-button,
+  .bcp-surface-card,
+  .bcp-flagship-card {
     transition: none;
   }
 }

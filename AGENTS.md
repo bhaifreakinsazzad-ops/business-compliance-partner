@@ -77,3 +77,33 @@ npm run build       # Next.js clean production build
 - **Production Git Remote:** `origin` points to `https://github.com/bhaifreakinsazzad-ops/business-compliance-partner.git`.
 - **Target Vercel Project:** `business-compliance-partner` (`w9h-engineering`).
 - Keep `main` and `feature/bcp-final-delivery-v3` synchronized and verified.
+
+---
+
+## 6. V7.0 Executive Signature — Living Lavender Governance
+
+1. **Executive Lavender Visual Authority:**
+   - The three flagship homepage cards (`Our Courses → Our Services → Our Books`) MUST remain in that exact DOM order and share the unified Muted Lavender (`#DDD6EB`) fill treatment (`rgb(221, 214, 235)`). Never restyle the homepage to predominantly navy-and-gold or assign unrelated colors per flagship card.
+   - Maintain crisp mobile typography and flexible header sizing (`min-w-0 flex-1 lg:flex-initial`) so `320px` and `390px` viewports never suffer horizontal overflow (`scrollWidth <= clientWidth`).
+2. **Fail-Closed Durable Private Document Storage (`src/lib/storage/private-documents.ts`):**
+   - Production requires durable object storage (`PRIVATE_STORAGE_PROVIDER=S3|SUPABASE` with complete endpoint/bucket/credentials) and fails closed (`503 STORAGE_NOT_CONFIGURED`) unless `ALLOW_EPHEMERAL_PRIVATE_STORAGE=true` is explicitly set.
+   - Enforce binary magic-byte verification, SHA-256 checksum persistence and verification on download (`422`), quarantine enforcement (`423`), traversal-safe storage key resolution, and sanitized `Content-Disposition` headers.
+   - Least-privilege RBAC (`src/lib/security/rbac.ts`): `ADMIN` holds `documents:admin`, `documents:delete`, `documents:download`, and `orders:cancel`; `LEAD_MANAGER` holds `documents:review` and `orders:manage` without unredacted customer document download or order cancellation; `EDITOR` is restricted to content management.
+3. **Exact Integer-Paisa Commerce & Idempotency (`src/lib/commerce/`):**
+   - Keep `src/lib/commerce/payments.ts` browser-safe (no `node:crypto` imports) and keep `hashIdempotencyPayload` inside server-only `src/lib/commerce/checkout-rules.ts`.
+   - Duplicate `bookId` checkout line items MUST be merged deterministically BEFORE enforcing per-book (`<= 20`) and total-order (`<= 50`) quantity caps.
+   - Reusing an idempotency key with a different canonical SHA-256 payload hash MUST fail with `409 IDEMPOTENCY_KEY_MISMATCH`.
+   - Quote acceptance and sandbox payment verification MUST execute atomic conditional `updateMany` state guards; order cancellations MUST restore book stock (`BookInventoryMovement` `ORDER_CANCELLED_RESTORE`) and void open `DUE` invoices inside a single Prisma transaction.
+   - Sandbox payments MUST remain gated on BOTH non-production environment AND `SANDBOX_PAYMENTS_ENABLED=true`.
+4. **Authoritative LMS Entitlements:**
+   - Course enrollment and lesson progress (`/api/lms/enroll`, `/api/lms/progress`, `/api/lms/certificate`) MUST enforce `Course.enrollmentModel` (`OPEN` vs `PAID` vs `RESTRICTED`) and verify active `CourseEntitlement` records.
+5. **Verified Analytics Separation:**
+   - Browser `trackEvent()` (`src/lib/analytics/events.ts`) always emits `client_observed` and strips forbidden PII keys.
+   - Authoritative conversions (`order_created`, `payment_verified`, `enrollment_completed`) are recorded exclusively server-side (`src/lib/analytics/server.ts`) as `server_verified` (`AnalyticsServerEvent`).
+6. **3D, WebGL & Motion Discipline:**
+   - Never use deprecated `THREE.Clock`; use pure monotonic delta timing (`src/lib/three/timing.ts`).
+   - Apply coalesced on-demand rendering (`requestRender()`) and software-WebGL fence synchronization (`awaitWebGLFrameFence()` via `gl.fenceSync`) without continuous unbounded 60Hz `requestAnimationFrame` spinning.
+   - Never apply `backdrop-blur-*` overlays over WebGL `<canvas>` elements, and never run CSS `transform` transitions concurrently with Motion `whileHover`/`whileTap` on the same element.
+7. **Health Endpoint Redaction (`/api/health`):**
+   - Public `/api/health` responses return minimal `{ ok, status, timestamp }` without database, environment, or storage diagnostics unless authenticated via a valid `ADMIN` session or timing-safe `HEALTHCHECK_TOKEN`.
+

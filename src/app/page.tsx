@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, ShieldCheck } from "lucide-react";
 import { getCanonicalBaseUrl, getPublicSiteConfig } from "@/lib/config/site";
-import { listBookCatalog } from "@/lib/books/catalog";
+import { loadBookCatalog } from "@/lib/books/catalog";
 import {
   listPublishedCourses,
   listPublishedFaqs,
@@ -24,6 +24,7 @@ import { CTASection } from "@/components/shared/CTASection";
 import { StatCounters } from "@/components/ui/StatCounters";
 import { LazyCompliance3D } from "@/components/ui/LazyCompliance3D";
 import { MotionReveal } from "@/components/ui/MotionReveal";
+import { StickyNarrativeSection } from "@/components/motion/StickyNarrativeSection";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { UnifiedSearchSection } from "@/components/home/UnifiedSearchSection";
 import { BusinessSolutionFinder } from "@/components/home/BusinessSolutionFinder";
@@ -59,13 +60,14 @@ const CLIENT_JOURNEY_STEPS = [
 ];
 
 export default async function HomePage() {
-  const [siteConfig, coursesData, servicesData, licensingData, faqs] =
+  const [siteConfig, coursesData, servicesData, licensingData, faqs, booksData] =
     await Promise.all([
       getPublicSiteConfig(),
       listPublishedCourses(),
       listPublishedServices(),
       listPublishedLicensing(),
       listPublishedFaqs(),
+      loadBookCatalog(),
     ]);
 
   const canonicalBaseUrl = getCanonicalBaseUrl();
@@ -75,9 +77,7 @@ export default async function HomePage() {
   const topServiceCategories = servicesData.categories.slice(0, 6);
   const featuredCourses = coursesData.items.slice(0, 6);
   const featuredServices = servicesData.items.slice(0, 6);
-  const featuredBooks = listBookCatalog()
-    .items.filter((b) => b.featured)
-    .slice(0, 6);
+  const featuredBooks = booksData.items.filter((b) => b.featured).slice(0, 6);
   const featuredLicensing = licensingData.items.slice(0, 4);
 
   return (
@@ -240,56 +240,68 @@ export default async function HomePage() {
         </section>
 
         {/* 8. Why BCP + Interactive 3D Ecosystem + Counters */}
-        <section className="bg-white border-b border-[#D4CCE3]">
-          <StatCounters />
+        <section className="bg-surface-canvas border-b border-border-subtle">
+          <StatCounters
+            documentedTotal={437}
+            categoryCount={27}
+            publishedCount={
+              coursesData.items.length +
+              servicesData.items.length +
+              licensingData.items.length
+            }
+            divisionCount={4}
+          />
 
-          <div className="bg-gradient-to-b from-[#F2EFF8]/80 to-white">
-            <div className="ps-container py-12 sm:py-14 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-              <div className="lg:col-span-6 space-y-5">
-                <p className="inline-flex items-center gap-2 text-xs font-en font-semibold uppercase tracking-[0.16em] text-[#51406F]">
-                  <ShieldCheck className="w-4 h-4 text-[#51406F]" aria-hidden="true" />
-                  <span>About Business Compliance Partner</span>
-                </p>
-                <h2 className="text-2xl sm:text-3xl font-bold leading-snug text-[#081838]">
-                  স্বচ্ছ প্রক্রিয়া, সঠিক তথ্যসূত্র ও বাস্তবভিত্তিক সহায়তা
-                </h2>
-                <p className="text-sm sm:text-base text-[#181D26]/85 leading-relaxed">
-                  Business Compliance Partner (BCP) বাংলাদেশের উদ্যোক্তা, এসএমই ও
-                  পেশাজীবীদের জন্য একটি স্বাধীন ব্যবসায়িক শিক্ষা, কমপ্লায়েন্স সেবা এবং
-                  প্রকাশনা সহায়তা প্ল্যাটফর্ম।
-                </p>
-                <ul className="space-y-2.5 text-sm text-[#181D26]/90">
-                  {[
-                    "Smart RJSC, NBR, BPPA (e-GP), DIFE LIMA ও ফায়ার সার্ভিসের সঠিক রেফারেন্স",
-                    "কাল্পনিক অফার বা অবাস্তব সরকারি অনুমোদনের নিশ্চয়তা ছাড়াই স্বচ্ছ তথ্য",
-                    "কোর্স, পেশাদার সেবা, বই, লাইসেন্সিং ও কনসালটেন্সি—সমন্বিত সমাধান কাঠামো",
-                  ].map((point, idx) => (
-                    <li key={idx} className="flex items-start gap-2.5">
-                      <CheckCircle2
-                        className="w-4 h-4 text-[#00865A] shrink-0 mt-1"
+          <div className="bg-gradient-to-b from-surface-lavender/80 to-surface-canvas">
+            <div className="ps-container py-12 sm:py-14 space-y-10">
+              <StickyNarrativeSection
+                stickyContent={
+                  <>
+                    <p className="inline-flex items-center gap-2 text-xs font-en font-semibold uppercase tracking-[0.16em] text-text-accent">
+                      <ShieldCheck
+                        className="w-4 h-4 text-text-accent"
                         aria-hidden="true"
                       />
-                      <span>{point}</span>
-                    </li>
-                  ))}
-                </ul>
-                <div className="pt-1">
-                  <Link
-                    href="/about"
-                    className="inline-flex items-center gap-2 text-sm font-semibold text-[#51406F] hover:text-[#3F315A] hover:underline underline-offset-4"
-                  >
-                    <span>আমাদের সম্পর্কে বিস্তারিত জানুন</span>
-                    <ArrowRight className="w-4 h-4" aria-hidden="true" />
-                  </Link>
-                </div>
-              </div>
-
-              <div className="lg:col-span-6">
+                      <span>About Business Compliance Partner</span>
+                    </p>
+                    <h2 className="text-2xl sm:text-3xl font-bold leading-snug text-text-primary">
+                      স্বচ্ছ প্রক্রিয়া, সঠিক তথ্যসূত্র ও বাস্তবভিত্তিক সহায়তা
+                    </h2>
+                    <p className="text-sm sm:text-base text-text-body/85 leading-relaxed">
+                      Business Compliance Partner (BCP) বাংলাদেশের উদ্যোক্তা, এসএমই ও
+                      পেশাজীবীদের জন্য একটি স্বাধীন ব্যবসায়িক শিক্ষা, কমপ্লায়েন্স সেবা এবং
+                      প্রকাশনা সহায়তা প্ল্যাটফর্ম।
+                    </p>
+                    <ul className="space-y-2.5 text-sm text-text-body/90">
+                      {[
+                        "Smart RJSC, NBR, BPPA (e-GP), DIFE LIMA ও ফায়ার সার্ভিসের সঠিক রেফারেন্স",
+                        "কাল্পনিক অফার বা অবাস্তব সরকারি অনুমোদনের নিশ্চয়তা ছাড়াই স্বচ্ছ তথ্য",
+                        "কোর্স, পেশাদার সেবা, বই, লাইসেন্সিং ও কনসালটেন্সি—সমন্বিত সমাধান কাঠামো",
+                      ].map((point, idx) => (
+                        <li key={idx} className="flex items-start gap-2.5">
+                          <CheckCircle2
+                            className="w-4 h-4 text-action-whatsapp shrink-0 mt-1"
+                            aria-hidden="true"
+                          />
+                          <span>{point}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="pt-1">
+                      <Link
+                        href="/about"
+                        className="inline-flex items-center gap-2 text-sm font-semibold text-text-accent hover:text-action-primary-hover hover:underline underline-offset-4"
+                      >
+                        <span>আমাদের সম্পর্কে বিস্তারিত জানুন</span>
+                        <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                      </Link>
+                    </div>
+                  </>
+                }
+              >
                 <LazyCompliance3D />
-              </div>
-            </div>
+              </StickyNarrativeSection>
 
-            <div className="ps-container pb-10">
               <AuthorityNote limitationsBn={siteConfig.legalDisclaimerBn} />
             </div>
           </div>

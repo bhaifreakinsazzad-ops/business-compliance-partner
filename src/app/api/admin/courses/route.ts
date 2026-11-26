@@ -115,6 +115,8 @@ export async function POST(request: NextRequest) {
           deliveryMode: emptyToNull(data.deliveryMode) ?? null,
           duration: emptyToNull(data.duration) ?? null,
           feeDisplay: emptyToNull(data.feeDisplay) ?? null,
+          enrollmentModel: data.enrollmentModel,
+          pricePaisa: data.pricePaisa ?? null,
           instructorId: emptyToNull(data.instructorId) ?? null,
           contentStatus: data.contentStatus,
           availabilityStatus: data.availabilityStatus,

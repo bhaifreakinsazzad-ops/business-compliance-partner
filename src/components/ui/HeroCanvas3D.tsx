@@ -3,10 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import {
+  attachContextLossRecovery,
   createContactShadowTexture,
+  createResizeObserver,
   createRoomEnvironmentTexture,
   detectSoftwareWebGL,
   disposeObject3D,
+  disposeRoomEnvironment,
+  type RoomEnvironmentResources,
 } from "@/components/three/threeUtils";
 
 export type EcosystemPillarId =
@@ -143,8 +147,7 @@ export function HeroCanvas3D({
     camera.position.set(0, 2.35, 6.2);
     camera.lookAt(0, 0.15, 0);
 
-    let envResources: ReturnType<typeof createRoomEnvironmentTexture> | null =
-      null;
+    let envResources: RoomEnvironmentResources | null = null;
     if (!isSoftwareGl) {
       try {
         envResources = createRoomEnvironmentTexture(renderer);
@@ -168,7 +171,6 @@ export function HeroCanvas3D({
     const mainGroup = new THREE.Group();
     scene.add(mainGroup);
 
-    // Contact shadow grounding
     const shadowTex = createContactShadowTexture();
     const shadowPlane = new THREE.Mesh(
       new THREE.PlaneGeometry(5.6, 5.6),
@@ -183,7 +185,6 @@ export function HeroCanvas3D({
     shadowPlane.position.y = -0.95;
     mainGroup.add(shadowPlane);
 
-    // Central Institutional Core (Navy + Gold + Lavender rings)
     const coreMesh = new THREE.Mesh(
       new THREE.IcosahedronGeometry(0.68, 1),
       new THREE.MeshStandardMaterial({
@@ -216,7 +217,6 @@ export function HeroCanvas3D({
     orbitRing.rotation.x = Math.PI / 2;
     mainGroup.add(orbitRing);
 
-    // 5 Interactive Pillar Nodes with proxy hit meshes & glowing rings
     const hitMeshes: THREE.Mesh[] = [];
     const nodeGroups: Array<{
       id: EcosystemPillarId;
@@ -255,7 +255,6 @@ export function HeroCanvas3D({
       halo.rotation.x = Math.PI / 2;
       group.add(halo);
 
-      // Larger invisible proxy mesh for forgiving raycasting
       const hitProxy = new THREE.Mesh(
         new THREE.SphereGeometry(0.48, 12, 12),
         new THREE.MeshBasicMaterial({ visible: false }),
@@ -264,7 +263,6 @@ export function HeroCanvas3D({
       group.add(hitProxy);
       hitMeshes.push(hitProxy);
 
-      // Connector line to center
       const lineGeo = new THREE.BufferGeometry().setFromPoints([
         new THREE.Vector3(0, 0, 0),
         new THREE.Vector3(
@@ -293,9 +291,9 @@ export function HeroCanvas3D({
       });
     });
 
-    // Throttled Raycaster interaction
     const raycaster = new THREE.Raycaster();
     const pointer = new THREE.Vector2();
+    const targetScaleVec = new THREE.Vector3(1, 1, 1);
     let hoveredPillar: EcosystemPillarId | null = null;
     let lastRaycastTime = 0;
 
@@ -306,49 +304,91 @@ export function HeroCanvas3D({
       pointer.y = -((clientY - rect.top) / rect.height) * 2 + 1;
     };
 
+    let isDragging = false;
+    let prevDragX = 0;
+    let manualOrbitOffset = 0;
+    let dragVelocity = 0;
+    let dragDist = 0;
+
+    const handlePointerDown = (e: PointerEvent) => {
+      isDragging = true;
+      prevDragX = e.clientX;
+      dragDist = 0;
+      renderer.domElement.setPointerCapture?.(e.pointerId);
+    };
+
     const handlePointerMove = (e: PointerEvent) => {
+      if (isDragging) {
+        const dx = e.clientX - prevDragX;
+        prevDragX = e.clientX;
+        dragVelocity += dx * 0.004;
+        dragDist += Math.abs(dx);
+      }
+
       const now = performance.now();
-      if (now - lastRaycastTime < 40) return;
+      if (now - lastRaycastTime < 32) return;
       lastRaycastTime = now;
       updatePointer(e.clientX, e.clientY);
       raycaster.setFromCamera(pointer, camera);
       const hits = raycaster.intersectObjects(hitMeshes, false);
-      const hitId = (hits[0]?.object.userData.pillarId as EcosystemPillarId | undefined) ?? null;
+      const hitId =
+        (hits[0]?.object.userData.pillarId as EcosystemPillarId | undefined) ??
+        null;
       hoveredPillar = hitId;
-      renderer.domElement.style.cursor = hitId ? "pointer" : "grab";
+      renderer.domElement.style.cursor = isDragging
+        ? "grabbing"
+        : hitId
+        ? "pointer"
+        : "grab";
     };
 
-    const handleClick = (e: MouseEvent) => {
-      updatePointer(e.clientX, e.clientY);
-      raycaster.setFromCamera(pointer, camera);
-      const hits = raycaster.intersectObjects(hitMeshes, false);
-      const hitId = hits[0]?.object.userData.pillarId as EcosystemPillarId | undefined;
-      if (hitId) {
-        callbackRef.current?.(hitId);
+    const handlePointerUp = (e: PointerEvent) => {
+      isDragging = false;
+      if (dragDist < 6) {
+        updatePointer(e.clientX, e.clientY);
+        raycaster.setFromCamera(pointer, camera);
+        const hits = raycaster.intersectObjects(hitMeshes, false);
+        const hitId = hits[0]?.object.userData.pillarId as
+          | EcosystemPillarId
+          | undefined;
+        if (hitId) {
+          callbackRef.current?.(hitId);
+        }
       }
     };
 
+    renderer.domElement.addEventListener("pointerdown", handlePointerDown);
     renderer.domElement.addEventListener("pointermove", handlePointerMove, {
       passive: true,
     });
-    renderer.domElement.addEventListener("click", handleClick);
+    renderer.domElement.addEventListener("pointerup", handlePointerUp);
 
-    const handleResize = () => {
-      const newW = container.clientWidth;
-      const newH = container.clientHeight;
-      if (!newW || !newH) return;
+    const stopResize = createResizeObserver(container, (newW, newH) => {
       camera.aspect = newW / newH;
       camera.updateProjectionMatrix();
       renderer.setSize(newW, newH);
       renderer.render(scene, camera);
-    };
-    window.addEventListener("resize", handleResize);
+    });
 
     let isVisible = true;
     let isTabActive = !document.hidden;
+    let contextLost = false;
     let cancelled = false;
     let rafId = 0;
     let timeoutId = 0;
+
+    const stopContextLoss = attachContextLossRecovery(
+      renderer.domElement,
+      () => {
+        contextLost = true;
+        setWebglSupported(false);
+      },
+      () => {
+        contextLost = false;
+        setWebglSupported(true);
+        renderer.render(scene, camera);
+      },
+    );
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -367,16 +407,20 @@ export function HeroCanvas3D({
 
     const renderFrame = () => {
       if (cancelled) return;
-      if (!isVisible || !isTabActive) {
+      if (contextLost || !isVisible || !isTabActive) {
         scheduleNext();
         return;
       }
 
       const elapsed = clock.getElapsedTime();
       if (!prefersReducedMotion) {
-        mainGroup.rotation.y = elapsed * 0.14;
+        dragVelocity *= 0.92;
+        manualOrbitOffset += dragVelocity;
+        mainGroup.rotation.y = manualOrbitOffset + elapsed * 0.14;
         coreMesh.rotation.y = -elapsed * 0.3;
         coreGoldRing.rotation.z = elapsed * 0.25;
+      } else {
+        mainGroup.rotation.y = manualOrbitOffset;
       }
 
       const activeId = selectedRef.current;
@@ -384,10 +428,8 @@ export function HeroCanvas3D({
         const isActive = node.id === activeId;
         const isHovered = node.id === hoveredPillar;
         const targetScale = isActive ? 1.32 : isHovered ? 1.18 : 1;
-        node.group.scale.lerp(
-          new THREE.Vector3(targetScale, targetScale, targetScale),
-          0.12,
-        );
+        targetScaleVec.set(targetScale, targetScale, targetScale);
+        node.group.scale.lerp(targetScaleVec, 0.12);
         node.group.position.y = prefersReducedMotion
           ? isActive
             ? 0.18
@@ -422,20 +464,18 @@ export function HeroCanvas3D({
       window.clearTimeout(timeoutId);
       observer.disconnect();
       document.removeEventListener("visibilitychange", handleVisibilityChange);
+      renderer.domElement.removeEventListener("pointerdown", handlePointerDown);
       renderer.domElement.removeEventListener("pointermove", handlePointerMove);
-      renderer.domElement.removeEventListener("click", handleClick);
-      window.removeEventListener("resize", handleResize);
+      renderer.domElement.removeEventListener("pointerup", handlePointerUp);
+      stopResize();
+      stopContextLoss();
 
       if (renderer.domElement.parentNode === container) {
         container.removeChild(renderer.domElement);
       }
 
       disposeObject3D(scene);
-      if (envResources) {
-        envResources.envMap.dispose();
-        envResources.envScene.dispose();
-        envResources.pmrem.dispose();
-      }
+      disposeRoomEnvironment(envResources);
       renderer.dispose();
     };
   }, []);

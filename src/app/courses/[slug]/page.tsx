@@ -4,7 +4,8 @@ import { notFound } from "next/navigation";
 import { ArrowRight, CheckCircle2, Users } from "lucide-react";
 import { getCanonicalBaseUrl, getPublicSiteConfig } from "@/lib/config/site";
 import { buildWhatsAppCourseMessage } from "@/lib/contact/whatsapp";
-import { listRelatedBooksForCourseCategory } from "@/lib/books/catalog";
+import { loadBookCatalog } from "@/lib/books/catalog";
+import { rankRelatedBooks } from "@/lib/recommendations/cross-division";
 import {
   getPublishedCourseBySlug,
   listRelatedCourses,
@@ -42,9 +43,10 @@ export default async function CourseDetailPage({
   params,
 }: CourseDetailPageProps) {
   const { slug } = await params;
-  const [siteConfig, course] = await Promise.all([
+  const [siteConfig, course, allBooksRes] = await Promise.all([
     getPublicSiteConfig(),
     getPublishedCourseBySlug(slug),
+    loadBookCatalog(),
   ]);
 
   if (!course) {
@@ -58,7 +60,20 @@ export default async function CourseDetailPage({
     course.slug,
     3,
   );
-  const relatedBooks = listRelatedBooksForCourseCategory(course.categorySlug, 2);
+  const relatedBooks = rankRelatedBooks(
+    allBooksRes.items,
+    {
+      titleBn: course.titleBn,
+      titleEn: course.titleEn,
+      categorySlug: course.categorySlug,
+      categoryNameBn: course.categoryNameBn,
+      summaryBn: course.summaryBn,
+      topics: course.outcomes,
+      relatedCourseCategorySlug: course.categorySlug,
+    },
+    undefined,
+    2,
+  );
   const enquiryHref = `/consultancy?pillar=COURSES&slug=${encodeURIComponent(
     course.slug,
   )}&topic=${encodeURIComponent(course.titleBn)}`;

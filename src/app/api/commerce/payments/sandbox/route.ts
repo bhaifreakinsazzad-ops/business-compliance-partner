@@ -1,52 +1,252 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { recordServerVerifiedEvent } from "@/lib/analytics/server";
+import { isSandboxGatewayEnabled } from "@/lib/commerce/checkout-rules";
+import {
+  fromPaisa,
+  toPaisa,
+  verifySandboxPayment,
+} from "@/lib/commerce/payments";
 import { getCurrentCustomer } from "@/lib/customer/auth";
 import { isDatabaseConfigured, prisma } from "@/lib/db/prisma";
-import { verifySandboxPayment } from "@/lib/commerce/payments";
+import { isCoreCommerceSchemaReady } from "@/lib/db/schema-ready";
+
+const sandboxPaymentSchema = z.object({
+  orderId: z.string().trim().min(1, "অর্ডার আইডি প্রয়োজন।"),
+  amountBdt: z.number().positive().optional(),
+  transactionReference: z.string().trim().min(4).max(120).optional(),
+});
 
 export async function POST(req: NextRequest) {
+  if (!isSandboxGatewayEnabled()) {
+    return NextResponse.json(
+      {
+        error:
+          "এই পরিবেশে স্যান্ডবক্স পেমেন্ট নিষ্ক্রিয়। অনুগ্রহ করে অনুমোদিত পেমেন্ট গেটওয়ে ব্যবহার করুন।",
+        code: "SANDBOX_DISABLED",
+      },
+      { status: 403 },
+    );
+  }
+
   const customer = await getCurrentCustomer();
   if (!customer) {
     return NextResponse.json({ error: "অননুমোদিত অনুরোধ।" }, { status: 401 });
   }
 
+  if (!isDatabaseConfigured() || !(await isCoreCommerceSchemaReady())) {
+    return NextResponse.json(
+      {
+        error: "পেমেন্ট সেবা সাময়িকভাবে অনুপলভ্য।",
+        code: "SERVICE_UNAVAILABLE",
+      },
+      { status: 503 },
+    );
+  }
+
+  let parsedBody: z.infer<typeof sandboxPaymentSchema>;
   try {
-    const { orderId, amountBdt, transactionReference } = await req.json();
-    if (!orderId || !amountBdt) {
+    const raw = await req.json();
+    const parsed = sandboxPaymentSchema.safeParse(raw);
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: "অর্ডার আইডি ও টাকার পরিমাণ প্রয়োজন।" },
-        { status: 400 }
+        { error: parsed.error.errors[0]?.message || "সঠিক পেমেন্ট তথ্য দিন।" },
+        { status: 400 },
       );
     }
+    parsedBody = parsed.data;
+  } catch {
+    return NextResponse.json({ error: "অবৈধ JSON রিকোয়েস্ট।" }, { status: 400 });
+  }
 
-    const txnRef = transactionReference || `TXN-SBX-${Date.now()}`;
-    const verification = verifySandboxPayment(txnRef, orderId, amountBdt);
+  const txnRef =
+    parsedBody.transactionReference || `TXN-SBX-${Date.now()}`;
 
-    if (isDatabaseConfigured()) {
-      await prisma.order.update({
-        where: { id: orderId },
-        data: {
-          paymentStatus: "PAID",
-          status: "IN_FULFILLMENT",
-          payments: {
-            create: {
-              transactionReference: txnRef,
-              method: "SANDBOX",
-              amountBdt,
-              status: "SUCCESSFUL",
+  try {
+    const outcome = await prisma.$transaction(async (tx) => {
+      const order = await tx.order.findFirst({
+        where: {
+          id: parsedBody.orderId,
+          customerId: customer.id,
+        },
+        include: {
+          quote: {
+            include: {
+              request: true,
             },
           },
         },
       });
 
-      // Update associated invoice if found
-      await prisma.invoice.updateMany({
-        where: { orderId },
+      if (!order) {
+        return { kind: "NOT_FOUND" as const };
+      }
+
+      const existingPayment = await tx.paymentRecord.findUnique({
+        where: { transactionReference: txnRef },
+      });
+      if (existingPayment) {
+        if (existingPayment.orderId !== order.id) {
+          return { kind: "TXN_CONFLICT" as const };
+        }
+        return {
+          kind: "IDEMPOTENT" as const,
+          amountBdt: existingPayment.amountBdt,
+          order,
+        };
+      }
+
+      if (order.status === "CANCELLED" || order.status === "REFUNDED") {
+        return { kind: "CANCELLED_ORDER" as const };
+      }
+
+      if (order.paymentStatus === "PAID") {
+        return { kind: "ALREADY_PAID" as const };
+      }
+
+      const serverPaisa = order.totalPaisa ?? toPaisa(order.totalBdt);
+      if (
+        parsedBody.amountBdt !== undefined &&
+        toPaisa(parsedBody.amountBdt) !== serverPaisa
+      ) {
+        return {
+          kind: "AMOUNT_MISMATCH" as const,
+          expectedBdt: fromPaisa(serverPaisa),
+        };
+      }
+
+      const authoritativeAmountBdt = fromPaisa(serverPaisa);
+
+      const atomicUpdate = await tx.order.updateMany({
+        where: {
+          id: order.id,
+          customerId: customer.id,
+          paymentStatus: "UNPAID",
+          status: { notIn: ["CANCELLED", "REFUNDED"] },
+        },
+        data: {
+          paymentStatus: "PAID",
+          status: "IN_FULFILLMENT",
+        },
+      });
+
+      if (atomicUpdate.count === 0) {
+        return { kind: "ALREADY_PAID" as const };
+      }
+
+      await tx.paymentRecord.create({
+        data: {
+          transactionReference: txnRef,
+          orderId: order.id,
+          method: "SANDBOX",
+          currency: "BDT",
+          amountPaisa: serverPaisa,
+          amountBdt: authoritativeAmountBdt,
+          status: "SUCCESSFUL",
+        },
+      });
+
+      await tx.invoice.updateMany({
+        where: { orderId: order.id, customerId: customer.id },
         data: { status: "PAID", paidAt: new Date() },
+      });
+
+      // If this paid quote/order references a published paid course, grant CourseEntitlement atomically
+      const linkedCourseSlug = order.quote?.request?.serviceSlug;
+      if (linkedCourseSlug) {
+        const course = await tx.course.findFirst({
+          where: { slug: linkedCourseSlug, contentStatus: "PUBLISHED" },
+          select: { id: true },
+        });
+        if (course) {
+          await tx.courseEntitlement.upsert({
+            where: {
+              customerId_courseId: {
+                customerId: customer.id,
+                courseId: course.id,
+              },
+            },
+            create: {
+              customerId: customer.id,
+              courseId: course.id,
+              sourceType: "ORDER",
+              orderId: order.id,
+              status: "ACTIVE",
+            },
+            update: {
+              sourceType: "ORDER",
+              orderId: order.id,
+              status: "ACTIVE",
+            },
+          });
+        }
+      }
+
+      const refreshedOrder = await tx.order.findUnique({
+        where: { id: order.id },
+      });
+
+      return {
+        kind: "PAID" as const,
+        amountBdt: authoritativeAmountBdt,
+        order: refreshedOrder ?? order,
+      };
+    });
+
+    if (outcome.kind === "NOT_FOUND") {
+      return NextResponse.json(
+        { error: "অর্ডারটি খুঁজে পাওয়া যায়নি।" },
+        { status: 404 },
+      );
+    }
+
+    if (outcome.kind === "CANCELLED_ORDER") {
+      return NextResponse.json(
+        { error: "বাতিলকৃত অর্ডারের বিপরীতে পেমেন্ট গ্রহণ করা যাবে না।" },
+        { status: 409 },
+      );
+    }
+
+    if (outcome.kind === "TXN_CONFLICT") {
+      return NextResponse.json(
+        { error: "এই ট্রানজেকশন রেফারেন্সটি ইতিমধ্যে অন্য অর্ডারে ব্যবহৃত হয়েছে।" },
+        { status: 409 },
+      );
+    }
+
+    if (outcome.kind === "ALREADY_PAID") {
+      return NextResponse.json(
+        { error: "এই অর্ডারের পেমেন্ট ইতোমধ্যেই সম্পন্ন হয়েছে।" },
+        { status: 409 },
+      );
+    }
+
+    if (outcome.kind === "AMOUNT_MISMATCH") {
+      return NextResponse.json(
+        { error: "পেমেন্টের পরিমাণ অর্ডারের মোট মূল্যের সাথে সামঞ্জস্যপূর্ণ নয়।" },
+        { status: 400 },
+      );
+    }
+
+    if (outcome.kind === "PAID") {
+      await recordServerVerifiedEvent({
+        eventName: "payment_verified",
+        customerId: customer.id,
+        entityType: "Order",
+        entityId: outcome.order.id,
+        payload: { orderKind: outcome.order.orderKind },
       });
     }
 
+    const verification = verifySandboxPayment(
+      txnRef,
+      outcome.order.id,
+      outcome.amountBdt,
+    );
+
     return NextResponse.json({
       success: true,
+      idempotent: outcome.kind === "IDEMPOTENT",
       verification,
       message: "স্যান্ডবক্স পেমেন্ট সফলভাবে প্রক্রিয়া করা হয়েছে।",
     });
@@ -54,7 +254,7 @@ export async function POST(req: NextRequest) {
     console.error("[payments/sandbox] Error:", err);
     return NextResponse.json(
       { error: "পেমেন্ট সম্পন্ন করতে সমস্যা হয়েছে।" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

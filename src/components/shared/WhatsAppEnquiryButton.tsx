@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ArrowRight, MessageCircle } from "lucide-react";
+import { trackEvent } from "@/lib/analytics/events";
 import {
   buildWhatsAppServiceMessage,
   buildWhatsAppUrl,
@@ -82,6 +83,16 @@ export function WhatsAppEnquiryButton({
         rel="noopener noreferrer"
         data-whatsapp-cta="true"
         onClick={() => {
+          const eventName = servicePath?.startsWith("/books")
+            ? "click_book_whatsapp"
+            : servicePath?.startsWith("/services")
+              ? "click_service_whatsapp"
+              : "contact_click_whatsapp";
+          const slug = servicePath?.split("/").filter(Boolean).pop();
+          trackEvent(eventName, {
+            slug: slug ?? undefined,
+            sourcePage: servicePath ?? "/",
+          });
           if (typeof window !== "undefined") {
             window.dispatchEvent(
               new CustomEvent("bcp:whatsapp_click", {

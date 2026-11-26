@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
   ArrowRight,
@@ -21,6 +23,7 @@ import {
   Users,
   type LucideIcon,
 } from "lucide-react";
+import { trackEvent } from "@/lib/analytics/events";
 import type { PublicCategoryDTO } from "@/types/domain";
 import { cn } from "@/lib/utils";
 
@@ -83,6 +86,22 @@ export function CategoryGrid({
     return qs ? `${basePath}?${qs}` : basePath;
   };
 
+  const trackCategoryClick = (categorySlug: string) => {
+    const eventName =
+      basePath === "/courses"
+        ? "select_course_category"
+        : basePath === "/services"
+          ? "select_service_category"
+          : basePath === "/books"
+            ? "select_book_category"
+            : null;
+    if (!eventName) return;
+    trackEvent(eventName, {
+      category: categorySlug,
+      sourcePage: basePath,
+    });
+  };
+
   const isFiveTileShowcase =
     luminousPriority && !showAllCard && categories.length === 5;
 
@@ -116,8 +135,8 @@ export function CategoryGrid({
           className={cn(
             "group rounded-[16px] border p-5 flex flex-col justify-between gap-3 transition-[transform,box-shadow,border-color,background-color] duration-200 min-h-[132px] focus-visible:outline-3 focus-visible:outline-[#C59028] focus-visible:outline-offset-2",
             !activeSlug
-              ? "bg-[#51406F] text-white border-[#51406F] shadow-sm"
-              : "bg-white text-[#081838] border-[#D4CCE3] hover:border-[#51406F]/55 hover:-translate-y-0.5 hover:shadow-md",
+              ? "bg-action-primary text-white border-action-primary shadow-sm"
+              : "bg-surface-card text-text-primary border-border-subtle hover:border-action-primary/55 hover:-translate-y-0.5 hover:shadow-md",
           )}
         >
           <div className="flex items-start justify-between gap-3">
@@ -126,7 +145,7 @@ export function CategoryGrid({
                 "inline-flex items-center justify-center w-11 h-11 rounded-[12px] shrink-0",
                 !activeSlug
                   ? "bg-white/15 text-white"
-                  : "bg-[#F2EFF8] text-[#51406F] border border-[#D4CCE3]",
+                  : "bg-surface-lavender text-text-accent border border-border-subtle",
               )}
             >
               <Layers className="w-5 h-5" aria-hidden="true" />
@@ -134,7 +153,7 @@ export function CategoryGrid({
             <ArrowRight
               className={cn(
                 "w-4 h-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1",
-                !activeSlug ? "text-white" : "text-[#596775]",
+                !activeSlug ? "text-white" : "text-text-muted",
               )}
               aria-hidden="true"
             />
@@ -146,7 +165,7 @@ export function CategoryGrid({
             <p
               className={cn(
                 "text-xs",
-                !activeSlug ? "text-white/85" : "text-[#596775]",
+                !activeSlug ? "text-white/85" : "text-text-muted",
               )}
             >
               সকল প্রকাশিত আইটেম দেখুন
@@ -176,6 +195,7 @@ export function CategoryGrid({
             data-category-card={cat.slug}
             data-priority-tile={isFeaturedShowcase ? "true" : undefined}
             aria-current={isActive ? "page" : undefined}
+            onClick={() => trackCategoryClick(cat.slug)}
             className={cn(
               "group relative overflow-hidden rounded-[16px] border flex flex-col justify-between gap-4 transition-[transform,box-shadow,border-color,background-color] duration-200 focus-visible:outline-3 focus-visible:outline-[#C59028] focus-visible:outline-offset-2",
               showcaseSpanClass,
@@ -183,12 +203,12 @@ export function CategoryGrid({
                 ? "p-5 sm:p-6 min-h-[154px]"
                 : "p-5 min-h-[132px]",
               isActive
-                ? "bg-[#51406F] text-white border-[#51406F] shadow-md"
+                ? "bg-action-primary text-white border-action-primary shadow-md"
                 : isFeaturedShowcase
-                  ? "bg-gradient-to-br from-white via-[#F9F7FC] to-[#F2EFF8] text-[#081838] border-[#D4CCE3] hover:border-[#51406F]/55 hover:-translate-y-0.5 hover:shadow-md"
+                  ? "bg-gradient-to-br from-white via-[#F9F7FC] to-surface-lavender text-text-primary border-border-subtle hover:border-action-primary/55 hover:-translate-y-0.5 hover:shadow-md"
                   : isPriority
-                    ? "bg-[#F2EFF8]/65 text-[#081838] border-[#D4CCE3] hover:border-[#51406F]/50 hover:-translate-y-0.5 hover:shadow-sm"
-                    : "bg-white text-[#081838] border-[#D4CCE3] hover:border-[#51406F]/50 hover:-translate-y-0.5 hover:shadow-sm",
+                    ? "bg-surface-lavender/70 text-text-primary border-border-subtle hover:border-action-primary/50 hover:-translate-y-0.5 hover:shadow-sm"
+                    : "bg-surface-card text-text-primary border-border-subtle hover:border-action-primary/50 hover:-translate-y-0.5 hover:shadow-sm",
             )}
           >
             <div className="relative flex items-start justify-between gap-3">

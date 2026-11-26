@@ -80,6 +80,7 @@ describe("SEO structured data and PWA safety", () => {
     const source = readFileSync(resolve("public/sw.js"), "utf8");
     expect(source).toContain('"/admin"');
     expect(source).toContain('"/api"');
+    expect(source).toContain('"/portal"');
     expect(source).toContain('"/documents"');
     expect(source).not.toMatch(/cache\.put\s*\(/);
     expect(source).not.toMatch(/caches\.open\([^)]*\)[\s\S]*fetch\(request\)[\s\S]*cache/i);

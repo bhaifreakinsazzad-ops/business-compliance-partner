@@ -3,7 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { getCanonicalBaseUrl, getPublicSiteConfig } from "@/lib/config/site";
-import { listRelatedBooksForServiceCategory } from "@/lib/books/catalog";
+import { loadBookCatalog } from "@/lib/books/catalog";
+import { rankRelatedBooks } from "@/lib/recommendations/cross-division";
 import {
   getPublishedServiceBySlug,
   listRelatedServices,
@@ -43,9 +44,10 @@ export default async function ServiceDetailPage({
   params,
 }: ServiceDetailPageProps) {
   const { slug } = await params;
-  const [siteConfig, service] = await Promise.all([
+  const [siteConfig, service, allBooksRes] = await Promise.all([
     getPublicSiteConfig(),
     getPublishedServiceBySlug(slug),
+    loadBookCatalog({ limit: 12 }),
   ]);
 
   if (!service) {
@@ -58,7 +60,20 @@ export default async function ServiceDetailPage({
     service.slug,
     3,
   );
-  const relatedBooks = listRelatedBooksForServiceCategory(service.categorySlug, 2);
+  const relatedBooks = rankRelatedBooks(
+    allBooksRes.items,
+    {
+      titleBn: service.titleBn,
+      titleEn: service.titleEn,
+      categorySlug: service.categorySlug,
+      categoryNameBn: service.categoryNameBn,
+      summaryBn: service.summaryBn,
+      topics: service.processSteps.map((s) => s.titleBn),
+      relatedServiceCategorySlug: service.categorySlug,
+    },
+    undefined,
+    2,
+  );
   const enquiryHref = `/consultancy?pillar=SERVICES&slug=${encodeURIComponent(
     service.slug,
   )}&topic=${encodeURIComponent(service.titleBn)}`;

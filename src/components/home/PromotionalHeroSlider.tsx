@@ -151,12 +151,15 @@ export function PromotionalHeroSlider({
     if (!hasInteractedRef.current || prefersReducedMotion) return;
     const panel = textPanelRef.current;
     if (!panel) return;
-    animate(panel, {
+    const anim = animate(panel, {
       opacity: [0.65, 1],
       translateY: [8, 0],
       duration: MOTION_DURATIONS.standard,
       ease: MOTION_EASES.crisp,
     });
+    return () => {
+      anim.cancel();
+    };
   }, [activeIndex, prefersReducedMotion]);
 
   const handleKeyDown = (e: KeyboardEvent<HTMLElement>) => {
@@ -203,7 +206,7 @@ export function PromotionalHeroSlider({
       onKeyDown={handleKeyDown}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
-      className="relative bg-gradient-to-br from-[#F2EFF8] via-[#ECE7F5] to-[#E2D9F0] text-[#181D26] border-b border-[#D4CCE3] overflow-hidden"
+      className="relative bg-gradient-to-br from-surface-lavender via-surface-lavender-tint to-[#E2D9F0] text-text-body border-b border-border-subtle overflow-hidden"
     >
       {/* Subtle Executive Lavender radial glow & decorative gold curve edge */}
       <div

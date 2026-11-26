@@ -28,7 +28,7 @@ export function Footer({ siteConfig }: FooterProps) {
 
   return (
     <>
-      <footer className="bg-[#081838] text-white/85 border-t border-[#A599C2]/30 pt-14 pb-20 sm:pb-12 text-sm">
+      <footer className="bg-surface-navy text-white/85 border-t border-bcp-dusty/30 pt-14 pb-24 sm:pb-12 text-sm">
         <div className="ps-container space-y-10">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10">
             {/* Column 1: Brand Identity */}
@@ -77,7 +77,7 @@ export function Footer({ siteConfig }: FooterProps) {
                 <li>
                   <Link
                     href="/courses"
-                    className="hover:text-[#DDD6EB] hover:underline underline-offset-4"
+                    className="hover:text-surface-lavender-muted hover:underline underline-offset-4"
                   >
                     আমাদের সকল কোর্সসমূহ
                   </Link>
@@ -85,7 +85,7 @@ export function Footer({ siteConfig }: FooterProps) {
                 <li>
                   <Link
                     href="/services"
-                    className="hover:text-[#DDD6EB] hover:underline underline-offset-4"
+                    className="hover:text-surface-lavender-muted hover:underline underline-offset-4"
                   >
                     আমাদের সকল সেবাসমূহ
                   </Link>
@@ -93,7 +93,7 @@ export function Footer({ siteConfig }: FooterProps) {
                 <li>
                   <Link
                     href="/books"
-                    className="hover:text-[#DDD6EB] hover:underline underline-offset-4"
+                    className="hover:text-surface-lavender-muted hover:underline underline-offset-4"
                   >
                     আমাদের সকল বইসমূহ
                   </Link>
@@ -101,7 +101,7 @@ export function Footer({ siteConfig }: FooterProps) {
                 <li>
                   <Link
                     href="/licensing"
-                    className="hover:text-[#DDD6EB] hover:underline underline-offset-4"
+                    className="hover:text-surface-lavender-muted hover:underline underline-offset-4"
                   >
                     লাইসেন্সিং ও নিবন্ধন
                   </Link>
@@ -109,7 +109,7 @@ export function Footer({ siteConfig }: FooterProps) {
                 <li>
                   <Link
                     href="/tools"
-                    className="hover:text-[#DDD6EB] hover:underline underline-offset-4"
+                    className="hover:text-surface-lavender-muted hover:underline underline-offset-4"
                   >
                     প্রস্তুতি ও রোডম্যাপ টুলস
                   </Link>
@@ -117,7 +117,7 @@ export function Footer({ siteConfig }: FooterProps) {
                 <li>
                   <Link
                     href="/consultancy"
-                    className="hover:text-[#DDD6EB] hover:underline underline-offset-4"
+                    className="hover:text-surface-lavender-muted hover:underline underline-offset-4"
                   >
                     কনসালটেন্সি ও পরামর্শ
                   </Link>

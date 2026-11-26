@@ -4,6 +4,9 @@ const OFFLINE_URL = "/offline";
 const PRIVATE_PREFIXES = [
   "/admin",
   "/api",
+  "/portal",
+  "/login",
+  "/register",
   "/account",
   "/dashboard",
   "/documents",

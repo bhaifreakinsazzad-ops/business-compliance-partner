@@ -63,7 +63,17 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (err) {
-    console.error("[customer/login] Error:", err);
+    const code =
+      err && typeof err === "object" && "code" in err
+        ? String((err as { code?: unknown }).code)
+        : "";
+    if (code === "P2021" || code === "P2022" || code === "P1001" || code === "P1002") {
+      return NextResponse.json(
+        { error: "গ্রাহক ডাটাবেজ সেবা সাময়িকভাবে অনুপলভ্য। অনুগ্রহ করে পরে চেষ্টা করুন।" },
+        { status: 503 }
+      );
+    }
+    console.error("[customer/login] Unexpected error");
     return NextResponse.json(
       { error: "লগইন প্রক্রিয়ায় ত্রুটি ঘটেছে।" },
       { status: 500 }

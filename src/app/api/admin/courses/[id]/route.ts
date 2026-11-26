@@ -120,6 +120,12 @@ export async function PATCH(
     if (data.feeDisplay !== undefined) {
       updateData.feeDisplay = emptyToNull(data.feeDisplay);
     }
+    if (data.enrollmentModel !== undefined) {
+      updateData.enrollmentModel = data.enrollmentModel;
+    }
+    if (data.pricePaisa !== undefined) {
+      updateData.pricePaisa = data.pricePaisa;
+    }
     if (data.instructorId !== undefined) {
       updateData.instructorId = emptyToNull(data.instructorId);
     }
