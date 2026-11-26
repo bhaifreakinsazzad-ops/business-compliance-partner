@@ -364,7 +364,7 @@ describe("V6 Security & Commerce Integrity Remediations (V6-001 to V6-004)", () 
     );
     expect(uploadBlockedRes.status).toBe(403);
 
-    // Valid upload by Customer A saves file & DB row, then Customer B gets 403 on download, Customer A gets 200 bytes
+    // Valid upload persists the file in quarantine; ownership and clearance are checked independently
     mockPrisma.complianceCase.findFirst.mockResolvedValueOnce({ id: "case-owned" });
     mockTx.document.create.mockImplementationOnce(async ({ data }) => data);
 
@@ -383,7 +383,7 @@ describe("V6 Security & Commerce Integrity Remediations (V6-001 to V6-004)", () 
     );
     expect(uploadOk.status).toBe(201);
     const { document } = (await uploadOk.json()) as {
-      document: { publicReference: string; fileKey: string; mimeType: string };
+      document: { publicReference: string; fileKey: string; mimeType: string; quarantineStatus: string };
     };
 
     // Customer B tries to download -> 403
@@ -398,11 +398,24 @@ describe("V6 Security & Commerce Integrity Remediations (V6-001 to V6-004)", () 
     );
     expect(forbiddenDownload.status).toBe(403);
 
-    // Customer A downloads -> 200 with private cache headers & exact PDF bytes
+    // The owner cannot download an unreviewed upload.
+    expect(document.quarantineStatus).toBe("QUARANTINED");
     state.customer = CUSTOMER_A;
     mockPrisma.document.findUnique.mockResolvedValueOnce({
       ...document,
       customerId: CUSTOMER_A.id,
+    });
+    const quarantinedDownload = await getDocumentByRef(
+      new NextRequest(`http://localhost/api/documents/${document.publicReference}`),
+      { params: Promise.resolve({ ref: document.publicReference }) },
+    );
+    expect(quarantinedDownload.status).toBe(423);
+
+    // Simulate a persisted authorized clearance; verify exact bytes and private headers.
+    mockPrisma.document.findUnique.mockResolvedValueOnce({
+      ...document,
+      customerId: CUSTOMER_A.id,
+      quarantineStatus: "CLEAR",
     });
     const allowedDownload = await getDocumentByRef(
       new NextRequest(`http://localhost/api/documents/${document.publicReference}`),
