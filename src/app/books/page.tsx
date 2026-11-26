@@ -14,7 +14,7 @@ import { SearchBox } from "@/components/shared/SearchBox";
 import { CTASection } from "@/components/shared/CTASection";
 
 export const metadata: Metadata = {
-  title: "আমাদের সকল বইসমূহ | প্রকাশনা প্রিভিউ",
+  title: "আমাদের সকল বইসমূহ | পেশাদার প্রকাশনা",
   description:
     "বাংলাদেশে আয়কর, ভ্যাট ও মূসক, e-GP, Smart RJSC, অ্যাকাউন্টিং, ই-কমার্স, কাস্টমস ও শ্রম আইন বিষয়ক আসন্ন কমপ্লায়েন্স বইয়ের প্রিভিউ ও আগ্রহ নিবন্ধন।",
   alternates: { canonical: "/books" },
@@ -35,6 +35,7 @@ export default async function BooksPage({ searchParams }: BooksPageProps) {
   });
 
   const activeCategory = categories.find((c) => c.slug === category);
+  const hasUpcomingBooks = items.some((book) => book.availabilityState === "UPCOMING_PREVIEW");
 
   const categoryCards: PublicCategoryDTO[] = categories.map((cat) => ({
     id: cat.slug,
@@ -69,7 +70,7 @@ export default async function BooksPage({ searchParams }: BooksPageProps) {
                 <span>03 · Books · Practical Knowledge & Publications</span>
               </p>
               <h1 className="text-3xl sm:text-4xl font-extrabold leading-snug text-[#081838]">
-                আমাদের সকল বইসমূহ ও প্রকাশনা প্রিভিউ
+                আমাদের সকল বইসমূহ ও প্রকাশনা
               </h1>
               <p className="text-sm sm:text-base text-[#181D26]/85 leading-relaxed">
                 আমাদের কোর্স ও কমপ্লায়েন্স সেবাসমূহের সাথে সামঞ্জস্যপূর্ণ প্র্যাকটিক্যাল
@@ -81,7 +82,7 @@ export default async function BooksPage({ searchParams }: BooksPageProps) {
             {/* Honest Pre-Launch Notice */}
             <div className="rounded-[12px] border border-[#D4CCE3] bg-white/85 px-4 py-3 flex items-start gap-2.5 text-xs sm:text-sm text-[#181D26] max-w-3xl">
               <Info className="w-4 h-4 text-[#51406F] shrink-0 mt-0.5" aria-hidden="true" />
-              <span>{BOOK_PRICING_NOTICE_BN}</span>
+              <span>{hasUpcomingBooks ? BOOK_PRICING_NOTICE_BN : "প্রকাশিত বইয়ের মূল্য ও প্রাপ্যতা সংশ্লিষ্ট বইয়ের বিস্তারিত পাতায় দেখুন।"}</span>
             </div>
           </div>
         </section>
@@ -101,7 +102,7 @@ export default async function BooksPage({ searchParams }: BooksPageProps) {
               {category || q ? (
                 <div className="flex flex-wrap items-center justify-between gap-3 pt-1 text-xs sm:text-sm">
                   <p className="text-[#181D26]/85">
-                    মোট <strong>{items.length}</strong>টি প্রস্তাবিত বই পাওয়া গেছে
+                    মোট <strong>{items.length}</strong>টি বই পাওয়া গেছে
                     {activeCategory ? (
                       <>
                         {" "}
@@ -126,7 +127,7 @@ export default async function BooksPage({ searchParams }: BooksPageProps) {
                   বইয়ের বিভাগ নির্বাচন করুন
                 </h2>
                 <p className="text-xs sm:text-sm text-[#596775]">
-                  আয়কর, ভ্যাট, ই-জিপি, কোম্পানি আইন, অ্যাকাউন্টিং, ই-কমার্স, কাস্টমস ও শ্রম আইন ভিত্তিক ৯টি প্রকাশনা বিভাগ।
+                  বিষয়ভিত্তিক {categories.length}টি প্রকাশনা বিভাগ থেকে আপনার প্রয়োজনীয় বই খুঁজুন।
                 </p>
               </div>
 
@@ -148,11 +149,11 @@ export default async function BooksPage({ searchParams }: BooksPageProps) {
                 <div className="flex items-center justify-between gap-3 border-b border-[#D4CCE3] pb-3">
                   <h2 className="text-lg sm:text-xl font-bold text-[#081838]">
                     {activeCategory
-                      ? `${activeCategory.nameBn} — আসন্ন প্রকাশনা প্রিভিউ`
-                      : "সকল প্রস্তাবিত বই ও হ্যান্ডবুক"}
+                      ? `${activeCategory.nameBn} — বই ও প্রকাশনা`
+                      : "সকল বই ও হ্যান্ডবুক"}
                   </h2>
                   <span className="text-xs sm:text-sm font-medium text-[#596775] tabular-nums">
-                    মোট {items.length}টি বই প্রিভিউ
+                    মোট {items.length}টি বই
                   </span>
                 </div>
 

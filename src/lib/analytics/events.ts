@@ -25,6 +25,7 @@ export const ANALYTICS_EVENTS = [
   "checkout_start",
   "order_created",
   "payment_verified",
+  "enrollment_created",
   "enrollment_completed",
 ] as const;
 
@@ -118,6 +119,9 @@ export function trackEvent(
   const lastFired = recentEventCache.get(dedupeKey);
   if (lastFired && now - lastFired < DEDUPE_WINDOW_MS) {
     return;
+  }
+  for (const [key, timestamp] of recentEventCache) {
+    if (now - timestamp >= DEDUPE_WINDOW_MS) recentEventCache.delete(key);
   }
   recentEventCache.set(dedupeKey, now);
 

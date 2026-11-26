@@ -120,7 +120,9 @@ export function assertDurablePrivateStorageConfigured(): {
     process.env.NEXT_PUBLIC_APP_ENV?.toLowerCase() === "production";
 
   if (provider === "LOCAL") {
-    if (isProdRuntime && !isEphemeralStorageExplicitlyAllowed()) {
+    if (process.env.VERCEL_ENV === "production" ||
+        process.env.NEXT_PUBLIC_APP_ENV?.toLowerCase() === "production" ||
+        (isProdRuntime && !isEphemeralStorageExplicitlyAllowed())) {
       throw new StorageConfigurationError(
         "নথি সংরক্ষণের জন্য প্রোডাকশন পরিবেশে স্থায়ী প্রাইভেট অবজেক্ট স্টোরেজ (S3/Supabase) কনফিগার করা বাধ্যতামূলক।",
       );

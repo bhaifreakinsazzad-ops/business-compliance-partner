@@ -141,7 +141,7 @@ export async function POST(req: NextRequest) {
           sha256: persisted.sha256,
           storageProvider: persisted.storageProvider,
           storageBucket: persisted.storageBucket,
-          quarantineStatus: "CLEAR",
+          quarantineStatus: "QUARANTINED",
           status: "PENDING_REVIEW",
         },
       });

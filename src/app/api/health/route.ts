@@ -2,6 +2,7 @@ import { timingSafeEqual } from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
 import { isStagingEnvironment } from "@/lib/config/site";
 import { checkDatabaseHealth } from "@/lib/db/prisma";
+import { isPublicSchemaReady, isCoreCommerceSchemaReady, isBooksSchemaReady } from "@/lib/db/schema-ready";
 import { getCurrentAdminSession } from "@/lib/security/session";
 import { assertDurablePrivateStorageConfigured } from "@/lib/storage/private-documents";
 
@@ -27,7 +28,10 @@ function hasValidHealthToken(request: NextRequest): boolean {
 
 export async function GET(request: NextRequest) {
   const dbHealth = await checkDatabaseHealth();
-  const isHealthy = dbHealth.status === "connected";
+  const [publicSchema, commerceSchema, booksSchema] = dbHealth.status === "connected"
+    ? await Promise.all([isPublicSchemaReady(), isCoreCommerceSchemaReady(), isBooksSchemaReady()])
+    : [false, false, false];
+  const isHealthy = dbHealth.status === "connected" && publicSchema && commerceSchema && booksSchema;
   const statusCode = isHealthy ? 200 : 503;
 
   const [admin, tokenAuthorized] = await Promise.all([
@@ -35,7 +39,7 @@ export async function GET(request: NextRequest) {
     Promise.resolve(hasValidHealthToken(request)),
   ]);
 
-  const includeDiagnostics = Boolean(admin || tokenAuthorized);
+  const includeDiagnostics = Boolean(admin?.role === "ADMIN" || tokenAuthorized);
 
   if (!includeDiagnostics) {
     return NextResponse.json(
@@ -63,7 +67,8 @@ export async function GET(request: NextRequest) {
   return NextResponse.json(
     {
       ok: isHealthy,
-      status: isHealthy ? "healthy" : dbHealth.status,
+      status: isHealthy ? "healthy" : "degraded",
+      schemaReadiness: { public: publicSchema, commerce: commerceSchema, books: booksSchema },
       environment: isStagingEnvironment() ? "staging" : "production",
       database: dbHealth.status,
       ...(typeof dbHealth.latencyMs === "number"
