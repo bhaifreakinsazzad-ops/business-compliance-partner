@@ -11,7 +11,7 @@ import { canUseCatalogueFixtures } from "@/lib/config/catalogue-policy";
 
 export const BOOK_AVAILABILITY_BADGE_BN = "প্রকাশনা আসন্ন";
 export const BOOK_PRICING_NOTICE_BN =
-  "প্রস্তাবিত প্রকাশনা প্রিভিউ — মূল্য, সংস্করণ ও প্রকাশের তারিখ ক্লায়েন্ট অনুমোদনের পর নির্ধারিত হবে।";
+  "প্রস্তাবিত প্রকাশনা প্রিভিউ — আসন্ন সংস্করণের চূড়ান্ত মূল্য ও প্রকাশনার তথ্য প্রকাশের সময় হালনাগাদ করা হবে।";
 
 const RAW_BOOK_CATEGORIES: Omit<PublicBookCategoryDTO, "previewCount">[] = [
   {

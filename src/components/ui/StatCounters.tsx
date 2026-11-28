@@ -72,7 +72,7 @@ export function StatCounters({
         sublabelBn:
           publishedCount > 0
             ? "যাচাইকৃত ও সরাসরি অনুসন্ধানযোগ্য এন্ট্রি"
-            : "ক্লায়েন্ট অনুমোদনের অপেক্ষায়",
+            : "আসন্ন কমপ্লায়েন্স রেফারেন্স সংস্করণ",
         icon: FileCheck2,
       },
       {

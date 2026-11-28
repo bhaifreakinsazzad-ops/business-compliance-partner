@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import NextImage from "next/image";
 import * as THREE from "three";
 import { BookOpen, RotateCcw, RotateCw } from "lucide-react";
 import type { PublicBookPreview } from "@/types/domain";
+import { resolveBookCoverAsset } from "@/lib/config/media-manifest";
 import {
   attachContextLossRecovery,
   awaitWebGLFrameFence,
@@ -49,6 +51,7 @@ function wrapCanvasText(
 function createFrontCoverTexture(
   book: PublicBookPreview,
   logoImage?: HTMLImageElement | null,
+  governedCoverImage?: HTMLImageElement | null,
 ): THREE.CanvasTexture {
   const canvas = document.createElement("canvas");
   canvas.width = 512;
@@ -56,6 +59,18 @@ function createFrontCoverTexture(
   const ctx = canvas.getContext("2d");
 
   if (ctx) {
+    if (
+      governedCoverImage &&
+      governedCoverImage.complete &&
+      governedCoverImage.naturalWidth > 0
+    ) {
+      ctx.drawImage(governedCoverImage, 0, 0, 512, 720);
+      const tex = new THREE.CanvasTexture(canvas);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      tex.anisotropy = 4;
+      return tex;
+    }
+
     const { coverHex, accentHex, textHex, spineHex } = book.coverPalette;
     ctx.fillStyle = coverHex;
     ctx.fillRect(0, 0, 512, 720);
@@ -172,8 +187,8 @@ function createBackCoverTexture(book: PublicBookPreview): THREE.CanvasTexture {
     ctx.font = "500 15px Inter, sans-serif";
     ctx.fillText(
       book.availabilityState === "PUBLISHED_PRICED"
-        ? "Status: Verified Commercial Edition"
-        : "Status: Client Approval Pending",
+        ? "Verified Commercial Edition"
+        : "Upcoming Reference Edition Preview",
       64,
       595,
     );
@@ -470,11 +485,25 @@ export function BookPreview3D({ book }: BookPreview3DProps) {
     bookGroup.add(ribbon);
 
     let cancelled = false;
+    const coverAsset = resolveBookCoverAsset(book.slug, book.categorySlug);
+    const coverImg = new window.Image();
+    coverImg.crossOrigin = "anonymous";
+    coverImg.onload = () => {
+      if (cancelled) return;
+      const upgraded = createFrontCoverTexture(book, null, coverImg);
+      const oldMap = frontMat.map;
+      frontMat.map = upgraded;
+      frontMat.needsUpdate = true;
+      oldMap?.dispose();
+      renderer.render(scene, camera);
+    };
+    coverImg.src = coverAsset.publicPath;
+
     const logoImg = new window.Image();
     logoImg.crossOrigin = "anonymous";
     logoImg.onload = () => {
-      if (cancelled) return;
-      const upgraded = createFrontCoverTexture(book, logoImg);
+      if (cancelled || (coverImg.complete && coverImg.naturalWidth > 0)) return;
+      const upgraded = createFrontCoverTexture(book, logoImg, null);
       const oldMap = frontMat.map;
       frontMat.map = upgraded;
       frontMat.needsUpdate = true;
@@ -715,26 +744,22 @@ export function BookPreview3D({ book }: BookPreview3DProps) {
           className="w-full h-[320px] sm:h-[360px] cursor-grab active:cursor-grabbing select-none"
         />
       ) : (
-        <div className="p-8 flex items-center justify-center min-h-[320px]">
-          <div
-            className="w-52 h-72 rounded-[12px] p-5 flex flex-col justify-between shadow-lg border border-[#C59028]"
-            style={{
-              backgroundColor: book.coverPalette.coverHex,
-              color: book.coverPalette.textHex,
-            }}
-          >
-            <p className="text-[11px] font-bold uppercase tracking-wider text-[#DFB15B]">
-              {book.categoryNameEn}
-            </p>
-            <p className="font-editorial text-lg font-bold leading-snug">
-              {book.titleBn}
-            </p>
-            <p className="text-[11px] opacity-80">
-              {book.availabilityState === "PUBLISHED_PRICED"
-                ? "প্রকাশিত সংস্করণ"
-                : "প্রকাশনা আসন্ন"}
-            </p>
+        <div className="p-8 flex flex-col items-center justify-center gap-3 min-h-[320px]">
+          <div className="relative w-48 aspect-[3/4] rounded-e-[12px] rounded-s-[4px] overflow-hidden shadow-lg border border-[#B8BBFF]/60">
+            <NextImage
+              src={resolveBookCoverAsset(book.slug, book.categorySlug).publicPath}
+              alt={resolveBookCoverAsset(book.slug, book.categorySlug).altBn}
+              width={720}
+              height={960}
+              referrerPolicy="no-referrer"
+              className="w-full h-full object-cover"
+            />
           </div>
+          <p className="text-xs font-semibold text-[#596775]">
+            {book.availabilityState === "PUBLISHED_PRICED"
+              ? "প্রকাশিত সংস্করণ প্রচ্ছদ"
+              : "প্রস্তাবিত কনসেপ্ট প্রচ্ছদ · প্রকাশনা আসন্ন"}
+          </p>
         </div>
       )}
 

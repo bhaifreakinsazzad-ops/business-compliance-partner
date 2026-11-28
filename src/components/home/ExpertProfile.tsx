@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ShieldCheck } from "lucide-react";
 import { useAnimationScope } from "@/hooks/useAnimationScope";
+import { INSTITUTIONAL_STUDIO_MEDIA } from "@/lib/config/media-manifest";
 import { animateRevealItems } from "@/lib/motion/tokens";
 import { cn } from "@/lib/utils";
 
@@ -28,8 +29,8 @@ export interface ExpertProfileProps {
 }
 
 /**
- * Reusable alternating Profile + Numbered Timeline showcase component
- * styled in the White-to-Periwinkle AKIJ iBOS palette.
+ * Reusable alternating Institutional Studio + Numbered Timeline showcase component
+ * styled in the White-to-Periwinkle AKIJ iBOS palette without fabricated human portraits.
  */
 export function ExpertProfile({
   eyebrowBn,
@@ -62,14 +63,14 @@ export function ExpertProfile({
       ref={scopeRef}
       className="relative grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center"
     >
-      {/* Portrait / Official Brand Badge Card */}
+      {/* Institutional Studio Artwork + Restrained Brand Medallion Card */}
       <div
         className={cn(
           "lg:col-span-5 flex justify-center",
           isRightImage ? "lg:order-2" : "lg:order-1",
         )}
       >
-        <div className="relative w-full max-w-sm rounded-[22px] border-2 border-[#B8BBFF] bg-white p-7 text-center space-y-5 shadow-[0_18px_42px_rgba(36,63,186,0.12)]">
+        <div className="relative w-full max-w-md rounded-[22px] border border-[#B8BBFF] bg-white p-5 sm:p-6 space-y-5 shadow-[0_18px_42px_rgba(36,63,186,0.12)]">
           {/* Subtle Reference Corner Dot Accent */}
           <div
             aria-hidden="true"
@@ -83,30 +84,43 @@ export function ExpertProfile({
             ))}
           </div>
 
-          {imageSrc ? (
-            <div className="inline-flex items-center justify-center rounded-full p-2.5 bg-[#FBFAFF] shadow-sm border-2 border-[#C59028]/70">
+          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[16px] border border-[#E1E4F2] bg-[#FBFAFF]">
+            <Image
+              src={INSTITUTIONAL_STUDIO_MEDIA.publicPath}
+              alt={INSTITUTIONAL_STUDIO_MEDIA.altBn}
+              width={INSTITUTIONAL_STUDIO_MEDIA.width}
+              height={INSTITUTIONAL_STUDIO_MEDIA.height}
+              referrerPolicy="no-referrer"
+              className="h-full w-full object-cover"
+            />
+          </div>
+
+          <div className="flex items-start gap-3.5 text-start">
+            {imageSrc ? (
               <Image
                 src={imageSrc}
                 alt={imageAlt}
-                width={136}
-                height={136}
+                width={48}
+                height={48}
                 referrerPolicy="no-referrer"
-                className="rounded-full object-contain"
+                className="w-12 h-12 rounded-full bg-white border border-[#C59028]/80 object-contain shrink-0 shadow-xs"
               />
-            </div>
-          ) : null}
+            ) : null}
 
-          <div className="space-y-2">
-            <p
-              className="font-en text-xs font-bold uppercase tracking-[0.18em] text-[#243FBA]"
-              lang="en"
-            >
-              Business Compliance Partner
-            </p>
-            <p className="text-base sm:text-lg font-extrabold text-[#081838] leading-snug">
-              {taglineBn}
-            </p>
-            <p className="text-xs text-[#596775] leading-relaxed">{summaryBn}</p>
+            <div className="space-y-1 min-w-0">
+              <p
+                className="font-en text-[11px] font-bold uppercase tracking-[0.16em] text-[#243FBA]"
+                lang="en"
+              >
+                Business Compliance Partner
+              </p>
+              <p className="text-sm sm:text-base font-extrabold text-[#081838] leading-snug">
+                {taglineBn}
+              </p>
+              <p className="text-xs text-[#596775] leading-relaxed">
+                {summaryBn}
+              </p>
+            </div>
           </div>
 
           <div className="pt-3 border-t border-[#E1E4F2]">

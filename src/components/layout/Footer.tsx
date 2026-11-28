@@ -254,7 +254,7 @@ export function Footer({ siteConfig }: FooterProps) {
               ) : (
                 <div className="rounded-[12px] border border-white/15 bg-white/[0.06] p-3.5 space-y-2">
                   <p className="text-xs text-white/85 leading-relaxed">
-                    অফিস ফোন, ঠিকানা ও হোয়াটসঅ্যাপ তথ্য অনুমোদনের পর এখানে যুক্ত হবে।
+                    কোর্স, কমপ্লায়েন্স সেবা ও প্রকাশনা বিষয়ে জানতে আমাদের অনলাইন পরামর্শ ফর্ম ব্যবহার করুন।
                   </p>
                   <Link
                     href="/consultancy"

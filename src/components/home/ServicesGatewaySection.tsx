@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -14,10 +15,11 @@ import {
 } from "lucide-react";
 import { ConsultancyForm } from "@/components/forms/ConsultancyForm";
 import { WhatsAppEnquiryButton } from "@/components/shared/WhatsAppEnquiryButton";
+import { resolveServiceTrackAsset } from "@/lib/config/media-manifest";
 import { cn } from "@/lib/utils";
 
 interface ServiceTrackHighlight {
-  id: string;
+  id: "tax" | "vat" | "rjsc" | "licensing";
   tabLabelBn: string;
   titleBn: string;
   href: string;
@@ -106,11 +108,13 @@ export function ServicesGatewaySection({
   verifiedWhatsapp,
   canonicalBaseUrl,
 }: ServicesGatewaySectionProps) {
-  const [selectedId, setSelectedId] = useState<string>(SERVICE_HIGHLIGHTS[0]!.id);
+  const [selectedId, setSelectedId] =
+    useState<ServiceTrackHighlight["id"]>("tax");
   const activeTrack =
     SERVICE_HIGHLIGHTS.find((item) => item.id === selectedId) ??
     SERVICE_HIGHLIGHTS[0]!;
   const TrackIcon = getTrackIcon(activeTrack.icon);
+  const trackAsset = resolveServiceTrackAsset(activeTrack.id);
 
   return (
     <section
@@ -121,7 +125,7 @@ export function ServicesGatewaySection({
     >
       <div className="ps-container">
         <div className="bcp-periwinkle-service-frame rounded-[24px] border border-[#B8BBFF] p-5 sm:p-9 lg:p-12 shadow-[0_18px_48px_rgba(36,63,186,0.08)] space-y-8">
-          {/* Centered Header matching Screenshot 2026-11-26 231239 (1).png */}
+          {/* Centered Header */}
           <div className="text-center max-w-2xl mx-auto space-y-3">
             <p className="inline-flex items-center gap-1.5 font-en text-xs font-bold uppercase tracking-[0.16em] text-[#243FBA]">
               <BriefcaseBusiness className="w-3.5 h-3.5" aria-hidden="true" />
@@ -171,17 +175,29 @@ export function ServicesGatewaySection({
             })}
           </div>
 
-          {/* Inner Split Container: Left Service Details + Right White Enquiry Form Card */}
+          {/* Inner Split Container: Left Editorial Visual + Checklist, Right White Enquiry Form Card */}
           <div
             id="services-gateway-panel"
             role="tabpanel"
             aria-labelledby={`services-tab-${activeTrack.id}`}
-            className="rounded-[20px] border border-white bg-white/95 p-5 sm:p-7 lg:p-9 shadow-sm grid grid-cols-1 lg:grid-cols-12 gap-7 lg:gap-8 items-center"
+            className="rounded-[20px] border border-white bg-white/95 p-5 sm:p-7 lg:p-9 shadow-sm grid grid-cols-1 lg:grid-cols-12 gap-7 lg:gap-8 items-start"
           >
             <div className="lg:col-span-6 space-y-5">
+              {/* Track-Specific Editorial Artwork Header */}
+              <div className="overflow-hidden rounded-[14px] border border-[#E1E4F2] bg-[#F4F5FF] shadow-xs">
+                <Image
+                  src={trackAsset.publicPath}
+                  alt={trackAsset.altBn}
+                  width={trackAsset.width}
+                  height={trackAsset.height}
+                  referrerPolicy="no-referrer"
+                  className="w-full h-auto object-cover"
+                />
+              </div>
+
               <div className="flex items-start gap-3.5">
-                <span className="inline-flex items-center justify-center w-12 h-12 rounded-[12px] bg-[#243FBA] text-white shrink-0 shadow-xs">
-                  <TrackIcon className="w-6 h-6" aria-hidden="true" />
+                <span className="inline-flex items-center justify-center w-11 h-11 rounded-[12px] bg-[#243FBA] text-white shrink-0 shadow-xs">
+                  <TrackIcon className="w-5 h-5" aria-hidden="true" />
                 </span>
                 <div className="space-y-1">
                   <p className="font-en text-[11px] font-bold uppercase tracking-[0.14em] text-[#243FBA]">
@@ -237,7 +253,7 @@ export function ServicesGatewaySection({
 
                 <p className="inline-flex items-center gap-2 text-xs text-[#596775]">
                   <Lock className="w-3.5 h-3.5 text-[#00865A] shrink-0" aria-hidden="true" />
-                  <span>আপনার ব্যবসায়িক তথ্য সম্পূর্ণ গোপন রাখা হয়</span>
+                  <span>আপনার ব্যবসায়িক তথ্য প্রযোজ্য গোপনীয়তা নীতিমালা অনুযায়ী সংরক্ষিত থাকে</span>
                 </p>
               </div>
             </div>

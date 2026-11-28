@@ -167,10 +167,10 @@ test.describe("V8.1 Video-Verified Reference Fidelity & AKIJ Periwinkle Transfor
     // Pause / Resume control
     const pauseBtn = hero.getByRole("button", { name: "স্লাইডার থামান" });
     await pauseBtn.click();
-    await expect(pauseBtn).toHaveAttribute("aria-pressed", "true");
     const resumeBtn = hero.getByRole("button", { name: "স্লাইডার চালু করুন" });
+    await expect(resumeBtn).toHaveAttribute("aria-pressed", "true");
     await resumeBtn.click();
-    await expect(resumeBtn).toHaveAttribute("aria-pressed", "false");
+    await expect(pauseBtn).toHaveAttribute("aria-pressed", "false");
   });
 
   test("floating conversion dock stacks circular buttons vertically on scroll without mobile overflow", async ({
@@ -201,12 +201,13 @@ test.describe("V8.1 Video-Verified Reference Fidelity & AKIJ Periwinkle Transfor
   }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto("/");
+    await page.goto("/", { waitUntil: "networkidle" });
 
     const hero = page.getByRole("region", {
       name: "প্রচারণামূলক ব্যানার স্লাইডার",
     });
     const nextBtn = hero.locator('button[data-carousel-next="true"]');
+    await expect(nextBtn).toBeVisible();
     await nextBtn.click();
     await expect(hero.locator("[data-slide-counter]")).toContainText("02");
   });
@@ -224,5 +225,51 @@ test.describe("V8.1 Video-Verified Reference Fidelity & AKIJ Periwinkle Transfor
     await expect(
       page.locator('a[href^="https://wa.me/8801521537864"]').first(),
     ).toBeVisible();
+    await expect(page.locator("main")).not.toContainText("চূড়ান্ত ক্লায়েন্ট অনুমোদনের পর");
+  });
+
+  test("V8.2 static artwork renders cleanly with zero broken images, single H1, guarded inactive slides, and paused progress freeze", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/");
+
+    // Single semantic H1 on homepage even after switching slides
+    await expect(page.locator("h1")).toHaveCount(1);
+
+    const hero = page.getByRole("region", {
+      name: "প্রচারণামূলক ব্যানার স্লাইডার",
+    });
+
+    // Inactive slides are aria-hidden and their links are excluded from keyboard tab order
+    const inactiveSlides = hero.locator('[data-coverflow-slide][aria-hidden="true"]');
+    await expect(inactiveSlides).toHaveCount(3);
+    const inactiveTabIndexes = await inactiveSlides
+      .locator("a")
+      .evaluateAll((links) => links.map((a) => a.getAttribute("tabindex")));
+    expect(inactiveTabIndexes.every((val) => val === "-1")).toBe(true);
+
+    // Pausing slider preserves elapsed progress instead of snapping scaleX to 1
+    const pauseBtn = hero.getByRole("button", { name: "স্লাইডার থামান" });
+    await pauseBtn.click();
+    const activeBarScaleX = await hero
+      .locator('[data-slide-progress="ecosystem-overview"]')
+      .evaluate((el) => {
+        const t = window.getComputedStyle(el).transform;
+        if (!t || t === "none") return 0;
+        const m = new DOMMatrix(t);
+        return m.a;
+      });
+    expect(activeBarScaleX).toBeLessThan(0.9);
+
+    // Every visible <img> across the homepage must load with naturalWidth > 0
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await page.waitForTimeout(350);
+    const brokenImages = await page.evaluate(() =>
+      Array.from(document.querySelectorAll("img"))
+        .filter((img) => img.complete && img.naturalWidth === 0)
+        .map((img) => img.getAttribute("src")),
+    );
+    expect(brokenImages).toEqual([]);
   });
 });

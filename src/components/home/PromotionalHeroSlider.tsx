@@ -16,7 +16,6 @@ import {
   ArrowRight,
   BookOpen,
   BriefcaseBusiness,
-  CheckCircle2,
   ChevronLeft,
   ChevronRight,
   GraduationCap,
@@ -29,16 +28,20 @@ import {
   getCoverflowSlideGeometry,
   wrapSlideIndex,
 } from "@/lib/home/coverflow";
+import { resolveHeroSlideAsset } from "@/lib/config/media-manifest";
 import { PrimaryBusinessActions } from "@/components/home/PrimaryBusinessActions";
 import { cn } from "@/lib/utils";
 
 interface PromoSlide {
-  id: string;
+  id:
+    | "ecosystem-overview"
+    | "professional-courses"
+    | "tax-vat-services"
+    | "books-storefront";
   orderCode: string;
   badgeBn: string;
   titleBn: string;
   subtitleBn: string;
-  highlightsBn: string[];
   ctaHref: string;
   ctaLabelBn: string;
   secondaryHref: string;
@@ -47,6 +50,7 @@ interface PromoSlide {
   visualTone: "overview" | "courses" | "services" | "books";
   posterTheme: {
     canvasClass: string;
+    scrimClass: string;
     isDark: boolean;
   };
 }
@@ -60,11 +64,6 @@ const PROMO_SLIDES: PromoSlide[] = [
       "ব্যবসা শুরু থেকে কমপ্লায়েন্স পরিচালনা—কোর্স, পেশাদার সেবা ও বই এক প্ল্যাটফর্মে",
     subtitleBn:
       "বাংলাদেশের উদ্যোক্তা ও পেশাজীবীদের জন্য ব্যবহারিক প্রশিক্ষণ, আয়কর-ভ্যাট-আরজেএসসি সেবা এবং রেফারেন্স প্রকাশনা।",
-    highlightsBn: [
-      "দক্ষতা উন্নয়নে ব্যবহারিক Courses",
-      "ব্যবসার জন্য পেশাদার Services",
-      "অফিসিয়াল রেফারেন্স Books",
-    ],
     ctaHref: "/courses",
     ctaLabelBn: "কোর্সসমূহ দেখুন",
     secondaryHref: "/services",
@@ -72,8 +71,9 @@ const PROMO_SLIDES: PromoSlide[] = [
     visualTagEn: "ONE PARTNER · COMPLETE SOLUTIONS",
     visualTone: "overview",
     posterTheme: {
-      canvasClass:
-        "from-[#FFFFFF] via-[#F4F5FF] to-[#E2E3FF] text-[#081838] border-[#B8BBFF]",
+      canvasClass: "bg-[#F5F6FF] text-[#081838] border-[#B8BBFF]",
+      scrimClass:
+        "bg-gradient-to-b from-white/95 via-[#F4F5FF]/90 to-[#E2E3FF]/55 md:bg-gradient-to-r md:from-white/96 md:via-[#F4F5FF]/88 md:to-transparent",
       isDark: false,
     },
   },
@@ -84,11 +84,6 @@ const PROMO_SLIDES: PromoSlide[] = [
     titleBn: "Tax, VAT, e-GP, E-commerce ও RJSC ব্যবহারিক কোর্স",
     subtitleBn:
       "পেশাদার দক্ষতা অর্জন করুন এবং নিজেকে প্রস্তুত করুন—১০টি ব্যবহারিক প্রশিক্ষণ ট্র্যাক ও স্পষ্ট সিলেবাস।",
-    highlightsBn: [
-      "আয়কর ও কর্পোরেট ট্যাক্স রিটার্ন",
-      "ভ্যাট ও মূসক ৯.১ অনলাইন দাখিল",
-      "BPPA e-GP দরপত্র ও ই-কমার্স DBID",
-    ],
     ctaHref: "/courses",
     ctaLabelBn: "Explore Courses",
     secondaryHref: "/consultancy?pillar=COURSES",
@@ -96,8 +91,9 @@ const PROMO_SLIDES: PromoSlide[] = [
     visualTagEn: "01 · COURSES GATEWAY",
     visualTone: "courses",
     posterTheme: {
-      canvasClass:
-        "from-[#102454] via-[#1B337A] to-[#243FBA] text-white border-[#243FBA]",
+      canvasClass: "bg-[#0B1C42] text-white border-[#243FBA]",
+      scrimClass:
+        "bg-gradient-to-b from-[#081838]/95 via-[#102454]/85 to-[#202D72]/55 md:bg-gradient-to-r md:from-[#081838]/96 md:via-[#102454]/84 md:to-transparent",
       isDark: true,
     },
   },
@@ -108,11 +104,6 @@ const PROMO_SLIDES: PromoSlide[] = [
     titleBn: "আয়কর, ভ্যাট, Smart RJSC ও ব্যবসার লাইসেন্সিং সেবা",
     subtitleBn:
       "ব্যবসার প্রয়োজনীয় পেশাদার সহায়তা ও সমাধান নিন—সরাসরি পরামর্শ ও WhatsApp সহায়তা।",
-    highlightsBn: [
-      "e-TIN, আয়কর রিটার্ন ও BIN নিবন্ধন",
-      "Smart RJSC কোম্পানি গঠন ও রিটার্ন",
-      "ট্রেড লাইসেন্স, DIFE, ফায়ার ও IRC/ERC",
-    ],
     ctaHref: "/services",
     ctaLabelBn: "Explore Services",
     secondaryHref: "/licensing",
@@ -120,8 +111,9 @@ const PROMO_SLIDES: PromoSlide[] = [
     visualTagEn: "02 · SERVICES GATEWAY",
     visualTone: "services",
     posterTheme: {
-      canvasClass:
-        "from-[#F7F8FF] via-[#EAECFF] to-[#CFD1FF] text-[#081838] border-[#B8BBFF]",
+      canvasClass: "bg-[#F4F5FF] text-[#081838] border-[#B8BBFF]",
+      scrimClass:
+        "bg-gradient-to-b from-white/95 via-[#F4F5FF]/90 to-[#E2E3FF]/55 md:bg-gradient-to-r md:from-white/96 md:via-[#F4F5FF]/88 md:to-transparent",
       isDark: false,
     },
   },
@@ -132,11 +124,6 @@ const PROMO_SLIDES: PromoSlide[] = [
     titleBn: "ব্যবহারিক কমপ্লায়েন্স হ্যান্ডবুক ও প্রকাশনা মার্কেটপ্লেস",
     subtitleBn:
       "প্রয়োজনীয় বই ও প্রকাশনার মাধ্যমে আপনার কমপ্লায়েন্স জ্ঞান সমৃদ্ধ করুন—আয়কর, ভ্যাট ও কর্পোরেট গাইড।",
-    highlightsBn: [
-      "আয়কর ও মূসক ৯.১ ফিল্ড গাইড",
-      "e-GP ও সরকারি টেন্ডার ম্যানুয়াল",
-      "RJSC কোম্পানি আইন ও উদ্যোক্তা গাইড",
-    ],
     ctaHref: "/books",
     ctaLabelBn: "Explore Books",
     secondaryHref: "/contact",
@@ -144,8 +131,9 @@ const PROMO_SLIDES: PromoSlide[] = [
     visualTagEn: "03 · BOOKS MARKETPLACE",
     visualTone: "books",
     posterTheme: {
-      canvasClass:
-        "from-[#0B1C42] via-[#202D72] to-[#2B46BA] text-white border-[#202D72]",
+      canvasClass: "bg-[#0B1C42] text-white border-[#202D72]",
+      scrimClass:
+        "bg-gradient-to-b from-[#081838]/95 via-[#132556]/85 to-[#202D72]/50 md:bg-gradient-to-r md:from-[#081838]/96 md:via-[#132556]/82 md:to-transparent",
       isDark: true,
     },
   },
@@ -176,6 +164,8 @@ export function PromotionalHeroSlider({
   const slideAnimationsRef = useRef<JSAnimation[]>([]);
   const progressBarRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const progressAnimRef = useRef<JSAnimation | null>(null);
+  const elapsedMsRef = useRef<number>(0);
+  const lastCycleIndexRef = useRef<number>(0);
   const prevOffsetsRef = useRef<number[]>(
     PROMO_SLIDES.map((_, idx) =>
       getCircularSlideOffset(idx, 0, PROMO_SLIDES.length),
@@ -228,12 +218,16 @@ export function PromotionalHeroSlider({
     isFocused ||
     isDocumentHidden;
 
-  // Synchronized autoplay timer + Anime.js elapsed progress bar
+  // Synchronized autoplay timer + Anime.js elapsed progress bar that freezes accurately on pause/hover/focus
   useEffect(() => {
     progressAnimRef.current?.cancel();
     progressAnimRef.current = null;
 
-    const activeBar = progressBarRefs.current[activeIndex];
+    if (lastCycleIndexRef.current !== activeIndex) {
+      elapsedMsRef.current = 0;
+      lastCycleIndexRef.current = activeIndex;
+    }
+
     for (let i = 0; i < PROMO_SLIDES.length; i += 1) {
       const bar = progressBarRefs.current[i];
       if (!bar) continue;
@@ -242,31 +236,46 @@ export function PromotionalHeroSlider({
       }
     }
 
+    const activeBar = progressBarRefs.current[activeIndex];
+    const startRatio = Math.min(1, Math.max(0, elapsedMsRef.current / AUTO_ADVANCE_MS));
+
     if (autoPlaySuspended) {
       if (activeBar) {
-        set(activeBar, { scaleX: 1 });
+        set(activeBar, { scaleX: prefersReducedMotion ? 1 : startRatio });
       }
       return;
     }
 
+    const remainingMs = Math.max(80, AUTO_ADVANCE_MS - elapsedMsRef.current);
+    const startedAt = performance.now();
+
     if (activeBar) {
+      set(activeBar, { scaleX: startRatio });
       progressAnimRef.current = animate(activeBar, {
-        scaleX: [0, 1],
-        duration: AUTO_ADVANCE_MS,
+        scaleX: [startRatio, 1],
+        duration: remainingMs,
         ease: "linear",
       });
     }
 
-    const timer = window.setInterval(() => {
+    const timer = window.setTimeout(() => {
+      elapsedMsRef.current = 0;
       setActiveIndex((prev) => wrapSlideIndex(prev + 1, PROMO_SLIDES.length));
-    }, AUTO_ADVANCE_MS);
+    }, remainingMs);
 
     return () => {
-      window.clearInterval(timer);
+      window.clearTimeout(timer);
+      const ranMs = Math.max(0, performance.now() - startedAt);
+      elapsedMsRef.current = Math.min(AUTO_ADVANCE_MS, elapsedMsRef.current + ranMs);
       progressAnimRef.current?.cancel();
       progressAnimRef.current = null;
+      if (activeBar) {
+        set(activeBar, {
+          scaleX: Math.min(1, elapsedMsRef.current / AUTO_ADVANCE_MS),
+        });
+      }
     };
-  }, [activeIndex, autoPlaySuspended]);
+  }, [activeIndex, autoPlaySuspended, prefersReducedMotion]);
 
   // Interruptible Anime.js 3D coverflow transforms
   useEffect(() => {
@@ -317,8 +326,6 @@ export function PromotionalHeroSlider({
         return;
       }
 
-      // When a slide wraps from offscreen/opposite wing into prev (-1) or next (+1),
-      // position it just outside its entering edge before gliding in so it never crosses center.
       if (Math.abs(prevOffset) > 1 && Math.abs(nextOffset) === 1) {
         const entrySign = nextOffset < 0 ? -1 : 1;
         set(el, {
@@ -407,7 +414,7 @@ export function PromotionalHeroSlider({
         >
           {/* Central 16:9 Stage Reference Box + Left/Right Circular Edge Arrows */}
           <div
-            className="relative mx-auto w-[88%] sm:w-[76%] md:w-[68%] lg:w-[64%] max-w-[900px] min-h-[272px] sm:min-h-0 sm:aspect-[16/9]"
+            className="relative mx-auto w-[88%] sm:w-[82%] md:w-[76%] lg:w-[64%] max-w-[900px] min-h-[280px] sm:min-h-[348px] lg:min-h-0 lg:aspect-[16/9]"
             style={{
               perspective: "1350px",
               transformStyle: "preserve-3d",
@@ -422,6 +429,7 @@ export function PromotionalHeroSlider({
               const geom = getCoverflowSlideGeometry(offset, isCompactViewport);
               const isActive = offset === 0;
               const isNeighbor = Math.abs(offset) === 1;
+              const heroAsset = resolveHeroSlideAsset(slide.id);
               const SlideVisualIcon =
                 slide.visualTone === "courses"
                   ? GraduationCap
@@ -451,7 +459,7 @@ export function PromotionalHeroSlider({
                   }}
                   style={initialStyle}
                   className={cn(
-                    "absolute inset-0 rounded-[20px] sm:rounded-[24px] will-change-transform origin-center overflow-hidden border bg-gradient-to-br shadow-[0_22px_54px_rgba(32,45,114,0.16)]",
+                    "absolute inset-0 rounded-[20px] sm:rounded-[24px] will-change-transform origin-center overflow-hidden border shadow-[0_22px_54px_rgba(32,45,114,0.16)]",
                     slide.posterTheme.canvasClass,
                     isActive
                       ? "ring-2 ring-[#B8BBFF]/80"
@@ -460,50 +468,37 @@ export function PromotionalHeroSlider({
                         : "pointer-events-none",
                   )}
                 >
-                  {/* Bespoke Graphical Banner Composition */}
-                  <div className="relative h-full w-full px-6 py-4 sm:px-9 sm:py-7 lg:px-11 lg:py-9 flex flex-col justify-between">
-                    {/* Subtle SVG Graphical Mesh Decoration */}
-                    <svg
+                  {/* Art-Directed Campaign Studio Artwork + Measured Readability Scrim */}
+                  <div className="relative h-full w-full px-5 py-4 sm:px-9 sm:py-7 lg:px-11 lg:py-9 flex flex-col justify-between">
+                    <Image
+                      src={heroAsset.publicPath}
+                      alt={isActive ? heroAsset.altBn : ""}
+                      fill
+                      sizes="(max-width: 767px) 88vw, 900px"
+                      priority={idx === 0}
+                      loading={idx === 0 ? undefined : "eager"}
+                      referrerPolicy="no-referrer"
+                      className="object-cover object-[78%_center] md:object-right pointer-events-none select-none"
+                    />
+                    <div
                       aria-hidden="true"
-                      viewBox="0 0 800 450"
-                      className="absolute inset-0 w-full h-full pointer-events-none opacity-80"
-                      preserveAspectRatio="xMidYMid slice"
-                    >
-                      <circle
-                        cx="720"
-                        cy="60"
-                        r="190"
-                        fill={slide.posterTheme.isDark ? "#B8BBFF" : "#243FBA"}
-                        fillOpacity={slide.posterTheme.isDark ? "0.14" : "0.08"}
-                      />
-                      <circle
-                        cx="680"
-                        cy="380"
-                        r="150"
-                        stroke="#DFB15B"
-                        strokeOpacity={slide.posterTheme.isDark ? "0.35" : "0.28"}
-                        strokeWidth="1.5"
-                        fill="none"
-                      />
-                      <path
-                        d="M0 390 Q 260 320 800 375"
-                        stroke={slide.posterTheme.isDark ? "#B8BBFF" : "#243FBA"}
-                        strokeOpacity="0.16"
-                        strokeWidth="2"
-                        fill="none"
-                      />
-                    </svg>
+                      className={cn(
+                        "absolute inset-0 pointer-events-none",
+                        slide.posterTheme.scrimClass,
+                      )}
+                    />
 
-                    {/* Banner Top Row: BCP Official Circular Badge + Division Tag + Slide Index */}
+                    {/* Banner Top Row: BCP Official Circular Badge + Division Tag */}
                     <div className="relative z-10 flex items-center justify-between gap-2">
                       <div className="inline-flex items-center gap-2 sm:gap-2.5">
                         {logoAssetPath ? (
                           <Image
                             src={logoAssetPath}
-                            alt={`${brandName} অফিসিয়াল ব্যাজ`}
+                            alt={isActive ? `${brandName} অফিসিয়াল ব্যাজ` : ""}
                             width={34}
                             height={34}
-                            priority={idx <= 1}
+                            priority={idx === 0}
+                            loading={idx === 0 ? undefined : "eager"}
                             referrerPolicy="no-referrer"
                             className="w-7 h-7 sm:w-9 sm:h-9 rounded-full border border-[#C59028]/80 bg-white object-contain shrink-0 shadow-xs"
                           />
@@ -522,10 +517,10 @@ export function PromotionalHeroSlider({
 
                       <span
                         className={cn(
-                          "hidden sm:inline-flex items-center gap-1.5 font-en text-[11px] font-bold uppercase tracking-[0.14em]",
+                          "hidden sm:inline-flex items-center gap-1.5 font-en text-[11px] font-bold uppercase tracking-[0.14em] rounded-md px-2.5 py-1",
                           slide.posterTheme.isDark
-                            ? "text-[#CCCEFF]"
-                            : "text-[#202D72]/75",
+                            ? "bg-[#081838]/65 text-[#CCCEFF] border border-white/15"
+                            : "bg-white/80 text-[#202D72] border border-[#B8BBFF]/60",
                         )}
                         lang="en"
                       >
@@ -534,74 +529,51 @@ export function PromotionalHeroSlider({
                       </span>
                     </div>
 
-                    {/* Banner Center Split: Strong Bengali Headline + Structured Highlight Tiles */}
-                    <div className="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-5 items-center my-auto py-1">
-                      <div className="md:col-span-7 space-y-2 sm:space-y-3">
-                        {idx === 0 && isActive ? (
-                          <h1
-                            className={cn(
-                              "text-lg sm:text-2xl lg:text-[1.85rem] xl:text-[2.05rem] font-extrabold leading-[1.24] [text-wrap:balance]",
-                              slide.posterTheme.isDark
-                                ? "text-white"
-                                : "text-[#081838]",
-                            )}
-                          >
-                            {slide.titleBn}
-                          </h1>
-                        ) : (
-                          <p
-                            className={cn(
-                              "text-lg sm:text-2xl lg:text-[1.85rem] xl:text-[2.05rem] font-extrabold leading-[1.24] [text-wrap:balance]",
-                              slide.posterTheme.isDark
-                                ? "text-white"
-                                : "text-[#081838]",
-                            )}
-                          >
-                            {slide.titleBn}
-                          </p>
-                        )}
-
-                        <p
+                    {/* Left Safe Typography Zone leaving Right Artwork Composition Unobstructed */}
+                    <div className="relative z-10 my-auto py-2 max-w-xl md:max-w-[58%] space-y-2.5 sm:space-y-3.5">
+                      {idx === 0 && isActive ? (
+                        <h1
                           className={cn(
-                            "text-xs sm:text-sm leading-relaxed line-clamp-2 max-w-xl",
+                            "text-lg sm:text-2xl lg:text-[1.85rem] xl:text-[2.05rem] font-extrabold leading-[1.24] [text-wrap:balance]",
                             slide.posterTheme.isDark
-                              ? "text-[#CCCEFF]"
-                              : "text-[#596775]",
+                              ? "text-white"
+                              : "text-[#081838]",
                           )}
                         >
-                          {slide.subtitleBn}
+                          {slide.titleBn}
+                        </h1>
+                      ) : (
+                        <p
+                          className={cn(
+                            "text-lg sm:text-2xl lg:text-[1.85rem] xl:text-[2.05rem] font-extrabold leading-[1.24] [text-wrap:balance]",
+                            slide.posterTheme.isDark
+                              ? "text-white"
+                              : "text-[#081838]",
+                          )}
+                        >
+                          {slide.titleBn}
                         </p>
-                      </div>
+                      )}
 
-                      {/* Right Graphical Highlights Panel (matches poster artwork blocks) */}
-                      <div className="hidden md:flex md:col-span-5 flex-col gap-2">
-                        {slide.highlightsBn.map((point) => (
-                          <div
-                            key={point}
-                            className={cn(
-                              "flex items-center gap-2.5 rounded-[12px] px-3.5 py-2.5 border text-xs font-semibold shadow-xs",
-                              slide.posterTheme.isDark
-                                ? "bg-white/10 border-white/15 text-white"
-                                : "bg-white/90 border-[#B8BBFF]/80 text-[#081838]",
-                            )}
-                          >
-                            <CheckCircle2
-                              className={cn(
-                                "w-4 h-4 shrink-0",
-                                slide.posterTheme.isDark
-                                  ? "text-[#DFB15B]"
-                                  : "text-[#243FBA]",
-                              )}
-                              aria-hidden="true"
-                            />
-                            <span className="line-clamp-1">{point}</span>
-                          </div>
-                        ))}
-                      </div>
+                      <p
+                        className={cn(
+                          "text-xs sm:text-sm leading-relaxed line-clamp-2 max-w-md",
+                          slide.posterTheme.isDark
+                            ? "text-[#CCCEFF]"
+                            : "text-[#3B4859]",
+                        )}
+                      >
+                        {slide.subtitleBn}
+                      </p>
                     </div>
 
-                    {/* Banner Bottom Action Strip (only active slide interactive via keyboard) */}
-                    <div className="relative z-10 flex flex-wrap items-center justify-between gap-2.5 pt-1">
+                    {/* Banner Bottom Action Strip (inactive slides stay non-interactive so wing clicks advance cleanly) */}
+                    <div
+                      className={cn(
+                        "relative z-10 flex flex-wrap items-center justify-between gap-2.5 pt-1",
+                        !isActive && "pointer-events-none",
+                      )}
+                    >
                       <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
                         <Link
                           href={slide.ctaHref}
@@ -623,8 +595,8 @@ export function PromotionalHeroSlider({
                           className={cn(
                             "inline-flex items-center justify-center min-h-9 sm:min-h-10 px-3.5 sm:px-4 rounded-[10px] border font-semibold text-xs sm:text-sm whitespace-nowrap transition-colors",
                             slide.posterTheme.isDark
-                              ? "border-white/30 bg-white/10 text-white hover:bg-white/20"
-                              : "border-[#B8BBFF] bg-white/85 text-[#202D72] hover:bg-[#E2E3FF]",
+                              ? "border-white/30 bg-[#081838]/65 text-white hover:bg-white/20"
+                              : "border-[#B8BBFF] bg-white/90 text-[#202D72] hover:bg-[#E2E3FF]",
                           )}
                         >
                           {slide.secondaryLabelBn}
@@ -633,10 +605,10 @@ export function PromotionalHeroSlider({
 
                       <span
                         className={cn(
-                          "hidden sm:inline-block font-en text-xs font-extrabold tabular-nums",
+                          "hidden sm:inline-block font-en text-xs font-extrabold tabular-nums px-2 py-0.5 rounded",
                           slide.posterTheme.isDark
-                            ? "text-[#DFB15B]"
-                            : "text-[#243FBA]",
+                            ? "bg-[#081838]/65 text-[#DFB15B]"
+                            : "bg-white/80 text-[#243FBA]",
                         )}
                       >
                         {slide.orderCode} / 0{PROMO_SLIDES.length}
@@ -714,9 +686,10 @@ export function PromotionalHeroSlider({
                           ref={(el) => {
                             progressBarRefs.current[idx] = el;
                           }}
+                          data-slide-progress={slide.id}
                           className="absolute inset-0 origin-left bg-[#243FBA] rounded-full"
                           style={{
-                            transform: isCurrent ? "scaleX(0)" : "scaleX(0)",
+                            transform: "scaleX(0)",
                           }}
                         />
                       </span>

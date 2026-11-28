@@ -246,7 +246,7 @@ export default async function BookDetailPage({ params }: BookDetailPageProps) {
                     <div className="flex justify-between gap-2">
                       <dt className="text-text-muted">সংস্করণ ও মূল্য</dt>
                       <dd className="font-semibold text-text-accent text-end">
-                        অনুমোদন সাপেক্ষে প্রকাশিত হবে
+                        প্রকাশনার সময় জানানো হবে
                       </dd>
                     </div>
                   </dl>

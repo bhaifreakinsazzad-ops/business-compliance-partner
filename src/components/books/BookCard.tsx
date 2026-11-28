@@ -1,9 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, BookOpen, ChevronRight } from "lucide-react";
+import { ArrowRight, ChevronRight } from "lucide-react";
 import type { PublicBookPreview } from "@/types/domain";
 import { BOOK_AVAILABILITY_BADGE_BN } from "@/lib/books/catalog";
 import { formatBdtFromPaisa } from "@/lib/commerce/payments";
+import { resolveBookCoverAsset } from "@/lib/config/media-manifest";
 import { buildWhatsAppBookMessage } from "@/lib/contact/whatsapp";
 import { WhatsAppEnquiryButton } from "@/components/shared/WhatsAppEnquiryButton";
 
@@ -35,6 +36,8 @@ export function BookCard({
     typeof book.pricePaisa === "number" &&
     book.pricePaisa > 0;
 
+  const coverAsset = resolveBookCoverAsset(book.slug, book.categorySlug);
+
   const enquiryHref = `/consultancy?pillar=CONSULTANCY&slug=${encodeURIComponent(
     book.slug,
   )}&topic=${encodeURIComponent(`প্রস্তাবিত বই: ${book.titleBn}`)}`;
@@ -55,40 +58,15 @@ export function BookCard({
           href={bookPath}
           className="bg-[#FBFAFF] border-b border-[#E1E4F2] p-5 flex items-center justify-center"
         >
-          <div
-            className="relative w-32 sm:w-36 aspect-[3/4] rounded-e-[10px] rounded-s-[4px] p-3.5 flex flex-col justify-between shadow-[0_12px_24px_rgba(8,24,56,0.18)] border border-black/15 transition-transform duration-200 group-hover:-translate-y-1"
-            style={{
-              backgroundColor: book.coverPalette.coverHex,
-              color: book.coverPalette.textHex,
-            }}
-          >
-            <span
-              aria-hidden="true"
-              className="absolute inset-y-0 start-0 w-2.5"
-              style={{ backgroundColor: book.coverPalette.spineHex }}
+          <div className="relative w-36 sm:w-40 aspect-[3/4] rounded-e-[10px] rounded-s-[4px] overflow-hidden shadow-[0_14px_28px_rgba(8,24,56,0.2)] border border-[#B8BBFF]/60 transition-transform duration-200 group-hover:-translate-y-1">
+            <Image
+              src={coverAsset.publicPath}
+              alt={coverAsset.altBn}
+              width={coverAsset.width}
+              height={coverAsset.height}
+              referrerPolicy="no-referrer"
+              className="h-full w-full object-cover"
             />
-            <span
-              className="ps-2 text-[9px] font-en font-bold uppercase tracking-wider opacity-90 line-clamp-1"
-              lang="en"
-            >
-              {book.categoryNameEn}
-            </span>
-            <span className="ps-2 text-xs sm:text-[13px] font-bold leading-snug line-clamp-3">
-              {book.titleBn}
-            </span>
-            <div className="ps-2 flex items-center justify-between">
-              <Image
-                src="/brand/bcp-master-logo.png"
-                alt="BCP"
-                width={22}
-                height={22}
-                referrerPolicy="no-referrer"
-                className="rounded-full bg-white object-contain"
-              />
-              <span className="font-en text-[9px] font-bold uppercase tracking-widest opacity-80">
-                BCP Edition
-              </span>
-            </div>
           </div>
         </Link>
 
@@ -138,39 +116,15 @@ export function BookCard({
           href={bookPath}
           className="rounded-[14px] bg-[#FBFAFF] border border-[#E1E4F2] p-4 flex items-center gap-4 group-hover:bg-[#E2E3FF]/35 group-hover:border-[#B8BBFF] transition-colors"
         >
-          <div
-            className="relative w-20 h-28 rounded-e-[8px] rounded-s-[3px] shrink-0 p-2.5 flex flex-col justify-between shadow-md overflow-hidden border border-black/10"
-            style={{
-              backgroundColor: book.coverPalette.coverHex,
-              color: book.coverPalette.textHex,
-            }}
-          >
-            <span
-              aria-hidden="true"
-              className="absolute inset-y-0 start-0 w-2"
-              style={{ backgroundColor: book.coverPalette.spineHex }}
+          <div className="relative w-21 sm:w-24 aspect-[3/4] rounded-e-[8px] rounded-s-[3px] shrink-0 overflow-hidden shadow-md border border-[#B8BBFF]/60">
+            <Image
+              src={coverAsset.publicPath}
+              alt={coverAsset.altBn}
+              width={coverAsset.width}
+              height={coverAsset.height}
+              referrerPolicy="no-referrer"
+              className="h-full w-full object-cover"
             />
-            <span
-              className="ps-1.5 text-[9px] font-en font-bold uppercase tracking-wider line-clamp-1 opacity-95"
-              style={{ color: book.coverPalette.textHex }}
-              lang="en"
-            >
-              {book.categoryNameEn}
-            </span>
-            <span className="ps-1.5 text-[10px] font-bold leading-tight line-clamp-3">
-              {book.titleBn}
-            </span>
-            <div className="ps-1.5 flex items-center justify-between">
-              <Image
-                src="/brand/bcp-master-logo.png"
-                alt="BCP"
-                width={18}
-                height={18}
-                referrerPolicy="no-referrer"
-                className="rounded-full bg-white object-contain"
-              />
-              <BookOpen className="w-3 h-3 opacity-80" aria-hidden="true" />
-            </div>
           </div>
 
           <div className="min-w-0 space-y-1">
@@ -209,7 +163,11 @@ export function BookCard({
                   ? `স্টক উপলব্ধ (${book.stockQuantity} কপি)`
                   : "বর্তমানে স্টক শেষ"}
               </p>
-            ) : null}
+            ) : (
+              <p className="text-[11px] font-medium text-[#596775]">
+                প্রস্তাবিত কনসেপ্ট প্রচ্ছদ
+              </p>
+            )}
           </div>
         </Link>
 

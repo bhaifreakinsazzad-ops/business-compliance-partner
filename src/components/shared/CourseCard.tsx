@@ -51,6 +51,7 @@ export function CourseCard({
       <Link href={coursePath} className="block overflow-hidden">
         <CourseArtworkThumbnail
           categorySlug={course.categorySlug}
+          offeringSlug={course.slug}
           categoryNameBn={course.categoryNameBn}
           badgeText={theme.badgeText}
           codeLabel={theme.codeLabel}
