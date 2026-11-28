@@ -10,6 +10,7 @@ import {
   filterPopularCourses,
 } from "@/lib/home/popular-courses";
 import { CourseCard } from "@/components/shared/CourseCard";
+import { EmptyState } from "@/components/shared/EmptyState";
 import { cn } from "@/lib/utils";
 
 interface PopularCoursesSectionProps {
@@ -117,9 +118,14 @@ export function PopularCoursesSection({
               ))}
             </div>
           ) : (
-            <div className="rounded-[16px] border border-[#E1E4F2] bg-[#FBFAFF] p-8 text-center text-sm text-[#596775]">
-              এই বিভাগে বর্তমানে কোনো প্রকাশিত কোর্স নেই। অনুগ্রহ করে সব কোর্স দেখুন।
-            </div>
+            <EmptyState
+              variant="courses"
+              stateType={courses.length === 0 ? "unpublished" : "no-results"}
+              titleBn="এই বিভাগে বর্তমানে কোনো প্রকাশিত কোর্স নেই"
+              descriptionBn="সব কোর্স দেখুন অথবা আপনার প্রয়োজনীয় প্রশিক্ষণের বিষয়ে আমাদের টিমকে আগ্রহ জানান।"
+              resetHref="/courses"
+              resetLabelBn="সকল কোর্স দেখুন"
+            />
           )}
         </div>
 

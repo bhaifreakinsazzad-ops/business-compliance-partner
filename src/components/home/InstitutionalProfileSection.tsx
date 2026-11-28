@@ -6,6 +6,7 @@ import {
   ExpertProfile,
   type ProfileTimelineItem,
 } from "@/components/home/ExpertProfile";
+import { resolveInstitutionalAsset } from "@/lib/config/media-manifest";
 import { cn } from "@/lib/utils";
 
 interface InstitutionalProfileSectionProps {
@@ -15,7 +16,7 @@ interface InstitutionalProfileSectionProps {
 }
 
 interface InstitutionalSlide {
-  id: string;
+  id: "foundation" | "standards";
   eyebrowBn: string;
   titleBn: string;
   panelTitleBn: string;
@@ -104,9 +105,9 @@ const INSTITUTIONAL_SLIDES: readonly InstitutionalSlide[] = [
 ] as const;
 
 /**
- * White-to-Periwinkle Institutional Profile Showcase (V8.1)
- * Adapts the alternating left/right profile + numbered timeline + slide switcher
- * from the reference while preserving honest BCP institutional branding.
+ * White-to-Periwinkle Institutional Profile Showcase (V8.3)
+ * Alternates the supplied portrait institutional poster (Slide 1) and studio architecture
+ * visual (Slide 2) alongside numbered institutional credentials.
  */
 export function InstitutionalProfileSection({
   logoAssetPath,
@@ -116,6 +117,7 @@ export function InstitutionalProfileSection({
   const [slideIndex, setSlideIndex] = useState(0);
   const activeSlide =
     INSTITUTIONAL_SLIDES[slideIndex] ?? INSTITUTIONAL_SLIDES[0]!;
+  const activeVisualAsset = resolveInstitutionalAsset(activeSlide.id);
 
   const goPrev = () =>
     setSlideIndex(
@@ -143,6 +145,8 @@ export function InstitutionalProfileSection({
             summaryBn={activeSlide.summaryBn}
             imageSrc={logoAssetPath || null}
             imageAlt={`${brandName} official badge`}
+            visualAsset={activeVisualAsset}
+            hideMedallionLogo={activeSlide.id === "foundation"}
             imagePosition={activeSlide.imagePosition}
             ctaHref={activeSlide.ctaHref}
             ctaLabelBn={activeSlide.ctaLabelBn}

@@ -203,8 +203,24 @@ export default async function CoursesPage({ searchParams }: CoursesPageProps) {
               </div>
             ) : (
               <EmptyState
-                titleBn="এই ফিল্টারে প্রকাশিত কোনো কোর্স পাওয়া যায়নি"
-                descriptionBn="অন্যান্য ক্যাটাগরি নির্বাচন করুন অথবা আমাদের কনসালটেন্সি ফর্মের মাধ্যমে নির্দিষ্ট প্রশিক্ষণের আগ্রহ জানান।"
+                variant="courses"
+                stateType={
+                  categories.length === 0 && !category && !q
+                    ? "unavailable"
+                    : !category && !q
+                      ? "unpublished"
+                      : "no-results"
+                }
+                titleBn={
+                  categories.length === 0 && !category && !q
+                    ? "কোর্স তালিকা সাময়িকভাবে লোড করা যায়নি"
+                    : "এই ফিল্টারে প্রকাশিত কোনো কোর্স পাওয়া যায়নি"
+                }
+                descriptionBn={
+                  categories.length === 0 && !category && !q
+                    ? "ডাটাবেস বা সংযোগ সাময়িকভাবে অনুপলব্ধ। কিছুক্ষণ পর পুনরায় চেষ্টা করুন অথবা সরাসরি আপনার পছন্দের প্রশিক্ষণ বিষয়ে অনুরোধ পাঠান।"
+                    : "অন্যান্য ক্যাটাগরি নির্বাচন করুন অথবা আমাদের কনসালটেন্সি ফর্মের মাধ্যমে নির্দিষ্ট প্রশিক্ষণের আগ্রহ জানান।"
+                }
                 resetHref="/courses"
                 resetLabelBn="সব কোর্স দেখুন"
               />

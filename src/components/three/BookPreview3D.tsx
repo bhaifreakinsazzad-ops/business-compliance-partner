@@ -54,8 +54,8 @@ function createFrontCoverTexture(
   governedCoverImage?: HTMLImageElement | null,
 ): THREE.CanvasTexture {
   const canvas = document.createElement("canvas");
-  canvas.width = 512;
-  canvas.height = 720;
+  canvas.width = 600;
+  canvas.height = 800;
   const ctx = canvas.getContext("2d");
 
   if (ctx) {
@@ -64,7 +64,7 @@ function createFrontCoverTexture(
       governedCoverImage.complete &&
       governedCoverImage.naturalWidth > 0
     ) {
-      ctx.drawImage(governedCoverImage, 0, 0, 512, 720);
+      ctx.drawImage(governedCoverImage, 0, 0, 600, 800);
       const tex = new THREE.CanvasTexture(canvas);
       tex.colorSpace = THREE.SRGBColorSpace;
       tex.anisotropy = 4;
@@ -401,8 +401,8 @@ export function BookPreview3D({ book }: BookPreview3DProps) {
     shadow.position.y = -1.42;
     scene.add(shadow);
 
-    const bookW = 1.75;
-    const bookH = 2.48;
+    const bookW = 1.80;
+    const bookH = 2.40;
     const bookD = 0.28;
 
     const frontTex = createFrontCoverTexture(book, null);
@@ -749,8 +749,8 @@ export function BookPreview3D({ book }: BookPreview3DProps) {
             <NextImage
               src={resolveBookCoverAsset(book.slug, book.categorySlug).publicPath}
               alt={resolveBookCoverAsset(book.slug, book.categorySlug).altBn}
-              width={720}
-              height={960}
+              width={resolveBookCoverAsset(book.slug, book.categorySlug).width}
+              height={resolveBookCoverAsset(book.slug, book.categorySlug).height}
               referrerPolicy="no-referrer"
               className="w-full h-full object-cover"
             />

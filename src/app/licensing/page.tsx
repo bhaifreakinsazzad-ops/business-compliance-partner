@@ -233,8 +233,24 @@ export default async function LicensingPage({
               </div>
             ) : (
               <EmptyState
-                titleBn="এই বিভাগে প্রকাশিত কোনো লাইসেন্সিং তথ্য পাওয়া যায়নি"
-                descriptionBn="অন্যান্য বিভাগ দেখুন অথবা আপনার প্রয়োজনীয় অনুমোদনের বিষয়ে সরাসরি পরামর্শের অনুরোধ পাঠান।"
+                variant="services"
+                stateType={
+                  categories.length === 0 && !category && !q
+                    ? "unavailable"
+                    : !category && !q
+                      ? "unpublished"
+                      : "no-results"
+                }
+                titleBn={
+                  categories.length === 0 && !category && !q
+                    ? "লাইসেন্সিং তালিকা সাময়িকভাবে লোড করা যায়নি"
+                    : "এই বিভাগে প্রকাশিত কোনো লাইসেন্সিং তথ্য পাওয়া যায়নি"
+                }
+                descriptionBn={
+                  categories.length === 0 && !category && !q
+                    ? "সাময়িক সংযোগ জটিলতায় তালিকা দেখানো যায়নি। পুনরায় চেষ্টা করুন অথবা প্রয়োজনীয় নিবন্ধনের জন্য সহায়তা চাইতে পারেন।"
+                    : "অন্যান্য বিভাগ দেখুন অথবা আপনার প্রয়োজনীয় অনুমোদনের বিষয়ে সরাসরি পরামর্শের অনুরোধ পাঠান।"
+                }
                 resetHref="/licensing"
                 resetLabelBn="সব লাইসেন্সিং দেখুন"
               />

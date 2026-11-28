@@ -170,8 +170,24 @@ export default async function BooksPage({ searchParams }: BooksPageProps) {
               </div>
             ) : (
               <EmptyState
-                titleBn="এই অনুসন্ধানে কোনো বই পাওয়া যায়নি"
-                descriptionBn="অন্যান্য বিভাগ নির্বাচন করুন অথবা আপনার কাঙ্ক্ষিত বিষয়টির ওপর প্রকাশনার জন্য পরামর্শ জানান।"
+                variant="books"
+                stateType={
+                  categories.length === 0 && !category && !q
+                    ? "unavailable"
+                    : !category && !q
+                      ? "unpublished"
+                      : "no-results"
+                }
+                titleBn={
+                  categories.length === 0 && !category && !q
+                    ? "বই ও প্রকাশনা তালিকা সাময়িকভাবে লোড করা যায়নি"
+                    : "এই অনুসন্ধানে কোনো বই পাওয়া যায়নি"
+                }
+                descriptionBn={
+                  categories.length === 0 && !category && !q
+                    ? "ডাটাবেস সংযোগ সাময়িকভাবে অনুপলব্ধ। পুনরায় লোড করুন অথবা আপনার কাঙ্ক্ষিত বইয়ের বিষয়ে প্রকাশনা আগ্রহ জানান।"
+                    : "অন্যান্য বিভাগ নির্বাচন করুন অথবা আপনার কাঙ্ক্ষিত বিষয়টির ওপর প্রকাশনার জন্য পরামর্শ জানান।"
+                }
                 resetHref="/books"
                 resetLabelBn="সব বই দেখুন"
               />

@@ -1,24 +1,31 @@
 import { expect, test } from "@playwright/test";
 
-test.describe("V8.1 Video-Verified Reference Fidelity & AKIJ Periwinkle Transformation", () => {
-  test("renders Bunyanum Marsus homepage section sequence, coverflow stage, journey, and white-to-Periwinkle profile", async ({
+test.describe("V8.3 Branded Asset Integration & Video-Verified Reference Fidelity", () => {
+  test("renders Bunyanum Marsus homepage section sequence, full-bleed coverflow, gateways, 3 pillars, journey, and institutional poster", async ({
     page,
   }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/");
 
-    // 1. 3D Perspective Coverflow Stage + Segmented Slider Indicator (01 — 04) + Tagline
+    // 1. 3D Perspective Coverflow Stage + Compact Bottom CTA Strip + Tagline
     const hero = page.getByRole("region", {
       name: "প্রচারণামূলক ব্যানার স্লাইডার",
     });
     await expect(hero).toBeVisible();
     await expect(hero.locator("[data-coverflow-stage]")).toBeVisible();
     await expect(hero.locator("[data-coverflow-slide]")).toHaveCount(4);
+    await expect(hero.locator('[data-hero-cta-strip="ecosystem-overview"]')).toBeVisible();
     await expect(hero).toContainText("01");
     await expect(hero).toContainText("04");
     await expect(hero).toContainText(
       "One Partner · Complete Solutions · Confident Growth",
     );
+
+    // Hero slide image fills 16:9 stage cleanly with branded V8.3 artwork
+    const activeHeroImg = hero
+      .locator('[data-coverflow-role="active"] img')
+      .first();
+    await expect(activeHeroImg).toHaveAttribute("src", /hero-brand\.webp/);
 
     // 2. Unified Compact Periwinkle Gateway Buttons (Courses -> Services -> Books)
     const gateways = page.locator("a[data-flagship-cta]");
@@ -44,7 +51,7 @@ test.describe("V8.1 Video-Verified Reference Fidelity & AKIJ Periwinkle Transfor
       expect(metric.height).toBeLessThanOrEqual(80);
     }
 
-    // 3. Popular Courses interactive category tabs & thumbnail-first product grid
+    // 3. Popular Courses interactive category tabs & uniform 16:9 thumbnails
     const coursesSection = page.locator('section[data-home-pillar="courses"]');
     await expect(coursesSection).toContainText("আমাদের জনপ্রিয় কোর্সসমূহ");
     const firstCategoryTab = coursesSection
@@ -56,9 +63,13 @@ test.describe("V8.1 Video-Verified Reference Fidelity & AKIJ Periwinkle Transfor
       coursesSection.locator("[data-popular-course-card]").first(),
     ).toBeVisible();
 
-    // 4. Services Gateway interactive track tabs + ConsultancyForm
+    // 4. Services Gateway interactive track tabs switch track artwork cleanly
     const servicesSection = page.locator('section[data-home-pillar="services"]');
     await expect(servicesSection).toContainText("আমাদের পেশাদার সেবাসমূহ");
+    await expect(
+      servicesSection.locator("img").first(),
+    ).toHaveAttribute("src", /service-tax\.webp/);
+
     const rjscTab = servicesSection.getByRole("tab", {
       name: "Smart RJSC ও কোম্পানি",
     });
@@ -67,6 +78,9 @@ test.describe("V8.1 Video-Verified Reference Fidelity & AKIJ Periwinkle Transfor
     await expect(servicesSection).toContainText(
       "কোম্পানি নিবন্ধন ও কর্পোরেট সেক্রেটারিয়াল সেবা",
     );
+    await expect(
+      servicesSection.locator("img").first(),
+    ).toHaveAttribute("src", /service-rjsc\.webp/);
     await expect(servicesSection.locator("form")).toBeVisible();
 
     // 5. Books E-Commerce Storefront section + category filter tabs
@@ -85,13 +99,16 @@ test.describe("V8.1 Video-Verified Reference Fidelity & AKIJ Periwinkle Transfor
     await expect(journeySection).toContainText("আমাদের কার্যক্রম কীভাবে চলে?");
     await expect(journeySection.locator("[data-journey-step]")).toHaveCount(4);
 
-    // 7. White-to-Periwinkle Institutional Profile 2-col section with pagination
+    // 7. White-to-Periwinkle Institutional Profile Slide 1 (portrait poster) -> Slide 2 (studio visual)
     const profileSection = page.locator(
       'section[aria-label="প্রতিষ্ঠান পরিচিতি — Business Compliance Partner"]',
     );
     await expect(profileSection).toBeVisible();
     await expect(
       profileSection.locator("[data-institutional-profile-frame='periwinkle']"),
+    ).toBeVisible();
+    await expect(
+      profileSection.locator('img[src*="bcp-institutional-poster.webp"]'),
     ).toBeVisible();
     await expect(profileSection).toContainText("Business Compliance Partner");
     await expect(profileSection).toContainText("১");
@@ -101,6 +118,9 @@ test.describe("V8.1 Video-Verified Reference Fidelity & AKIJ Periwinkle Transfor
       .getByRole("button", { name: "পরবর্তী পরিচিতি প্যানেল" })
       .click();
     await expect(profileSection).toContainText("02 / 02");
+    await expect(
+      profileSection.locator('img[src*="bcp-studio-editorial.webp"]'),
+    ).toBeVisible();
   });
 
   test("coverflow carousel renders 3D wing geometry, circular edge arrows, wrap-around, keyboard nav, and pause/resume", async ({
@@ -121,7 +141,6 @@ test.describe("V8.1 Video-Verified Reference Fidelity & AKIJ Periwinkle Transfor
     await expect(prevWing).toHaveCount(1);
     await expect(nextWing).toHaveCount(1);
 
-    // Active slide wider than tilted neighbor wings on desktop
     const boxes = await Promise.all([
       activeSlide.boundingBox(),
       prevWing.boundingBox(),
@@ -133,38 +152,31 @@ test.describe("V8.1 Video-Verified Reference Fidelity & AKIJ Periwinkle Transfor
     expect(boxes[0]!.width).toBeGreaterThan(boxes[1]!.width);
     expect(boxes[0]!.width).toBeGreaterThan(boxes[2]!.width);
 
-    // Neighbor wings carry 3D perspective transform (matrix3d)
     const wingTransform = await nextWing.evaluate(
       (el) => window.getComputedStyle(el).transform,
     );
     expect(wingTransform).not.toBe("none");
 
-    // Circular Previous / Next buttons directly on banner edges
     const nextBtn = hero.locator('button[data-carousel-next="true"]');
     const prevBtn = hero.locator('button[data-carousel-prev="true"]');
     await expect(nextBtn).toBeVisible();
     await expect(prevBtn).toBeVisible();
 
-    // Wrap-around backward: 01 -> 04
     await prevBtn.click();
     await expect(hero.locator("[data-slide-counter]")).toContainText("04");
 
-    // Wrap-around forward: 04 -> 01
     await nextBtn.click();
     await expect(hero.locator("[data-slide-counter]")).toContainText("01");
 
-    // Rapid consecutive next clicks resolve cleanly to slide 04 without layout drift
     await nextBtn.click();
     await nextBtn.click();
     await nextBtn.click();
     await expect(hero.locator("[data-slide-counter]")).toContainText("04");
 
-    // Keyboard navigation
     await hero.focus();
     await page.keyboard.press("ArrowRight");
     await expect(hero.locator("[data-slide-counter]")).toContainText("01");
 
-    // Pause / Resume control
     const pauseBtn = hero.getByRole("button", { name: "স্লাইডার থামান" });
     await pauseBtn.click();
     const resumeBtn = hero.getByRole("button", { name: "স্লাইডার চালু করুন" });
@@ -212,13 +224,14 @@ test.describe("V8.1 Video-Verified Reference Fidelity & AKIJ Periwinkle Transfor
     await expect(hero.locator("[data-slide-counter]")).toContainText("02");
   });
 
-  test("contact page renders centered Periwinkle header, official WhatsApp, #202D72 connect box, and form", async ({
+  test("contact page renders supplied customer support banner, centered Periwinkle header, official WhatsApp, and form", async ({
     page,
   }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/contact");
 
     await expect(page.locator("h1")).toContainText("আমাদের সাথে যোগাযোগ করুন");
+    await expect(page.locator('img[src*="customer-support.webp"]')).toBeVisible();
     await expect(page.locator("main")).toContainText("যোগাযোগের তথ্য");
     await expect(page.locator("main")).toContainText("সরাসরি ও দ্রুত যুক্ত থাকুন");
     await expect(page.locator("main form")).toBeVisible();
@@ -228,20 +241,39 @@ test.describe("V8.1 Video-Verified Reference Fidelity & AKIJ Periwinkle Transfor
     await expect(page.locator("main")).not.toContainText("চূড়ান্ত ক্লায়েন্ট অনুমোদনের পর");
   });
 
-  test("V8.2 static artwork renders cleanly with zero broken images, single H1, guarded inactive slides, and paused progress freeze", async ({
+  test("division empty states render dedicated branded V8.3 illustrations across courses, services, and books", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+
+    await page.goto("/courses?q=zzzzv83nomatch");
+    await expect(
+      page.locator('[data-empty-state-variant="courses"] img[src*="courses-empty-state.webp"]'),
+    ).toBeVisible();
+
+    await page.goto("/services?q=zzzzv83nomatch");
+    await expect(
+      page.locator('[data-empty-state-variant="services"] img[src*="services-empty-state.webp"]'),
+    ).toBeVisible();
+
+    await page.goto("/books?q=zzzzv83nomatch");
+    await expect(
+      page.locator('[data-empty-state-variant="books"] img[src*="books-empty-state.webp"]'),
+    ).toBeVisible();
+  });
+
+  test("V8.3 static artwork renders cleanly with zero broken images, single H1, guarded inactive slides, and paused progress freeze", async ({
     page,
   }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/");
 
-    // Single semantic H1 on homepage even after switching slides
     await expect(page.locator("h1")).toHaveCount(1);
 
     const hero = page.getByRole("region", {
       name: "প্রচারণামূলক ব্যানার স্লাইডার",
     });
 
-    // Inactive slides are aria-hidden and their links are excluded from keyboard tab order
     const inactiveSlides = hero.locator('[data-coverflow-slide][aria-hidden="true"]');
     await expect(inactiveSlides).toHaveCount(3);
     const inactiveTabIndexes = await inactiveSlides
@@ -249,7 +281,6 @@ test.describe("V8.1 Video-Verified Reference Fidelity & AKIJ Periwinkle Transfor
       .evaluateAll((links) => links.map((a) => a.getAttribute("tabindex")));
     expect(inactiveTabIndexes.every((val) => val === "-1")).toBe(true);
 
-    // Pausing slider preserves elapsed progress instead of snapping scaleX to 1
     const pauseBtn = hero.getByRole("button", { name: "স্লাইডার থামান" });
     await pauseBtn.click();
     const activeBarScaleX = await hero
@@ -262,7 +293,6 @@ test.describe("V8.1 Video-Verified Reference Fidelity & AKIJ Periwinkle Transfor
       });
     expect(activeBarScaleX).toBeLessThan(0.9);
 
-    // Every visible <img> across the homepage must load with naturalWidth > 0
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
     await page.waitForTimeout(350);
     const brokenImages = await page.evaluate(() =>

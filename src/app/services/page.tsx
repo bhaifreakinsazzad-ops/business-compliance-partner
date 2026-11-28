@@ -231,8 +231,24 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
               </div>
             ) : (
               <EmptyState
-                titleBn="এই বিভাগে প্রকাশিত কোনো সেবা পাওয়া যায়নি"
-                descriptionBn="অন্যান্য বিভাগ দেখুন অথবা সরাসরি আপনার ব্যবসার প্রয়োজন লিখে আমাদের টিমের কাছে পাঠান।"
+                variant="services"
+                stateType={
+                  categories.length === 0 && !resolvedCategory && !q
+                    ? "unavailable"
+                    : !resolvedCategory && !q
+                      ? "unpublished"
+                      : "no-results"
+                }
+                titleBn={
+                  categories.length === 0 && !resolvedCategory && !q
+                    ? "সেবা তালিকা সাময়িকভাবে লোড করা যায়নি"
+                    : "এই বিভাগে প্রকাশিত কোনো সেবা পাওয়া যায়নি"
+                }
+                descriptionBn={
+                  categories.length === 0 && !resolvedCategory && !q
+                    ? "সাময়িক সংযোগ জটিলতায় তালিকা দেখানো যায়নি। পুনরায় লোড করুন অথবা সরাসরি পরামর্শ অনুরোধ পাঠান।"
+                    : "অন্যান্য বিভাগ দেখুন অথবা সরাসরি আপনার ব্যবসার প্রয়োজন লিখে আমাদের টিমের কাছে পাঠান।"
+                }
                 resetHref="/services"
                 resetLabelBn="সব সেবা দেখুন"
               />

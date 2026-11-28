@@ -183,17 +183,44 @@ export function ServicesGatewaySection({
             className="rounded-[20px] border border-white bg-white/95 p-5 sm:p-7 lg:p-9 shadow-sm grid grid-cols-1 lg:grid-cols-12 gap-7 lg:gap-8 items-start"
           >
             <div className="lg:col-span-6 space-y-5">
-              {/* Track-Specific Editorial Artwork Header */}
-              <div className="overflow-hidden rounded-[14px] border border-[#E1E4F2] bg-[#F4F5FF] shadow-xs">
-                <Image
-                  src={trackAsset.publicPath}
-                  alt={trackAsset.altBn}
-                  width={trackAsset.width}
-                  height={trackAsset.height}
-                  referrerPolicy="no-referrer"
-                  className="w-full h-auto object-cover"
-                />
-              </div>
+              {/* Track-Specific Editorial Artwork Header (uniform 16:9 stage prevents jump across 16:9 and wide assets) */}
+              {trackAsset.width / trackAsset.height > 2.2 ? (
+                <div className="aspect-video w-full overflow-hidden rounded-[14px] border border-[#B8BBFF]/70 bg-gradient-to-br from-white via-[#F6F6FF] to-[#E2E3FF] p-3 sm:p-5 flex flex-col items-center justify-center gap-2.5 shadow-xs">
+                  <span
+                    className="font-en text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.18em] text-[#243FBA]"
+                    lang="en"
+                  >
+                    Business Compliance Partner · Services
+                  </span>
+                  <div className="w-full overflow-hidden rounded-[12px] border border-[#B8BBFF] bg-white shadow-xs">
+                    <Image
+                      src={trackAsset.publicPath}
+                      alt={trackAsset.altBn}
+                      width={trackAsset.width}
+                      height={trackAsset.height}
+                      referrerPolicy="no-referrer"
+                      className="w-full h-auto object-contain"
+                    />
+                  </div>
+                  <span
+                    className="font-en text-[10px] font-semibold uppercase tracking-[0.12em] text-[#596775]"
+                    lang="en"
+                  >
+                    Verified Bangladesh Compliance Desk
+                  </span>
+                </div>
+              ) : (
+                <div className="aspect-video w-full overflow-hidden rounded-[14px] border border-[#E1E4F2] bg-[#F4F5FF] shadow-xs">
+                  <Image
+                    src={trackAsset.publicPath}
+                    alt={trackAsset.altBn}
+                    width={trackAsset.width}
+                    height={trackAsset.height}
+                    referrerPolicy="no-referrer"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              )}
 
               <div className="flex items-start gap-3.5">
                 <span className="inline-flex items-center justify-center w-11 h-11 rounded-[12px] bg-[#243FBA] text-white shrink-0 shadow-xs">

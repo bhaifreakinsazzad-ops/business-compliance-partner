@@ -4,7 +4,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ShieldCheck } from "lucide-react";
 import { useAnimationScope } from "@/hooks/useAnimationScope";
-import { INSTITUTIONAL_STUDIO_MEDIA } from "@/lib/config/media-manifest";
+import {
+  INSTITUTIONAL_STUDIO_MEDIA,
+  type GovernedMediaAsset,
+} from "@/lib/config/media-manifest";
 import { animateRevealItems } from "@/lib/motion/tokens";
 import { cn } from "@/lib/utils";
 
@@ -22,6 +25,8 @@ export interface ExpertProfileProps {
   summaryBn: string;
   imageSrc: string | null;
   imageAlt: string;
+  visualAsset?: GovernedMediaAsset;
+  hideMedallionLogo?: boolean;
   imagePosition?: "left" | "right";
   ctaHref?: string;
   ctaLabelBn?: string;
@@ -29,7 +34,7 @@ export interface ExpertProfileProps {
 }
 
 /**
- * Reusable alternating Institutional Studio + Numbered Timeline showcase component
+ * Reusable alternating Institutional Showcase + Numbered Timeline component
  * styled in the White-to-Periwinkle AKIJ iBOS palette without fabricated human portraits.
  */
 export function ExpertProfile({
@@ -40,6 +45,8 @@ export function ExpertProfile({
   summaryBn,
   imageSrc,
   imageAlt,
+  visualAsset = INSTITUTIONAL_STUDIO_MEDIA,
+  hideMedallionLogo = false,
   imagePosition = "left",
   ctaHref = "/about",
   ctaLabelBn = "প্রতিষ্ঠান সম্পর্কে বিস্তারিত জানুন",
@@ -53,24 +60,25 @@ export function ExpertProfile({
       if (timelineItems.length === 0) return;
       animateRevealItems(timelineItems);
     },
-    [titleBn, imagePosition],
+    [titleBn, imagePosition, visualAsset.assetId],
   );
 
   const isRightImage = imagePosition === "right";
+  const isPortraitVisual = visualAsset.height > visualAsset.width;
 
   return (
     <div
       ref={scopeRef}
       className="relative grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center"
     >
-      {/* Institutional Studio Artwork + Restrained Brand Medallion Card */}
+      {/* Institutional Artwork + Restrained Brand Footer Card */}
       <div
         className={cn(
           "lg:col-span-5 flex justify-center",
           isRightImage ? "lg:order-2" : "lg:order-1",
         )}
       >
-        <div className="relative w-full max-w-md rounded-[22px] border border-[#B8BBFF] bg-white p-5 sm:p-6 space-y-5 shadow-[0_18px_42px_rgba(36,63,186,0.12)]">
+        <div className="relative w-full max-w-md rounded-[22px] border border-[#B8BBFF] bg-white p-4 sm:p-5 space-y-4 shadow-[0_18px_42px_rgba(36,63,186,0.12)]">
           {/* Subtle Reference Corner Dot Accent */}
           <div
             aria-hidden="true"
@@ -84,19 +92,24 @@ export function ExpertProfile({
             ))}
           </div>
 
-          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[16px] border border-[#E1E4F2] bg-[#FBFAFF]">
+          <div
+            className={cn(
+              "relative w-full overflow-hidden rounded-[16px] border border-[#E1E4F2] bg-[#FBFAFF]",
+              isPortraitVisual ? "aspect-[4/5]" : "aspect-[4/3]",
+            )}
+          >
             <Image
-              src={INSTITUTIONAL_STUDIO_MEDIA.publicPath}
-              alt={INSTITUTIONAL_STUDIO_MEDIA.altBn}
-              width={INSTITUTIONAL_STUDIO_MEDIA.width}
-              height={INSTITUTIONAL_STUDIO_MEDIA.height}
+              src={visualAsset.publicPath}
+              alt={visualAsset.altBn}
+              width={visualAsset.width}
+              height={visualAsset.height}
               referrerPolicy="no-referrer"
               className="h-full w-full object-cover"
             />
           </div>
 
           <div className="flex items-start gap-3.5 text-start">
-            {imageSrc ? (
+            {imageSrc && !hideMedallionLogo ? (
               <Image
                 src={imageSrc}
                 alt={imageAlt}

@@ -151,6 +151,8 @@ export function PromotionalHeroSlider({
   logoAssetPath,
   brandName,
 }: PromotionalHeroSliderProps) {
+  void logoAssetPath;
+  void brandName;
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -401,10 +403,10 @@ export function PromotionalHeroSlider({
       onTouchEnd={handleTouchEnd}
       className="bcp-reference-hero relative text-[#181D26] border-b border-[#E1E4F2] overflow-x-clip"
     >
-      {/* Keep a single semantic, screen-reader-safe H1 when browsing slides 02–04 */}
-      {activeIndex !== 0 ? (
-        <h1 className="visually-hidden">{PROMO_SLIDES[0]!.titleBn}</h1>
-      ) : null}
+      {/* Keep a single semantic, screen-reader-safe H1 because hero artwork renders campaign typography natively */}
+      <h1 className="visually-hidden">
+        {PROMO_SLIDES[0]!.titleBn} — {activeSlide.badgeBn}
+      </h1>
 
       <div className="pt-4 pb-6 sm:pt-7 sm:pb-8 space-y-5 sm:space-y-6">
         {/* 3D Perspective Coverflow Stage */}
@@ -412,9 +414,9 @@ export function PromotionalHeroSlider({
           className="relative mx-auto w-full max-w-[1440px] px-4 sm:px-6 py-2 overflow-hidden"
           data-coverflow-stage="true"
         >
-          {/* Central 16:9 Stage Reference Box + Left/Right Circular Edge Arrows */}
+          {/* Central 16:9 Stage Reference Box preserving full-bleed banner artwork proportions */}
           <div
-            className="relative mx-auto w-[88%] sm:w-[82%] md:w-[76%] lg:w-[64%] max-w-[900px] min-h-[280px] sm:min-h-[348px] lg:min-h-0 lg:aspect-[16/9]"
+            className="relative mx-auto w-[90%] sm:w-[82%] md:w-[76%] lg:w-[64%] max-w-[900px] aspect-[16/9]"
             style={{
               perspective: "1350px",
               transformStyle: "preserve-3d",
@@ -459,159 +461,63 @@ export function PromotionalHeroSlider({
                   }}
                   style={initialStyle}
                   className={cn(
-                    "absolute inset-0 rounded-[20px] sm:rounded-[24px] will-change-transform origin-center overflow-hidden border shadow-[0_22px_54px_rgba(32,45,114,0.16)]",
-                    slide.posterTheme.canvasClass,
+                    "absolute inset-0 rounded-[16px] sm:rounded-[22px] will-change-transform origin-center overflow-hidden border border-[#B8BBFF] bg-[#F5F6FF] shadow-[0_22px_54px_rgba(32,45,114,0.16)]",
                     isActive
-                      ? "ring-2 ring-[#B8BBFF]/80"
+                      ? "ring-2 ring-[#B8BBFF]/85"
                       : isNeighbor
                         ? "cursor-pointer"
                         : "pointer-events-none",
                   )}
                 >
-                  {/* Art-Directed Campaign Studio Artwork + Measured Readability Scrim */}
-                  <div className="relative h-full w-full px-5 py-4 sm:px-9 sm:py-7 lg:px-11 lg:py-9 flex flex-col justify-between">
+                  <div className="relative h-full w-full">
                     <Image
                       src={heroAsset.publicPath}
                       alt={isActive ? heroAsset.altBn : ""}
                       fill
-                      sizes="(max-width: 767px) 88vw, 900px"
+                      sizes="(max-width: 767px) 90vw, 900px"
                       priority={idx === 0}
                       loading={idx === 0 ? undefined : "eager"}
                       referrerPolicy="no-referrer"
-                      className="object-cover object-[78%_center] md:object-right pointer-events-none select-none"
-                    />
-                    <div
-                      aria-hidden="true"
-                      className={cn(
-                        "absolute inset-0 pointer-events-none",
-                        slide.posterTheme.scrimClass,
-                      )}
+                      className="object-cover object-center pointer-events-none select-none"
                     />
 
-                    {/* Banner Top Row: BCP Official Circular Badge + Division Tag */}
-                    <div className="relative z-10 flex items-center justify-between gap-2">
-                      <div className="inline-flex items-center gap-2 sm:gap-2.5">
-                        {logoAssetPath ? (
-                          <Image
-                            src={logoAssetPath}
-                            alt={isActive ? `${brandName} অফিসিয়াল ব্যাজ` : ""}
-                            width={34}
-                            height={34}
-                            priority={idx === 0}
-                            loading={idx === 0 ? undefined : "eager"}
-                            referrerPolicy="no-referrer"
-                            className="w-7 h-7 sm:w-9 sm:h-9 rounded-full border border-[#C59028]/80 bg-white object-contain shrink-0 shadow-xs"
-                          />
-                        ) : null}
-                        <span
-                          className={cn(
-                            "text-[11px] sm:text-xs font-extrabold tracking-wide",
-                            slide.posterTheme.isDark
-                              ? "text-[#DFB15B]"
-                              : "text-[#243FBA]",
-                          )}
-                        >
-                          {slide.badgeBn}
-                        </span>
-                      </div>
+                    {/* Assistive text description matching the baked-in campaign banner */}
+                    <span className="visually-hidden">
+                      {slide.titleBn} — {slide.subtitleBn}
+                    </span>
 
-                      <span
-                        className={cn(
-                          "hidden sm:inline-flex items-center gap-1.5 font-en text-[11px] font-bold uppercase tracking-[0.14em] rounded-md px-2.5 py-1",
-                          slide.posterTheme.isDark
-                            ? "bg-[#081838]/65 text-[#CCCEFF] border border-white/15"
-                            : "bg-white/80 text-[#202D72] border border-[#B8BBFF]/60",
-                        )}
-                        lang="en"
-                      >
-                        <SlideVisualIcon className="w-3.5 h-3.5" aria-hidden="true" />
-                        <span>{slide.visualTagEn}</span>
-                      </span>
-                    </div>
-
-                    {/* Left Safe Typography Zone leaving Right Artwork Composition Unobstructed */}
-                    <div className="relative z-10 my-auto py-2 max-w-xl md:max-w-[58%] space-y-2.5 sm:space-y-3.5">
-                      {idx === 0 && isActive ? (
-                        <h1
-                          className={cn(
-                            "text-lg sm:text-2xl lg:text-[1.85rem] xl:text-[2.05rem] font-extrabold leading-[1.24] [text-wrap:balance]",
-                            slide.posterTheme.isDark
-                              ? "text-white"
-                              : "text-[#081838]",
-                          )}
-                        >
-                          {slide.titleBn}
-                        </h1>
-                      ) : (
-                        <p
-                          className={cn(
-                            "text-lg sm:text-2xl lg:text-[1.85rem] xl:text-[2.05rem] font-extrabold leading-[1.24] [text-wrap:balance]",
-                            slide.posterTheme.isDark
-                              ? "text-white"
-                              : "text-[#081838]",
-                          )}
-                        >
-                          {slide.titleBn}
-                        </p>
-                      )}
-
-                      <p
-                        className={cn(
-                          "text-xs sm:text-sm leading-relaxed line-clamp-2 max-w-md",
-                          slide.posterTheme.isDark
-                            ? "text-[#CCCEFF]"
-                            : "text-[#3B4859]",
-                        )}
-                      >
-                        {slide.subtitleBn}
-                      </p>
-                    </div>
-
-                    {/* Banner Bottom Action Strip (inactive slides stay non-interactive so wing clicks advance cleanly) */}
+                    {/* Compact Bottom Action Strip sitting unobtrusively along the lower margin */}
                     <div
+                      data-hero-cta-strip={slide.id}
                       className={cn(
-                        "relative z-10 flex flex-wrap items-center justify-between gap-2.5 pt-1",
+                        "absolute inset-x-0 bottom-0 z-10 px-2.5 py-1.5 sm:px-5 sm:py-2.5 bg-white/88 backdrop-blur-md border-t border-[#B8BBFF]/70 flex items-center justify-between gap-2",
                         !isActive && "pointer-events-none",
                       )}
                     >
-                      <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
+                      <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
                         <Link
                           href={slide.ctaHref}
                           tabIndex={isActive ? 0 : -1}
-                          className={cn(
-                            "inline-flex items-center justify-center gap-1.5 min-h-9 sm:min-h-10 px-4 sm:px-5 rounded-[10px] font-bold text-xs sm:text-sm whitespace-nowrap transition-colors shadow-sm",
-                            slide.posterTheme.isDark
-                              ? "bg-white text-[#081838] hover:bg-[#E2E3FF]"
-                              : "bg-[#243FBA] text-white hover:bg-[#1D329B]",
-                          )}
+                          className="inline-flex items-center justify-center gap-1 sm:gap-1.5 min-h-7 sm:min-h-9 px-2.5 sm:px-4 rounded-[8px] sm:rounded-[10px] font-bold text-[11px] sm:text-xs md:text-sm whitespace-nowrap transition-colors shadow-xs bg-[#243FBA] text-white hover:bg-[#1D329B]"
                         >
                           <span>{slide.ctaLabelBn}</span>
-                          <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" aria-hidden="true" />
+                          <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" aria-hidden="true" />
                         </Link>
 
                         <Link
                           href={slide.secondaryHref}
                           tabIndex={isActive ? 0 : -1}
-                          className={cn(
-                            "inline-flex items-center justify-center min-h-9 sm:min-h-10 px-3.5 sm:px-4 rounded-[10px] border font-semibold text-xs sm:text-sm whitespace-nowrap transition-colors",
-                            slide.posterTheme.isDark
-                              ? "border-white/30 bg-[#081838]/65 text-white hover:bg-white/20"
-                              : "border-[#B8BBFF] bg-white/90 text-[#202D72] hover:bg-[#E2E3FF]",
-                          )}
+                          className="inline-flex items-center justify-center min-h-7 sm:min-h-9 px-2.5 sm:px-3.5 rounded-[8px] sm:rounded-[10px] border border-[#B8BBFF] bg-white/95 text-[#202D72] hover:bg-[#E2E3FF] font-semibold text-[11px] sm:text-xs md:text-sm whitespace-nowrap transition-colors"
                         >
                           {slide.secondaryLabelBn}
                         </Link>
                       </div>
 
-                      <span
-                        className={cn(
-                          "hidden sm:inline-block font-en text-xs font-extrabold tabular-nums px-2 py-0.5 rounded",
-                          slide.posterTheme.isDark
-                            ? "bg-[#081838]/65 text-[#DFB15B]"
-                            : "bg-white/80 text-[#243FBA]",
-                        )}
-                      >
-                        {slide.orderCode} / 0{PROMO_SLIDES.length}
+                      <span className="hidden sm:inline-flex items-center gap-1.5 font-en text-[11px] font-extrabold tabular-nums px-2.5 py-1 rounded-md bg-[#E2E3FF]/85 text-[#243FBA] shrink-0">
+                        <SlideVisualIcon className="w-3.5 h-3.5" aria-hidden="true" />
+                        <span>
+                          {slide.orderCode} / 0{PROMO_SLIDES.length}
+                        </span>
                       </span>
                     </div>
                   </div>

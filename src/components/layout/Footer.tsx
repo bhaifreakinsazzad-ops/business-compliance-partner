@@ -96,19 +96,19 @@ export function Footer({ siteConfig }: FooterProps) {
               <div className="pt-2.5 border-t border-white/15 flex flex-wrap gap-x-4 gap-y-1 text-xs text-white/80">
                 <Link
                   href="/licensing"
-                  className="hover:text-[#E2E3FF] hover:underline underline-offset-4"
+                  className="inline-flex items-center min-h-7 hover:text-[#E2E3FF] hover:underline underline-offset-4"
                 >
                   লাইসেন্সিং
                 </Link>
                 <Link
                   href="/consultancy"
-                  className="hover:text-[#E2E3FF] hover:underline underline-offset-4"
+                  className="inline-flex items-center min-h-7 hover:text-[#E2E3FF] hover:underline underline-offset-4"
                 >
                   কনসালটেন্সি
                 </Link>
                 <Link
                   href="/tools"
-                  className="hover:text-[#E2E3FF] hover:underline underline-offset-4"
+                  className="inline-flex items-center min-h-7 hover:text-[#E2E3FF] hover:underline underline-offset-4"
                 >
                   রোডম্যাপ টুলস
                 </Link>
@@ -120,11 +120,11 @@ export function Footer({ siteConfig }: FooterProps) {
               <h2 className="text-sm font-bold text-[#DFB15B] tracking-wide">
                 তথ্য ও নীতিমালা
               </h2>
-              <ul className="space-y-1.5 text-xs sm:text-sm text-white/85">
+              <ul className="space-y-0.5 text-xs sm:text-sm text-white/85">
                 <li>
                   <Link
                     href="/about"
-                    className="hover:text-[#E2E3FF] hover:underline underline-offset-4"
+                    className="inline-flex items-center min-h-7 hover:text-[#E2E3FF] hover:underline underline-offset-4"
                   >
                     আমাদের সম্পর্কে
                   </Link>
@@ -132,7 +132,7 @@ export function Footer({ siteConfig }: FooterProps) {
                 <li>
                   <Link
                     href="/faq"
-                    className="hover:text-[#E2E3FF] hover:underline underline-offset-4"
+                    className="inline-flex items-center min-h-7 hover:text-[#E2E3FF] hover:underline underline-offset-4"
                   >
                     সচরাচর জিজ্ঞাসা (FAQ)
                   </Link>
@@ -140,7 +140,7 @@ export function Footer({ siteConfig }: FooterProps) {
                 <li>
                   <Link
                     href="/contact"
-                    className="hover:text-[#E2E3FF] hover:underline underline-offset-4"
+                    className="inline-flex items-center min-h-7 hover:text-[#E2E3FF] hover:underline underline-offset-4"
                   >
                     যোগাযোগ
                   </Link>
@@ -148,7 +148,7 @@ export function Footer({ siteConfig }: FooterProps) {
                 <li>
                   <Link
                     href="/portal"
-                    className="hover:text-[#E2E3FF] hover:underline underline-offset-4"
+                    className="inline-flex items-center min-h-7 hover:text-[#E2E3FF] hover:underline underline-offset-4"
                   >
                     কাস্টমার পোর্টাল
                   </Link>
@@ -156,7 +156,7 @@ export function Footer({ siteConfig }: FooterProps) {
                 <li>
                   <Link
                     href="/privacy"
-                    className="hover:text-[#E2E3FF] hover:underline underline-offset-4"
+                    className="inline-flex items-center min-h-7 hover:text-[#E2E3FF] hover:underline underline-offset-4"
                   >
                     গোপনীয়তা নীতি
                   </Link>
@@ -164,7 +164,7 @@ export function Footer({ siteConfig }: FooterProps) {
                 <li>
                   <Link
                     href="/terms"
-                    className="hover:text-[#E2E3FF] hover:underline underline-offset-4"
+                    className="inline-flex items-center min-h-7 hover:text-[#E2E3FF] hover:underline underline-offset-4"
                   >
                     শর্তাবলি
                   </Link>
@@ -172,7 +172,7 @@ export function Footer({ siteConfig }: FooterProps) {
                 <li>
                   <Link
                     href="/disclaimer"
-                    className="hover:text-[#E2E3FF] hover:underline underline-offset-4"
+                    className="inline-flex items-center min-h-7 hover:text-[#E2E3FF] hover:underline underline-offset-4"
                   >
                     আইনি ডিসক্লেইমার
                   </Link>

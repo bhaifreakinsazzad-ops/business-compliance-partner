@@ -10,6 +10,7 @@ import {
   filterBooksByTab,
 } from "@/lib/home/popular-courses";
 import { BookCard } from "@/components/books/BookCard";
+import { EmptyState } from "@/components/shared/EmptyState";
 import { cn } from "@/lib/utils";
 
 interface BooksShowcaseSectionProps {
@@ -109,11 +110,22 @@ export function BooksShowcaseSection({
           role="tabpanel"
           aria-labelledby={tabs.length > 1 ? activeTabId : undefined}
         >
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {visibleBooks.map((book) => (
-              <BookCard key={book.slug} book={book} variant="storefront" />
-            ))}
-          </div>
+          {visibleBooks.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              {visibleBooks.map((book) => (
+                <BookCard key={book.slug} book={book} variant="storefront" />
+              ))}
+            </div>
+          ) : (
+            <EmptyState
+              variant="books"
+              stateType={books.length === 0 ? "unpublished" : "no-results"}
+              titleBn="এই বিভাগে বর্তমানে কোনো বই প্রদর্শিত হচ্ছে না"
+              descriptionBn="অন্যান্য প্রকাশনা বিভাগ দেখুন অথবা আপনার আগ্রহের বিষয়ে আমাদের টিমকে জানান।"
+              resetHref="/books"
+              resetLabelBn="সকল বই দেখুন"
+            />
+          )}
         </div>
 
         {/* View All Books Storefront CTA */}

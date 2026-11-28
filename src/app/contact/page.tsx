@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import {
   BookOpen,
@@ -10,6 +11,7 @@ import {
   MessageCircle,
   Phone,
 } from "lucide-react";
+import { resolveSupportBannerAsset } from "@/lib/config/media-manifest";
 import { getPublicSiteConfig } from "@/lib/config/site";
 import {
   buildWhatsAppGeneralMessage,
@@ -30,6 +32,7 @@ export const metadata: Metadata = {
 
 export default async function ContactPage() {
   const siteConfig = await getPublicSiteConfig();
+  const supportBanner = resolveSupportBannerAsset();
   const whatsappHref = buildWhatsAppUrl(
     siteConfig.verifiedWhatsapp,
     buildWhatsAppGeneralMessage(),
@@ -41,9 +44,9 @@ export default async function ContactPage() {
       <AppHeader siteConfig={siteConfig} />
 
       <main id="main-content" tabIndex={-1} className="flex-1 bg-white">
-        {/* Centered Reference-Style Contact Header */}
+        {/* Centered Reference-Style Contact Header + Branded Customer Support Banner */}
         <section className="bcp-periwinkle-contact-header text-[#081838] py-10 sm:py-14 border-b border-[#E1E4F2]">
-          <div className="ps-container space-y-5">
+          <div className="ps-container space-y-6">
             <div className="flex justify-center">
               <Breadcrumbs
                 items={[{ labelBn: "হোম", href: "/" }, { labelBn: "যোগাযোগ" }]}
@@ -57,6 +60,18 @@ export default async function ContactPage() {
                 আপনার যেকোনো প্রশ্ন, কোর্স সংক্রান্ত তথ্য, পেশাদার সেবা বা প্রকাশনার
                 অনুসন্ধানের জন্য আমাদের টিমের সাথে যোগাযোগ করতে পারেন।
               </p>
+            </div>
+
+            <div className="max-w-3xl mx-auto overflow-hidden rounded-[16px] border border-[#B8BBFF] bg-white shadow-[0_12px_32px_rgba(36,63,186,0.08)]">
+              <Image
+                src={supportBanner.publicPath}
+                alt={supportBanner.altBn}
+                width={supportBanner.width}
+                height={supportBanner.height}
+                priority
+                referrerPolicy="no-referrer"
+                className="w-full h-auto object-contain"
+              />
             </div>
           </div>
         </section>
