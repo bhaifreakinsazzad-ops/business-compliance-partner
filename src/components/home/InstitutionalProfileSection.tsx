@@ -1,6 +1,12 @@
-import Image from "next/image";
-import Link from "next/link";
-import { ArrowRight, ShieldCheck } from "lucide-react";
+"use client";
+
+import { useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ExpertProfile,
+  type ProfileTimelineItem,
+} from "@/components/home/ExpertProfile";
+import { cn } from "@/lib/utils";
 
 interface InstitutionalProfileSectionProps {
   logoAssetPath: string;
@@ -8,144 +14,185 @@ interface InstitutionalProfileSectionProps {
   taglineBn: string;
 }
 
-const INSTITUTIONAL_PILLARS = [
+interface InstitutionalSlide {
+  id: string;
+  eyebrowBn: string;
+  titleBn: string;
+  panelTitleBn: string;
+  summaryBn: string;
+  imagePosition: "left" | "right";
+  ctaHref: string;
+  ctaLabelBn: string;
+  items: readonly ProfileTimelineItem[];
+}
+
+const INSTITUTIONAL_SLIDES: readonly InstitutionalSlide[] = [
   {
-    numBn: "১",
-    titleBn: "জাতীয় রাজস্ব বোর্ড (NBR) আয়কর ও মূসক নির্দেশনা",
-    subtitleBn:
-      "আয়কর আইন ২০২৩ এবং ভ্যাট ও মূসক ৯.১ বিধিমালা অনুযায়ী ব্যবহারিক প্রশিক্ষণ ও কমপ্লায়েন্স সহায়তা",
+    id: "foundation",
+    eyebrowBn: "প্রতিষ্ঠান পরিচিতি",
+    titleBn: "Business Compliance Partner",
+    panelTitleBn: "প্রাতিষ্ঠানিক ভিত্তি ও মূল কর্মপরিধি",
+    summaryBn:
+      "বাংলাদেশের উদ্যোক্তা, এসএমই এবং কর্পোরেট পেশাজীবীদের জন্য স্বাধীন প্রশিক্ষণ, পরামর্শ ও প্রকাশনা প্ল্যাটফর্ম।",
+    imagePosition: "left",
+    ctaHref: "/about",
+    ctaLabelBn: "প্রতিষ্ঠান সম্পর্কে বিস্তারিত জানুন",
+    items: [
+      {
+        numBn: "১",
+        titleBn: "জাতীয় রাজস্ব বোর্ড (NBR) আয়কর ও মূসক নির্দেশনা",
+        subtitleBn:
+          "আয়কর আইন ২০২৩ এবং ভ্যাট ও মূসক ৯.১ বিধিমালা অনুযায়ী ব্যবহারিক প্রশিক্ষণ ও কমপ্লায়েন্স সহায়তা",
+      },
+      {
+        numBn: "২",
+        titleBn: "Smart RJSC ও কর্পোরেট সেক্রেটারিয়াল কাঠামো",
+        subtitleBn:
+          "কোম্পানি গঠন, বার্ষিক রিটার্ন ও কর্পোরেট ডকুমেন্টেশনের নির্ভুল প্রাতিষ্ঠানিক নির্দেশিকা",
+      },
+      {
+        numBn: "৩",
+        titleBn: "BPPA (e-GP), ট্রেড লাইসেন্স ও নিয়ন্ত্রক অনুমোদন সহায়তা",
+        subtitleBn:
+          "ট্রেড লাইসেন্স, DIFE, ফায়ার সার্ভিস ও আমদানি-রপ্তানি নিবন্ধনের সঠিক চেকলিস্ট ও পরামর্শ",
+      },
+      {
+        numBn: "৪",
+        titleBn: "ব্যবহারিক প্রশিক্ষণ কোর্স এবং কমপ্লায়েন্স প্রকাশনা",
+        subtitleBn:
+          "উদ্যোক্তা ও পেশাজীবীদের জন্য সুশৃঙ্খল Courses, Services ও Books ইকোসিস্টেম",
+      },
+    ],
   },
   {
-    numBn: "২",
-    titleBn: "Smart RJSC ও কর্পোরেট সেক্রেটারিয়াল কাঠামো",
-    subtitleBn:
-      "কোম্পানি গঠন, বার্ষিক রিটার্ন ও কর্পোরেট ডকুমেন্টেশনের নির্ভুল প্রাতিষ্ঠানিক নির্দেশিকা",
+    id: "standards",
+    eyebrowBn: "পেশাদার মানদণ্ড · ২ / ২",
+    titleBn: "স্বচ্ছতা, গোপনীয়তা ও ব্যবহারিক সহায়তা",
+    panelTitleBn: "সেবা ও পরামর্শ পরিচালনার মূল নীতিমালা",
+    summaryBn:
+      "প্রতিটি প্রশিক্ষণ, কমপ্লায়েন্স সেবা এবং প্রকাশনায় নির্ভুল তথ্য ও দায়িত্বশীল দিকনির্দেশনাই আমাদের অঙ্গীকার।",
+    imagePosition: "right",
+    ctaHref: "/consultancy",
+    ctaLabelBn: "সরাসরি পরামর্শের অনুরোধ পাঠান",
+    items: [
+      {
+        numBn: "১",
+        titleBn: "স্বাধীন ও নিরপেক্ষ কমপ্লায়েন্স দিকনির্দেশনা",
+        subtitleBn:
+          "আমরা কোনো সরকারি দপ্তরের অংশ নই; সংশ্লিষ্ট কর্তৃপক্ষের বিধিমালা অনুযায়ী নির্ভুল প্রস্তুতি ও দাখিলে সহায়তা করি।",
+      },
+      {
+        numBn: "২",
+        titleBn: "নথিপত্র ও ব্যবসায়িক তথ্যের সুরক্ষা",
+        subtitleBn:
+          "গ্রাহকের পরিচয়পত্র, কর রিটার্ন ও আর্থিক তথ্য সর্বদা গোপন ও সংরক্ষিত পরিবেশে প্রক্রিয়াজাত করা হয়।",
+      },
+      {
+        numBn: "৩",
+        titleBn: "কোর্স, সেবা ও বইয়ের সমন্বিত ব্যবহার",
+        subtitleBn:
+          "শিখতে চাইলে Courses, কাজে সহায়তা চাইলে Services এবং দ্রুত রেফারেন্সের জন্য Books—একই মানদণ্ডে সাজানো।",
+      },
+      {
+        numBn: "৪",
+        titleBn: "যাচাইকৃত তথ্যের ভিত্তিতে স্বচ্ছ যোগাযোগ",
+        subtitleBn:
+          "অনুমোদন বা সময়ের বিষয়ে অবাস্তব প্রতিশ্রুতি নয়—বাস্তবসম্মত ধাপ ও প্রয়োজনীয় নথি স্পষ্টভাবে জানানো হয়।",
+      },
+    ],
   },
-  {
-    numBn: "৩",
-    titleBn: "BPPA (e-GP), ট্রেড লাইসেন্স ও নিয়ন্ত্রক অনুমোদন সহায়তা",
-    subtitleBn:
-      "ট্রেড লাইসেন্স, DIFE, ফায়ার সার্ভিস ও আমদানি-রপ্তানি নিবন্ধনের সঠিক চেকলিস্ট ও পরামর্শ",
-  },
-  {
-    numBn: "৪",
-    titleBn: "ব্যবহারিক প্রশিক্ষণ কোর্স এবং কমপ্লায়েন্স প্রকাশনা",
-    subtitleBn:
-      "উদ্যোক্তা ও পেশাজীবীদের জন্য সুশৃঙ্খল Courses, Services ও Books ইকোসিস্টেম",
-  },
-];
+] as const;
 
 /**
- * Honest BCP Institutional Profile Section adapted from the 2-column numbered
- * credential layout (without fabricating any unverified individual mentor portrait or bio).
+ * White-to-Periwinkle Institutional Profile Showcase (V8.1)
+ * Adapts the alternating left/right profile + numbered timeline + slide switcher
+ * from the reference while preserving honest BCP institutional branding.
  */
 export function InstitutionalProfileSection({
   logoAssetPath,
   brandName,
   taglineBn,
 }: InstitutionalProfileSectionProps) {
+  const [slideIndex, setSlideIndex] = useState(0);
+  const activeSlide =
+    INSTITUTIONAL_SLIDES[slideIndex] ?? INSTITUTIONAL_SLIDES[0]!;
+
+  const goPrev = () =>
+    setSlideIndex(
+      (prev) =>
+        (prev - 1 + INSTITUTIONAL_SLIDES.length) % INSTITUTIONAL_SLIDES.length,
+    );
+  const goNext = () =>
+    setSlideIndex((prev) => (prev + 1) % INSTITUTIONAL_SLIDES.length);
+
   return (
     <section
       aria-label="প্রতিষ্ঠান পরিচিতি — Business Compliance Partner"
       className="py-12 sm:py-16 bg-white border-b border-[#E1E4F2]"
     >
       <div className="ps-container">
-        <div className="relative rounded-[24px] bg-[#081838] text-white p-6 sm:p-10 lg:p-12 overflow-hidden shadow-lg">
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(184,187,255,0.16),transparent_48%),radial-gradient(circle_at_90%_85%,rgba(197,144,40,0.14),transparent_45%)] pointer-events-none"
+        <div
+          data-institutional-profile-frame="periwinkle"
+          className="bcp-reference-profile-frame relative rounded-[24px] border border-[#B8BBFF] p-5 sm:p-9 lg:p-12 overflow-hidden shadow-[0_18px_48px_rgba(36,63,186,0.08)] space-y-7"
+        >
+          <ExpertProfile
+            eyebrowBn={activeSlide.eyebrowBn}
+            titleBn={activeSlide.titleBn}
+            panelTitleBn={activeSlide.panelTitleBn}
+            taglineBn={taglineBn}
+            summaryBn={activeSlide.summaryBn}
+            imageSrc={logoAssetPath || null}
+            imageAlt={`${brandName} official badge`}
+            imagePosition={activeSlide.imagePosition}
+            ctaHref={activeSlide.ctaHref}
+            ctaLabelBn={activeSlide.ctaLabelBn}
+            items={activeSlide.items}
           />
 
-          <div className="relative grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
-            {/* Left Column: Official BCP Badge & Institutional Identity Card */}
-            <div className="lg:col-span-5 flex justify-center">
-              <div className="w-full max-w-sm rounded-[20px] border-2 border-[#C59028]/75 bg-gradient-to-b from-[#0E224A] to-[#081838] p-7 text-center space-y-5 shadow-[0_18px_42px_rgba(0,0,0,0.35)]">
-                {logoAssetPath ? (
-                  <div className="inline-flex items-center justify-center rounded-full p-2 bg-white shadow-md border-2 border-[#DFB15B]">
-                    <Image
-                      src={logoAssetPath}
-                      alt={`${brandName} official badge`}
-                      width={136}
-                      height={136}
-                      className="rounded-full object-contain"
-                    />
-                  </div>
-                ) : null}
+          {/* Reference Paginated Profile Switcher Controls */}
+          <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-[#E1E4F2]/90">
+            <span className="font-en text-xs font-bold text-[#202D72] tabular-nums">
+              0{slideIndex + 1} / 0{INSTITUTIONAL_SLIDES.length}
+            </span>
 
-                <div className="space-y-2">
-                  <p className="font-en text-xs font-bold uppercase tracking-[0.18em] text-[#DFB15B]">
-                    Business Compliance Partner
-                  </p>
-                  <p className="text-base sm:text-lg font-bold text-white leading-snug">
-                    {taglineBn}
-                  </p>
-                  <p className="text-xs text-[#CCCEFF] leading-relaxed">
-                    বাংলাদেশের উদ্যোক্তা, এসএমই এবং কর্পোরেট পেশাজীবীদের জন্য স্বাধীন
-                    প্রশিক্ষণ, পরামর্শ ও প্রকাশনা প্ল্যাটফর্ম।
-                  </p>
-                </div>
-
-                <div className="pt-2 border-t border-white/15">
-                  <Link
-                    href="/about"
-                    className="inline-flex items-center justify-center gap-1.5 text-xs font-bold text-[#DFB15B] hover:text-white transition-colors"
-                  >
-                    <span>প্রতিষ্ঠান সম্পর্কে বিস্তারিত জানুন</span>
-                    <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
-                  </Link>
-                </div>
-              </div>
+            <div className="flex items-center gap-2">
+              {INSTITUTIONAL_SLIDES.map((slide, idx) => {
+                const isSelected = idx === slideIndex;
+                return (
+                  <button
+                    key={slide.id}
+                    type="button"
+                    onClick={() => setSlideIndex(idx)}
+                    aria-label={`পরিচিতি প্যানেল ${idx + 1}: ${slide.eyebrowBn}`}
+                    aria-current={isSelected ? "true" : undefined}
+                    className={cn(
+                      "h-2.5 rounded-full transition-all cursor-pointer",
+                      isSelected
+                        ? "w-8 bg-[#243FBA]"
+                        : "w-2.5 bg-[#B8BBFF] hover:bg-[#243FBA]/60",
+                    )}
+                  />
+                );
+              })}
             </div>
 
-            {/* Right Column: Numbered Institutional Credential List */}
-            <div className="lg:col-span-7 space-y-5">
-              <div className="space-y-2">
-                <p className="inline-flex items-center gap-2 text-xs font-bold text-[#DFB15B]">
-                  <span className="h-[1.5px] w-7 bg-[#DFB15B]" aria-hidden="true" />
-                  <span>প্রতিষ্ঠান পরিচিতি</span>
-                </p>
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white leading-tight">
-                  Business Compliance Partner
-                </h2>
-              </div>
-
-              <div className="rounded-[18px] border border-white/15 bg-white/[0.04] p-5 sm:p-7 space-y-5">
-                <div className="flex items-center gap-3">
-                  <span className="inline-flex items-center justify-center w-9 h-9 rounded-[10px] border border-[#C59028]/50 bg-[#C59028]/15 text-[#DFB15B] shrink-0">
-                    <ShieldCheck className="w-5 h-5" aria-hidden="true" />
-                  </span>
-                  <h3 className="text-base sm:text-lg font-bold text-white">
-                    প্রাতিষ্ঠানিক ভিত্তি ও মূল কর্মপরিধি
-                  </h3>
-                </div>
-
-                <ol className="relative space-y-4">
-                  {INSTITUTIONAL_PILLARS.map((item, idx) => (
-                    <li
-                      key={item.numBn}
-                      className="relative flex items-start gap-4"
-                    >
-                      {idx < INSTITUTIONAL_PILLARS.length - 1 ? (
-                        <span
-                          aria-hidden="true"
-                          className="absolute start-4 top-9 bottom-[-18px] w-[1.5px] bg-[#C59028]/45"
-                        />
-                      ) : null}
-                      <span className="relative z-10 inline-flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-[#DFB15B] to-[#C59028] text-[#081838] text-xs font-extrabold shrink-0 shadow-xs">
-                        {item.numBn}
-                      </span>
-                      <div className="space-y-0.5 pt-0.5">
-                        <p className="text-sm sm:text-base font-bold text-white leading-snug">
-                          {item.titleBn}
-                        </p>
-                        <p className="text-xs sm:text-sm text-white/75 leading-relaxed">
-                          {item.subtitleBn}
-                        </p>
-                      </div>
-                    </li>
-                  ))}
-                </ol>
-              </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={goPrev}
+                aria-label="পূর্ববর্তী পরিচিতি প্যানেল"
+                className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-[#B8BBFF] bg-white text-[#243FBA] hover:bg-[#243FBA] hover:text-white transition-colors cursor-pointer shadow-xs"
+              >
+                <ChevronLeft className="w-4 h-4" aria-hidden="true" />
+              </button>
+              <button
+                type="button"
+                onClick={goNext}
+                aria-label="পরবর্তী পরিচিতি প্যানেল"
+                className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-[#B8BBFF] bg-white text-[#243FBA] hover:bg-[#243FBA] hover:text-white transition-colors cursor-pointer shadow-xs"
+              >
+                <ChevronRight className="w-4 h-4" aria-hidden="true" />
+              </button>
             </div>
           </div>
         </div>

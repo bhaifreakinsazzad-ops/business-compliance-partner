@@ -1,4 +1,11 @@
+import fs from "node:fs";
 import { defineConfig, devices } from "@playwright/test";
+
+const SYSTEM_CHROMIUM_SHELL =
+  "/ms-playwright/chrome-headless-shell-linux64/chrome-headless-shell";
+const resolvedExecutablePath =
+  process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH ||
+  (fs.existsSync(SYSTEM_CHROMIUM_SHELL) ? SYSTEM_CHROMIUM_SHELL : undefined);
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -9,6 +16,9 @@ export default defineConfig({
   use: {
     baseURL: "http://127.0.0.1:3000",
     trace: "on-first-retry",
+    ...(resolvedExecutablePath
+      ? { launchOptions: { executablePath: resolvedExecutablePath } }
+      : {}),
   },
   projects: [
     {

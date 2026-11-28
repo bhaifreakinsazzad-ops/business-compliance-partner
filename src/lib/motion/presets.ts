@@ -21,6 +21,11 @@ export const CARD_HOVER_PROPS = {
   whileTap: { scale: 0.992, transition: { duration: 0.1 } },
 } as const;
 
+export const BUTTON_PRESS_PROPS = {
+  whileHover: { y: -1, transition: BCP_TRANSITIONS.micro },
+  whileTap: { scale: 0.985, transition: { duration: 0.1 } },
+} as const;
+
 export const PANEL_VARIANTS: Variants = {
   hidden: { opacity: 0, y: 8, scale: 0.99 },
   visible: {

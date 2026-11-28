@@ -10,10 +10,10 @@ import {
 import { AppHeader } from "@/components/layout/AppHeader";
 import { Footer } from "@/components/layout/Footer";
 import { PromotionalHeroSlider } from "@/components/home/PromotionalHeroSlider";
-import { PrimaryBusinessActions } from "@/components/home/PrimaryBusinessActions";
 import { PopularCoursesSection } from "@/components/home/PopularCoursesSection";
 import { ServicesGatewaySection } from "@/components/home/ServicesGatewaySection";
 import { BooksShowcaseSection } from "@/components/home/BooksShowcaseSection";
+import { CustomerJourneySection } from "@/components/home/CustomerJourneySection";
 import { InstitutionalProfileSection } from "@/components/home/InstitutionalProfileSection";
 import { AuthorityNote } from "@/components/shared/AuthorityNote";
 import { WhatsAppEnquiryButton } from "@/components/shared/WhatsAppEnquiryButton";
@@ -36,34 +36,34 @@ export default async function HomePage() {
       <AppHeader siteConfig={siteConfig} />
 
       <main id="main-content" tabIndex={-1} className="flex-1 bg-white">
-        {/* 1. Compact Reference Hero Slideshow (AKIJ Periwinkle Mesh + 01—04 Bar) */}
+        {/* 1. 3D Coverflow Hero + Integrated Compact Periwinkle Gateways (Courses -> Services -> Books) */}
         <PromotionalHeroSlider
           logoAssetPath={siteConfig.logoAssetPath}
           brandName={siteConfig.brandName}
         />
 
-        {/* 2. Three Unified Periwinkle Gateway Buttons: 01. Courses -> 02. Services -> 03. Books */}
-        <PrimaryBusinessActions />
-
-        {/* 3. GATEWAY 01 — Popular Courses (আমাদের জনপ্রিয় কোর্সসমূহ) */}
+        {/* 2. GATEWAY 01 — Popular Courses (আমাদের জনপ্রিয় কোর্সসমূহ) */}
         <PopularCoursesSection
           courses={coursesData.items}
           categories={prioritizedCategories}
         />
 
-        {/* 4. GATEWAY 02 — Services & Quick Consultancy Intake (আমাদের পেশাদার সেবাসমূহ) */}
+        {/* 3. GATEWAY 02 — Services & Quick Consultancy Intake (আমাদের পেশাদার সেবাসমূহ) */}
         <ServicesGatewaySection
           verifiedWhatsapp={siteConfig.verifiedWhatsapp}
           canonicalBaseUrl={canonicalBaseUrl}
         />
 
-        {/* 5. GATEWAY 03 — Dedicated E-Commerce Books Storefront (আমাদের সকল বইসমূহ) */}
+        {/* 4. GATEWAY 03 — Dedicated E-Commerce Books Storefront (আমাদের সকল বইসমূহ) */}
         <BooksShowcaseSection
           books={booksData.items}
           categories={booksData.categories}
         />
 
-        {/* 6. Institutional Profile Section (Official BCP Badge + 1-4 Pillars) */}
+        {/* 5. Four-Step Customer Journey (আমাদের কার্যক্রম কীভাবে চলে?) */}
+        <CustomerJourneySection />
+
+        {/* 6. White-to-Periwinkle Institutional Profile Section */}
         <InstitutionalProfileSection
           logoAssetPath={siteConfig.logoAssetPath}
           brandName={siteConfig.brandName}

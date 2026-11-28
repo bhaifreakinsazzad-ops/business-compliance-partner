@@ -152,15 +152,17 @@ export function ServicesGatewaySection({
               return (
                 <button
                   key={track.id}
+                  id={`services-tab-${track.id}`}
                   type="button"
                   role="tab"
                   aria-selected={isSelected}
+                  aria-controls="services-gateway-panel"
                   onClick={() => setSelectedId(track.id)}
                   className={cn(
                     "min-h-10 px-4 py-2 rounded-[10px] text-xs sm:text-sm font-semibold border transition-colors cursor-pointer",
                     isSelected
                       ? "bg-[#243FBA] text-white border-[#243FBA] shadow-xs"
-                      : "bg-white/90 text-[#081838] border-[#B8BBFF] hover:bg-[#E2E3FF]",
+                      : "bg-white/95 text-[#081838] border-[#B8BBFF] hover:bg-[#E2E3FF]",
                   )}
                 >
                   {track.tabLabelBn}
@@ -170,7 +172,12 @@ export function ServicesGatewaySection({
           </div>
 
           {/* Inner Split Container: Left Service Details + Right White Enquiry Form Card */}
-          <div className="rounded-[20px] border border-white bg-white/82 p-5 sm:p-7 lg:p-9 shadow-sm grid grid-cols-1 lg:grid-cols-12 gap-7 lg:gap-8 items-center">
+          <div
+            id="services-gateway-panel"
+            role="tabpanel"
+            aria-labelledby={`services-tab-${activeTrack.id}`}
+            className="rounded-[20px] border border-white bg-white/95 p-5 sm:p-7 lg:p-9 shadow-sm grid grid-cols-1 lg:grid-cols-12 gap-7 lg:gap-8 items-center"
+          >
             <div className="lg:col-span-6 space-y-5">
               <div className="flex items-start gap-3.5">
                 <span className="inline-flex items-center justify-center w-12 h-12 rounded-[12px] bg-[#243FBA] text-white shrink-0 shadow-xs">

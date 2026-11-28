@@ -5,12 +5,13 @@ import {
   useEffect,
   useRef,
   useState,
+  type CSSProperties,
   type KeyboardEvent,
   type TouchEvent,
 } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { animate } from "animejs";
+import { animate, set, type JSAnimation } from "animejs";
 import {
   ArrowRight,
   BookOpen,
@@ -23,7 +24,12 @@ import {
   Play,
   ShieldCheck,
 } from "lucide-react";
-import { MOTION_DURATIONS, MOTION_EASES } from "@/lib/motion/tokens";
+import {
+  getCircularSlideOffset,
+  getCoverflowSlideGeometry,
+  wrapSlideIndex,
+} from "@/lib/home/coverflow";
+import { PrimaryBusinessActions } from "@/components/home/PrimaryBusinessActions";
 import { cn } from "@/lib/utils";
 
 interface PromoSlide {
@@ -38,8 +44,11 @@ interface PromoSlide {
   secondaryHref: string;
   secondaryLabelBn: string;
   visualTagEn: string;
-  visualHeadingBn: string;
-  visualTone: "courses" | "services" | "books" | "overview";
+  visualTone: "overview" | "courses" | "services" | "books";
+  posterTheme: {
+    canvasClass: string;
+    isDark: boolean;
+  };
 }
 
 const PROMO_SLIDES: PromoSlide[] = [
@@ -53,16 +62,20 @@ const PROMO_SLIDES: PromoSlide[] = [
       "বাংলাদেশের উদ্যোক্তা ও পেশাজীবীদের জন্য ব্যবহারিক প্রশিক্ষণ, আয়কর-ভ্যাট-আরজেএসসি সেবা এবং রেফারেন্স প্রকাশনা।",
     highlightsBn: [
       "দক্ষতা উন্নয়নে ব্যবহারিক Courses",
-      "ব্যবসার জন্য পেশাদার Services ও WhatsApp সহায়তা",
-      "অফিসিয়াল রেফারেন্স হ্যান্ডবুক ও Books",
+      "ব্যবসার জন্য পেশাদার Services",
+      "অফিসিয়াল রেফারেন্স Books",
     ],
     ctaHref: "/courses",
     ctaLabelBn: "কোর্সসমূহ দেখুন",
     secondaryHref: "/services",
     secondaryLabelBn: "সেবাসমূহ দেখুন",
     visualTagEn: "ONE PARTNER · COMPLETE SOLUTIONS",
-    visualHeadingBn: "সমন্বিত ব্যবসায়িক শিক্ষা ও কমপ্লায়েন্স",
     visualTone: "overview",
+    posterTheme: {
+      canvasClass:
+        "from-[#FFFFFF] via-[#F4F5FF] to-[#E2E3FF] text-[#081838] border-[#B8BBFF]",
+      isDark: false,
+    },
   },
   {
     id: "professional-courses",
@@ -78,11 +91,15 @@ const PROMO_SLIDES: PromoSlide[] = [
     ],
     ctaHref: "/courses",
     ctaLabelBn: "Explore Courses",
-    secondaryHref: "/consultancy",
+    secondaryHref: "/consultancy?pillar=COURSES",
     secondaryLabelBn: "আগ্রহ নিবন্ধন",
     visualTagEn: "01 · COURSES GATEWAY",
-    visualHeadingBn: "আমাদের সকল কোর্সসমূহ",
     visualTone: "courses",
+    posterTheme: {
+      canvasClass:
+        "from-[#102454] via-[#1B337A] to-[#243FBA] text-white border-[#243FBA]",
+      isDark: true,
+    },
   },
   {
     id: "tax-vat-services",
@@ -101,8 +118,12 @@ const PROMO_SLIDES: PromoSlide[] = [
     secondaryHref: "/licensing",
     secondaryLabelBn: "লাইসেন্সিং নির্দেশিকা",
     visualTagEn: "02 · SERVICES GATEWAY",
-    visualHeadingBn: "আমাদের সকল সেবাসমূহ",
     visualTone: "services",
+    posterTheme: {
+      canvasClass:
+        "from-[#F7F8FF] via-[#EAECFF] to-[#CFD1FF] text-[#081838] border-[#B8BBFF]",
+      isDark: false,
+    },
   },
   {
     id: "books-storefront",
@@ -121,12 +142,17 @@ const PROMO_SLIDES: PromoSlide[] = [
     secondaryHref: "/contact",
     secondaryLabelBn: "যোগাযোগ করুন",
     visualTagEn: "03 · BOOKS MARKETPLACE",
-    visualHeadingBn: "আমাদের সকল বইসমূহ",
     visualTone: "books",
+    posterTheme: {
+      canvasClass:
+        "from-[#0B1C42] via-[#202D72] to-[#2B46BA] text-white border-[#202D72]",
+      isDark: true,
+    },
   },
 ];
 
-const AUTO_ADVANCE_MS = 6000;
+const AUTO_ADVANCE_MS = 6500;
+const TRANSITION_MS = 620;
 
 interface PromotionalHeroSliderProps {
   logoAssetPath: string;
@@ -141,61 +167,186 @@ export function PromotionalHeroSlider({
   const [isPaused, setIsPaused] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
+  const [isDocumentHidden, setIsDocumentHidden] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [isCompactViewport, setIsCompactViewport] = useState(false);
 
   const touchStartX = useRef<number | null>(null);
-  const textPanelRef = useRef<HTMLDivElement | null>(null);
-  const hasInteractedRef = useRef(false);
+  const slideRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const slideAnimationsRef = useRef<JSAnimation[]>([]);
+  const progressBarRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const progressAnimRef = useRef<JSAnimation | null>(null);
+  const prevOffsetsRef = useRef<number[]>(
+    PROMO_SLIDES.map((_, idx) =>
+      getCircularSlideOffset(idx, 0, PROMO_SLIDES.length),
+    ),
+  );
+  const hasMountedRef = useRef(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setPrefersReducedMotion(media.matches);
-    const onChange = (e: MediaQueryListEvent) =>
+    const motionMedia = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const viewportMedia = window.matchMedia("(max-width: 767px)");
+
+    setPrefersReducedMotion(motionMedia.matches);
+    setIsCompactViewport(viewportMedia.matches);
+    setIsDocumentHidden(document.hidden);
+
+    const onMotionChange = (e: MediaQueryListEvent) =>
       setPrefersReducedMotion(e.matches);
-    media.addEventListener("change", onChange);
-    return () => media.removeEventListener("change", onChange);
+    const onViewportChange = (e: MediaQueryListEvent) =>
+      setIsCompactViewport(e.matches);
+    const onVisibilityChange = () => setIsDocumentHidden(document.hidden);
+
+    motionMedia.addEventListener("change", onMotionChange);
+    viewportMedia.addEventListener("change", onViewportChange);
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    return () => {
+      motionMedia.removeEventListener("change", onMotionChange);
+      viewportMedia.removeEventListener("change", onViewportChange);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
   }, []);
 
   const goTo = useCallback((nextIndex: number) => {
-    hasInteractedRef.current = true;
-    setActiveIndex((nextIndex + PROMO_SLIDES.length) % PROMO_SLIDES.length);
+    setActiveIndex(wrapSlideIndex(nextIndex, PROMO_SLIDES.length));
   }, []);
 
   const goNext = useCallback(() => {
-    goTo(activeIndex + 1);
-  }, [activeIndex, goTo]);
+    setActiveIndex((prev) => wrapSlideIndex(prev + 1, PROMO_SLIDES.length));
+  }, []);
 
   const goPrev = useCallback(() => {
-    goTo(activeIndex - 1);
-  }, [activeIndex, goTo]);
+    setActiveIndex((prev) => wrapSlideIndex(prev - 1, PROMO_SLIDES.length));
+  }, []);
 
+  const autoPlaySuspended =
+    prefersReducedMotion ||
+    isPaused ||
+    isHovered ||
+    isFocused ||
+    isDocumentHidden;
+
+  // Synchronized autoplay timer + Anime.js elapsed progress bar
   useEffect(() => {
-    if (prefersReducedMotion || isPaused || isHovered || isFocused) {
+    progressAnimRef.current?.cancel();
+    progressAnimRef.current = null;
+
+    const activeBar = progressBarRefs.current[activeIndex];
+    for (let i = 0; i < PROMO_SLIDES.length; i += 1) {
+      const bar = progressBarRefs.current[i];
+      if (!bar) continue;
+      if (i !== activeIndex) {
+        set(bar, { scaleX: 0 });
+      }
+    }
+
+    if (autoPlaySuspended) {
+      if (activeBar) {
+        set(activeBar, { scaleX: 1 });
+      }
       return;
     }
+
+    if (activeBar) {
+      progressAnimRef.current = animate(activeBar, {
+        scaleX: [0, 1],
+        duration: AUTO_ADVANCE_MS,
+        ease: "linear",
+      });
+    }
+
     const timer = window.setInterval(() => {
-      hasInteractedRef.current = true;
-      setActiveIndex((prev) => (prev + 1) % PROMO_SLIDES.length);
+      setActiveIndex((prev) => wrapSlideIndex(prev + 1, PROMO_SLIDES.length));
     }, AUTO_ADVANCE_MS);
 
-    return () => window.clearInterval(timer);
-  }, [prefersReducedMotion, isPaused, isHovered, isFocused]);
-
-  useEffect(() => {
-    if (!hasInteractedRef.current || prefersReducedMotion) return;
-    const panel = textPanelRef.current;
-    if (!panel) return;
-    const anim = animate(panel, {
-      opacity: [0.7, 1],
-      translateY: [6, 0],
-      duration: MOTION_DURATIONS.standard,
-      ease: MOTION_EASES.crisp,
-    });
     return () => {
-      anim.cancel();
+      window.clearInterval(timer);
+      progressAnimRef.current?.cancel();
+      progressAnimRef.current = null;
     };
-  }, [activeIndex, prefersReducedMotion]);
+  }, [activeIndex, autoPlaySuspended]);
+
+  // Interruptible Anime.js 3D coverflow transforms
+  useEffect(() => {
+    const newOffsets = PROMO_SLIDES.map((_, idx) =>
+      getCircularSlideOffset(idx, activeIndex, PROMO_SLIDES.length),
+    );
+
+    if (!hasMountedRef.current) {
+      hasMountedRef.current = true;
+      prevOffsetsRef.current = newOffsets;
+      PROMO_SLIDES.forEach((_, idx) => {
+        const el = slideRefs.current[idx];
+        if (!el) return;
+        const geom = getCoverflowSlideGeometry(
+          newOffsets[idx] ?? 0,
+          isCompactViewport,
+        );
+        set(el, {
+          translateX: `${geom.translateXPercent}%`,
+          rotateY: geom.rotateYDeg,
+          scale: geom.scale,
+          opacity: geom.opacity,
+        });
+      });
+      return;
+    }
+
+    slideAnimationsRef.current.forEach((anim) => anim.cancel());
+    slideAnimationsRef.current = [];
+
+    const prevOffsets = prevOffsetsRef.current;
+
+    PROMO_SLIDES.forEach((_, idx) => {
+      const el = slideRefs.current[idx];
+      if (!el) return;
+
+      const prevOffset = prevOffsets[idx] ?? 0;
+      const nextOffset = newOffsets[idx] ?? 0;
+      const geom = getCoverflowSlideGeometry(nextOffset, isCompactViewport);
+
+      if (prefersReducedMotion) {
+        set(el, {
+          translateX: `${geom.translateXPercent}%`,
+          rotateY: geom.rotateYDeg,
+          scale: geom.scale,
+          opacity: geom.opacity,
+        });
+        return;
+      }
+
+      // When a slide wraps from offscreen/opposite wing into prev (-1) or next (+1),
+      // position it just outside its entering edge before gliding in so it never crosses center.
+      if (Math.abs(prevOffset) > 1 && Math.abs(nextOffset) === 1) {
+        const entrySign = nextOffset < 0 ? -1 : 1;
+        set(el, {
+          translateX: `${entrySign * 124}%`,
+          rotateY: entrySign * -20,
+          scale: 0.74,
+          opacity: 0,
+        });
+      }
+
+      const anim = animate(el, {
+        translateX: `${geom.translateXPercent}%`,
+        rotateY: geom.rotateYDeg,
+        scale: geom.scale,
+        opacity: geom.opacity,
+        duration: TRANSITION_MS,
+        ease: "outCubic",
+      });
+      slideAnimationsRef.current.push(anim);
+    });
+
+    prevOffsetsRef.current = newOffsets;
+
+    return () => {
+      slideAnimationsRef.current.forEach((anim) => anim.cancel());
+      slideAnimationsRef.current = [];
+    };
+  }, [activeIndex, isCompactViewport, prefersReducedMotion]);
 
   const handleKeyDown = (e: KeyboardEvent<HTMLElement>) => {
     if (e.key === "ArrowLeft") {
@@ -225,14 +376,6 @@ export function PromotionalHeroSlider({
   };
 
   const activeSlide = PROMO_SLIDES[activeIndex] ?? PROMO_SLIDES[0]!;
-  const SlideVisualIcon =
-    activeSlide.visualTone === "courses"
-      ? GraduationCap
-      : activeSlide.visualTone === "services"
-        ? BriefcaseBusiness
-        : activeSlide.visualTone === "books"
-          ? BookOpen
-          : ShieldCheck;
 
   return (
     <section
@@ -249,166 +392,345 @@ export function PromotionalHeroSlider({
       onKeyDown={handleKeyDown}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
-      className="bcp-periwinkle-hero-gradient relative text-[#181D26] border-b border-[#E1E4F2] overflow-hidden"
+      className="bcp-reference-hero relative text-[#181D26] border-b border-[#E1E4F2] overflow-x-clip"
     >
-      <div className="ps-container relative pt-6 pb-5 sm:pt-8 sm:pb-6 lg:pt-9 lg:pb-7 space-y-6">
-        {/* Compact Reference-Style Promotional Banner Card */}
-        <div className="rounded-[22px] border border-white/90 bg-white/88 shadow-[0_18px_48px_rgba(32,45,114,0.08)] p-5 sm:p-7 lg:p-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
-            {/* Left Column — Editorial Value Proposition & Actions */}
-            <div
-              ref={textPanelRef}
-              aria-live={isPaused ? "polite" : "off"}
-              className="lg:col-span-7 space-y-3.5"
-            >
-              <div className="inline-flex items-center gap-2.5">
-                {logoAssetPath ? (
-                  <Image
-                    src={logoAssetPath}
-                    alt={`${brandName} অফিসিয়াল ব্যাজ`}
-                    width={30}
-                    height={30}
-                    priority
-                    referrerPolicy="no-referrer"
-                    className="rounded-full border border-[#C59028]/70 bg-white object-contain shrink-0"
-                  />
-                ) : null}
-                <span className="text-xs sm:text-sm font-bold tracking-wide text-[#243FBA]">
-                  {activeSlide.badgeBn}
-                </span>
-              </div>
+      {/* Keep a single semantic, screen-reader-safe H1 when browsing slides 02–04 */}
+      {activeIndex !== 0 ? (
+        <h1 className="visually-hidden">{PROMO_SLIDES[0]!.titleBn}</h1>
+      ) : null}
 
-              {activeIndex === 0 ? (
-                <h1 className="text-2xl sm:text-3xl lg:text-[2.15rem] font-extrabold leading-[1.24] text-[#081838] [text-wrap:balance] max-w-2xl">
-                  {activeSlide.titleBn}
-                </h1>
-              ) : (
-                <>
-                  <h1 className="visually-hidden">
-                    {PROMO_SLIDES[0]!.titleBn}
-                  </h1>
-                  <p className="text-2xl sm:text-3xl lg:text-[2.15rem] font-extrabold leading-[1.24] text-[#081838] [text-wrap:balance] max-w-2xl">
-                    {activeSlide.titleBn}
-                  </p>
-                </>
-              )}
+      <div className="pt-4 pb-6 sm:pt-7 sm:pb-8 space-y-5 sm:space-y-6">
+        {/* 3D Perspective Coverflow Stage */}
+        <div
+          className="relative mx-auto w-full max-w-[1440px] px-4 sm:px-6 py-2 overflow-hidden"
+          data-coverflow-stage="true"
+        >
+          {/* Central 16:9 Stage Reference Box + Left/Right Circular Edge Arrows */}
+          <div
+            className="relative mx-auto w-[88%] sm:w-[76%] md:w-[68%] lg:w-[64%] max-w-[900px] min-h-[272px] sm:min-h-0 sm:aspect-[16/9]"
+            style={{
+              perspective: "1350px",
+              transformStyle: "preserve-3d",
+            }}
+          >
+            {PROMO_SLIDES.map((slide, idx) => {
+              const offset = getCircularSlideOffset(
+                idx,
+                activeIndex,
+                PROMO_SLIDES.length,
+              );
+              const geom = getCoverflowSlideGeometry(offset, isCompactViewport);
+              const isActive = offset === 0;
+              const isNeighbor = Math.abs(offset) === 1;
+              const SlideVisualIcon =
+                slide.visualTone === "courses"
+                  ? GraduationCap
+                  : slide.visualTone === "services"
+                    ? BriefcaseBusiness
+                    : slide.visualTone === "books"
+                      ? BookOpen
+                      : ShieldCheck;
 
-              <p className="text-sm sm:text-base text-[#596775] leading-relaxed max-w-xl">
-                {activeSlide.subtitleBn}
-              </p>
+              const initialStyle: CSSProperties = {
+                zIndex: geom.zIndex,
+                transform: `translate3d(${geom.translateXPercent}%, 0, 0) rotateY(${geom.rotateYDeg}deg) scale(${geom.scale})`,
+                opacity: geom.opacity,
+              };
 
-              <div className="pt-1 flex flex-wrap items-center gap-3">
-                <Link
-                  href={activeSlide.ctaHref}
-                  className="inline-flex items-center justify-center gap-2 min-h-11 px-5 py-2.5 rounded-[10px] bg-[#243FBA] text-white font-semibold text-xs sm:text-sm whitespace-nowrap shrink-0 hover:bg-[#1D329B] transition-colors shadow-sm"
-                >
-                  <span>{activeSlide.ctaLabelBn}</span>
-                  <ArrowRight className="w-4 h-4" aria-hidden="true" />
-                </Link>
-
-                <Link
-                  href={activeSlide.secondaryHref}
-                  className="inline-flex items-center justify-center min-h-11 px-4 py-2.5 rounded-[10px] border border-[#E1E4F2] bg-[#FBFAFF] text-[#081838] font-semibold text-xs sm:text-sm whitespace-nowrap shrink-0 hover:bg-[#E2E3FF] hover:border-[#243FBA] transition-colors"
-                >
-                  {activeSlide.secondaryLabelBn}
-                </Link>
-              </div>
-            </div>
-
-            {/* Right Column — Clean 16:9 Promotional Visual Showcase Frame */}
-            <div className="hidden sm:block lg:col-span-5">
-              <div className="rounded-[18px] border border-[#B8BBFF]/80 bg-gradient-to-br from-[#081838] via-[#13295B] to-[#243FBA] text-white p-5 sm:p-6 shadow-md relative overflow-hidden">
+              return (
                 <div
-                  aria-hidden="true"
-                  className="absolute -right-8 -top-8 w-36 h-36 rounded-full bg-[#B8BBFF]/20"
-                />
-                <div className="relative space-y-4">
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="inline-flex items-center gap-2 text-[11px] font-en font-bold uppercase tracking-[0.14em] text-[#CCCEFF]">
-                      <SlideVisualIcon className="w-4 h-4 text-[#DFB15B]" aria-hidden="true" />
-                      <span>{activeSlide.visualTagEn}</span>
-                    </span>
-                    <span className="font-en text-xs font-bold text-[#DFB15B] tabular-nums">
-                      {activeSlide.orderCode} / 0{PROMO_SLIDES.length}
-                    </span>
+                  key={slide.id}
+                  ref={(el) => {
+                    slideRefs.current[idx] = el;
+                  }}
+                  data-coverflow-slide={slide.id}
+                  data-coverflow-role={geom.role}
+                  aria-hidden={!isActive}
+                  onClick={() => {
+                    if (isNeighbor) goTo(idx);
+                  }}
+                  style={initialStyle}
+                  className={cn(
+                    "absolute inset-0 rounded-[20px] sm:rounded-[24px] will-change-transform origin-center overflow-hidden border bg-gradient-to-br shadow-[0_22px_54px_rgba(32,45,114,0.16)]",
+                    slide.posterTheme.canvasClass,
+                    isActive
+                      ? "ring-2 ring-[#B8BBFF]/80"
+                      : isNeighbor
+                        ? "cursor-pointer"
+                        : "pointer-events-none",
+                  )}
+                >
+                  {/* Bespoke Graphical Banner Composition */}
+                  <div className="relative h-full w-full px-6 py-4 sm:px-9 sm:py-7 lg:px-11 lg:py-9 flex flex-col justify-between">
+                    {/* Subtle SVG Graphical Mesh Decoration */}
+                    <svg
+                      aria-hidden="true"
+                      viewBox="0 0 800 450"
+                      className="absolute inset-0 w-full h-full pointer-events-none opacity-80"
+                      preserveAspectRatio="xMidYMid slice"
+                    >
+                      <circle
+                        cx="720"
+                        cy="60"
+                        r="190"
+                        fill={slide.posterTheme.isDark ? "#B8BBFF" : "#243FBA"}
+                        fillOpacity={slide.posterTheme.isDark ? "0.14" : "0.08"}
+                      />
+                      <circle
+                        cx="680"
+                        cy="380"
+                        r="150"
+                        stroke="#DFB15B"
+                        strokeOpacity={slide.posterTheme.isDark ? "0.35" : "0.28"}
+                        strokeWidth="1.5"
+                        fill="none"
+                      />
+                      <path
+                        d="M0 390 Q 260 320 800 375"
+                        stroke={slide.posterTheme.isDark ? "#B8BBFF" : "#243FBA"}
+                        strokeOpacity="0.16"
+                        strokeWidth="2"
+                        fill="none"
+                      />
+                    </svg>
+
+                    {/* Banner Top Row: BCP Official Circular Badge + Division Tag + Slide Index */}
+                    <div className="relative z-10 flex items-center justify-between gap-2">
+                      <div className="inline-flex items-center gap-2 sm:gap-2.5">
+                        {logoAssetPath ? (
+                          <Image
+                            src={logoAssetPath}
+                            alt={`${brandName} অফিসিয়াল ব্যাজ`}
+                            width={34}
+                            height={34}
+                            priority={idx <= 1}
+                            referrerPolicy="no-referrer"
+                            className="w-7 h-7 sm:w-9 sm:h-9 rounded-full border border-[#C59028]/80 bg-white object-contain shrink-0 shadow-xs"
+                          />
+                        ) : null}
+                        <span
+                          className={cn(
+                            "text-[11px] sm:text-xs font-extrabold tracking-wide",
+                            slide.posterTheme.isDark
+                              ? "text-[#DFB15B]"
+                              : "text-[#243FBA]",
+                          )}
+                        >
+                          {slide.badgeBn}
+                        </span>
+                      </div>
+
+                      <span
+                        className={cn(
+                          "hidden sm:inline-flex items-center gap-1.5 font-en text-[11px] font-bold uppercase tracking-[0.14em]",
+                          slide.posterTheme.isDark
+                            ? "text-[#CCCEFF]"
+                            : "text-[#202D72]/75",
+                        )}
+                        lang="en"
+                      >
+                        <SlideVisualIcon className="w-3.5 h-3.5" aria-hidden="true" />
+                        <span>{slide.visualTagEn}</span>
+                      </span>
+                    </div>
+
+                    {/* Banner Center Split: Strong Bengali Headline + Structured Highlight Tiles */}
+                    <div className="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-5 items-center my-auto py-1">
+                      <div className="md:col-span-7 space-y-2 sm:space-y-3">
+                        {idx === 0 && isActive ? (
+                          <h1
+                            className={cn(
+                              "text-lg sm:text-2xl lg:text-[1.85rem] xl:text-[2.05rem] font-extrabold leading-[1.24] [text-wrap:balance]",
+                              slide.posterTheme.isDark
+                                ? "text-white"
+                                : "text-[#081838]",
+                            )}
+                          >
+                            {slide.titleBn}
+                          </h1>
+                        ) : (
+                          <p
+                            className={cn(
+                              "text-lg sm:text-2xl lg:text-[1.85rem] xl:text-[2.05rem] font-extrabold leading-[1.24] [text-wrap:balance]",
+                              slide.posterTheme.isDark
+                                ? "text-white"
+                                : "text-[#081838]",
+                            )}
+                          >
+                            {slide.titleBn}
+                          </p>
+                        )}
+
+                        <p
+                          className={cn(
+                            "text-xs sm:text-sm leading-relaxed line-clamp-2 max-w-xl",
+                            slide.posterTheme.isDark
+                              ? "text-[#CCCEFF]"
+                              : "text-[#596775]",
+                          )}
+                        >
+                          {slide.subtitleBn}
+                        </p>
+                      </div>
+
+                      {/* Right Graphical Highlights Panel (matches poster artwork blocks) */}
+                      <div className="hidden md:flex md:col-span-5 flex-col gap-2">
+                        {slide.highlightsBn.map((point) => (
+                          <div
+                            key={point}
+                            className={cn(
+                              "flex items-center gap-2.5 rounded-[12px] px-3.5 py-2.5 border text-xs font-semibold shadow-xs",
+                              slide.posterTheme.isDark
+                                ? "bg-white/10 border-white/15 text-white"
+                                : "bg-white/90 border-[#B8BBFF]/80 text-[#081838]",
+                            )}
+                          >
+                            <CheckCircle2
+                              className={cn(
+                                "w-4 h-4 shrink-0",
+                                slide.posterTheme.isDark
+                                  ? "text-[#DFB15B]"
+                                  : "text-[#243FBA]",
+                              )}
+                              aria-hidden="true"
+                            />
+                            <span className="line-clamp-1">{point}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Banner Bottom Action Strip (only active slide interactive via keyboard) */}
+                    <div className="relative z-10 flex flex-wrap items-center justify-between gap-2.5 pt-1">
+                      <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
+                        <Link
+                          href={slide.ctaHref}
+                          tabIndex={isActive ? 0 : -1}
+                          className={cn(
+                            "inline-flex items-center justify-center gap-1.5 min-h-9 sm:min-h-10 px-4 sm:px-5 rounded-[10px] font-bold text-xs sm:text-sm whitespace-nowrap transition-colors shadow-sm",
+                            slide.posterTheme.isDark
+                              ? "bg-white text-[#081838] hover:bg-[#E2E3FF]"
+                              : "bg-[#243FBA] text-white hover:bg-[#1D329B]",
+                          )}
+                        >
+                          <span>{slide.ctaLabelBn}</span>
+                          <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" aria-hidden="true" />
+                        </Link>
+
+                        <Link
+                          href={slide.secondaryHref}
+                          tabIndex={isActive ? 0 : -1}
+                          className={cn(
+                            "inline-flex items-center justify-center min-h-9 sm:min-h-10 px-3.5 sm:px-4 rounded-[10px] border font-semibold text-xs sm:text-sm whitespace-nowrap transition-colors",
+                            slide.posterTheme.isDark
+                              ? "border-white/30 bg-white/10 text-white hover:bg-white/20"
+                              : "border-[#B8BBFF] bg-white/85 text-[#202D72] hover:bg-[#E2E3FF]",
+                          )}
+                        >
+                          {slide.secondaryLabelBn}
+                        </Link>
+                      </div>
+
+                      <span
+                        className={cn(
+                          "hidden sm:inline-block font-en text-xs font-extrabold tabular-nums",
+                          slide.posterTheme.isDark
+                            ? "text-[#DFB15B]"
+                            : "text-[#243FBA]",
+                        )}
+                      >
+                        {slide.orderCode} / 0{PROMO_SLIDES.length}
+                      </span>
+                    </div>
                   </div>
-
-                  <p className="text-lg sm:text-xl font-extrabold leading-snug text-white">
-                    {activeSlide.visualHeadingBn}
-                  </p>
-
-                  <ul className="space-y-2 text-xs sm:text-sm text-white/90">
-                    {activeSlide.highlightsBn.map((point) => (
-                      <li key={point} className="flex items-center gap-2">
-                        <CheckCircle2
-                          className="w-4 h-4 text-[#5de2a5] shrink-0"
-                          aria-hidden="true"
-                        />
-                        <span className="line-clamp-1">{point}</span>
-                      </li>
-                    ))}
-                  </ul>
                 </div>
-              </div>
-            </div>
+              );
+            })}
+
+            {/* Primary Circular Edge Navigation Arrows positioned directly on active banner edges */}
+            <button
+              type="button"
+              onClick={goPrev}
+              aria-label="পূর্ববর্তী স্লাইড"
+              data-carousel-prev="true"
+              className="absolute top-1/2 -translate-y-1/2 -left-4 sm:-left-6 z-40 inline-flex items-center justify-center w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-white/95 border border-[#B8BBFF] text-[#243FBA] hover:bg-[#243FBA] hover:text-white hover:border-[#243FBA] shadow-[0_10px_24px_rgba(32,45,114,0.18)] transition-colors cursor-pointer"
+            >
+              <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" aria-hidden="true" />
+            </button>
+
+            <button
+              type="button"
+              onClick={goNext}
+              aria-label="পরবর্তী স্লাইড"
+              data-carousel-next="true"
+              className="absolute top-1/2 -translate-y-1/2 -right-4 sm:-right-6 z-40 inline-flex items-center justify-center w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-white/95 border border-[#B8BBFF] text-[#243FBA] hover:bg-[#243FBA] hover:text-white hover:border-[#243FBA] shadow-[0_10px_24px_rgba(32,45,114,0.18)] transition-colors cursor-pointer"
+            >
+              <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" aria-hidden="true" />
+            </button>
           </div>
         </div>
 
-        {/* Bunyanum-style Centered Segmented Progress Bar + Counter + Pause Control */}
-        <div className="flex flex-col items-center gap-4">
-          <div className="inline-flex items-center justify-center gap-2 sm:gap-3 rounded-[14px] border border-[#B8BBFF]/90 bg-white/90 px-3 sm:px-4 py-1.5 sm:py-2 shadow-sm max-w-full">
-            <span className="font-en text-xs font-extrabold text-[#243FBA] tabular-nums whitespace-nowrap">
-              {activeSlide.orderCode}
-              <span className="text-[#596775] mx-1">—</span>
-              0{PROMO_SLIDES.length}
-            </span>
-
+        {/* Unified Lower Controls -> Tagline -> Compact Gateway Buttons */}
+        <div className="ps-container space-y-4 sm:space-y-5">
+          {/* Segmented Progress Bar + Counter + Pause/Play Control */}
+          <div className="flex justify-center">
             <div
-              className="flex items-center gap-1 sm:gap-1.5"
-              role="group"
-              aria-label="স্লাইড নির্বাচন"
+              aria-live={isPaused ? "polite" : "off"}
+              className="inline-flex items-center justify-center gap-2.5 sm:gap-3.5 rounded-full border border-[#B8BBFF]/90 bg-white/92 px-3.5 sm:px-5 py-1.5 sm:py-2 shadow-sm max-w-full"
             >
-              {PROMO_SLIDES.map((slide, idx) => {
-                const isCurrent = idx === activeIndex;
-                return (
-                  <button
-                    key={slide.id}
-                    type="button"
-                    onClick={() => goTo(idx)}
-                    aria-label={`স্লাইড ${idx + 1}: ${slide.badgeBn}`}
-                    aria-current={isCurrent ? "true" : undefined}
-                    className="py-1.5 px-0.5 cursor-pointer"
-                  >
-                    <span
-                      className={cn(
-                        "block h-1.5 rounded-full transition-all duration-200",
-                        isCurrent
-                          ? "w-7 sm:w-12 bg-[#243FBA]"
-                          : "w-3.5 sm:w-8 bg-[#CFD1FF] hover:bg-[#B8BBFF]",
-                      )}
-                      aria-hidden="true"
-                    />
-                  </button>
-                );
-              })}
-            </div>
-
-            <div className="flex items-center gap-1 border-s border-[#E1E4F2] ps-2 sm:ps-2.5 shrink-0">
-              <button
-                type="button"
-                onClick={goPrev}
-                aria-label="পূর্ববর্তী স্লাইড"
-                className="inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-[8px] border border-[#E1E4F2] bg-white text-[#081838] hover:border-[#243FBA] hover:text-[#243FBA] transition-colors cursor-pointer"
+              <span
+                data-slide-counter="true"
+                className="font-en text-xs font-extrabold text-[#243FBA] tabular-nums whitespace-nowrap"
               >
-                <ChevronLeft className="w-4 h-4" aria-hidden="true" />
-              </button>
+                {activeSlide.orderCode}
+                <span className="text-[#596775] mx-1">—</span>
+                0{PROMO_SLIDES.length}
+              </span>
+
+              <div
+                className="flex items-center gap-1.5 sm:gap-2"
+                role="group"
+                aria-label="স্লাইড নির্বাচন"
+              >
+                {PROMO_SLIDES.map((slide, idx) => {
+                  const isCurrent = idx === activeIndex;
+                  return (
+                    <button
+                      key={slide.id}
+                      type="button"
+                      onClick={() => goTo(idx)}
+                      aria-label={`স্লাইড ${idx + 1}: ${slide.badgeBn}`}
+                      aria-current={isCurrent ? "true" : undefined}
+                      className="py-1.5 px-0.5 cursor-pointer"
+                    >
+                      <span
+                        className={cn(
+                          "relative block h-1.5 rounded-full overflow-hidden transition-all duration-200 bg-[#CFD1FF]",
+                          isCurrent ? "w-8 sm:w-14" : "w-4 sm:w-8 hover:bg-[#B8BBFF]",
+                        )}
+                        aria-hidden="true"
+                      >
+                        <span
+                          ref={(el) => {
+                            progressBarRefs.current[idx] = el;
+                          }}
+                          className="absolute inset-0 origin-left bg-[#243FBA] rounded-full"
+                          style={{
+                            transform: isCurrent ? "scaleX(0)" : "scaleX(0)",
+                          }}
+                        />
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
 
               <button
                 type="button"
                 onClick={() => setIsPaused((prev) => !prev)}
                 aria-pressed={isPaused}
                 aria-label={isPaused ? "স্লাইডার চালু করুন" : "স্লাইডার থামান"}
-                className="inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-[8px] border border-[#B8BBFF] bg-[#E2E3FF] text-[#243FBA] hover:bg-[#243FBA] hover:text-white transition-colors cursor-pointer"
+                className="inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-[#B8BBFF] bg-[#E2E3FF] text-[#243FBA] hover:bg-[#243FBA] hover:text-white transition-colors cursor-pointer shrink-0"
               >
                 {isPaused ? (
                   <Play className="w-3.5 h-3.5" aria-hidden="true" />
@@ -416,29 +738,29 @@ export function PromotionalHeroSlider({
                   <Pause className="w-3.5 h-3.5" aria-hidden="true" />
                 )}
               </button>
-
-              <button
-                type="button"
-                onClick={goNext}
-                aria-label="পরবর্তী স্লাইড"
-                className="inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-[8px] border border-[#E1E4F2] bg-white text-[#081838] hover:border-[#243FBA] hover:text-[#243FBA] transition-colors cursor-pointer"
-              >
-                <ChevronRight className="w-4 h-4" aria-hidden="true" />
-              </button>
             </div>
           </div>
 
           {/* Reference Tagline Divider */}
-          <div className="flex items-center justify-center gap-3 w-full max-w-2xl">
-            <span className="h-[1.5px] flex-1 bg-gradient-to-r from-transparent to-[#243FBA]/50" aria-hidden="true" />
+          <div className="flex items-center justify-center gap-3 w-full max-w-2xl mx-auto">
+            <span
+              className="h-[1.5px] flex-1 bg-gradient-to-r from-transparent to-[#243FBA]/50"
+              aria-hidden="true"
+            />
             <p
               className="font-en text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em] text-[#202D72] text-center"
               lang="en"
             >
               One Partner · Complete Solutions · Confident Growth
             </p>
-            <span className="h-[1.5px] flex-1 bg-gradient-to-l from-transparent to-[#243FBA]/50" aria-hidden="true" />
+            <span
+              className="h-[1.5px] flex-1 bg-gradient-to-l from-transparent to-[#243FBA]/50"
+              aria-hidden="true"
+            />
           </div>
+
+          {/* Integrated Three Compact Periwinkle Gateways: Courses -> Services -> Books */}
+          <PrimaryBusinessActions embedded />
         </div>
       </div>
     </section>

@@ -248,13 +248,21 @@ body {
 }
 
 /* AKIJ iBOS Periwinkle Signature Gradient Surfaces */
-.bcp-periwinkle-hero-gradient {
+.bcp-periwinkle-hero-gradient,
+.bcp-reference-hero {
   background-color: #ffffff;
   background-image:
-    radial-gradient(at 100% 96%, #b3b6ff 0px, transparent 50%),
-    radial-gradient(at 1% 2%, #b3b6ff 0px, transparent 50%),
-    radial-gradient(at 32% 65%, #f2f2f8 0px, transparent 50%),
-    linear-gradient(180deg, #fbfaff 0%, #e2e3ff 100%);
+    radial-gradient(ellipse at 0% 0%, rgba(184, 187, 255, 0.85) 0%, transparent 58%),
+    radial-gradient(ellipse at 100% 100%, rgba(179, 182, 255, 0.82) 0%, transparent 62%),
+    radial-gradient(at 42% 55%, #fbfaff 0px, #ffffff 72%);
+}
+
+.bcp-reference-profile-frame {
+  background-color: #ffffff;
+  background-image:
+    radial-gradient(ellipse at 6% 12%, rgba(184, 187, 255, 0.48) 0%, transparent 52%),
+    radial-gradient(ellipse at 96% 90%, rgba(204, 206, 255, 0.56) 0%, transparent 54%),
+    linear-gradient(180deg, #fbfaff 0%, #ffffff 100%);
 }
 
 .bcp-periwinkle-gateway {

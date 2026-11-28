@@ -29,19 +29,20 @@ export function Footer({ siteConfig }: FooterProps) {
 
   return (
     <>
-      <footer className="bg-surface-navy text-white/85 border-t border-bcp-dusty/30 pt-14 pb-24 sm:pb-12 text-sm">
-        <div className="ps-container space-y-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10">
+      <footer className="bg-[#192766] text-white/90 border-t border-[#2E3F8F] pt-12 pb-10 text-sm">
+        <div className="ps-container space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-9">
             {/* Column 1: Brand Identity */}
-            <div className="lg:col-span-4 space-y-4">
+            <div className="lg:col-span-4 space-y-3.5">
               <div className="flex items-center gap-3">
                 {siteConfig.logoAssetPath ? (
                   <Image
                     src={siteConfig.logoAssetPath}
                     alt={`${siteConfig.brandName} official badge`}
-                    width={52}
-                    height={52}
-                    className="rounded-full border border-[#C59028]/60 object-contain shrink-0 bg-white shadow-md"
+                    width={48}
+                    height={48}
+                    referrerPolicy="no-referrer"
+                    className="rounded-full border border-[#C59028]/70 object-contain shrink-0 bg-white shadow-sm"
                   />
                 ) : null}
                 <div>
@@ -56,36 +57,27 @@ export function Footer({ siteConfig }: FooterProps) {
                   </p>
                 </div>
               </div>
-              <p className="text-xs text-white/75 leading-relaxed">
+              <p className="text-xs text-white/80 leading-relaxed">
                 বাংলাদেশের উদ্যোক্তা, ব্যবসায়ী ও পেশাজীবীদের জন্য{" "}
                 <span className="font-en font-semibold text-white" lang="en">
                   Courses · Services · Books
                 </span>{" "}
                 ভিত্তিক সুসংগঠিত শিক্ষা, কমপ্লায়েন্স সেবা ও প্রকাশনা প্ল্যাটফর্ম।
               </p>
-              {siteConfig.isIdentityProvisional ? (
-                <p className="text-[11px] text-white/60">
-                  নোট: ব্র্যান্ড নাম ও লোগো কনসেপ্ট ক্লায়েন্টের চূড়ান্ত অনুমোদনের অপেক্ষায়
-                  রয়েছে।
-                </p>
-              ) : null}
             </div>
 
             {/* Column 2: Primary Commercial Pillars strictly ordered: Courses -> Services -> Books */}
             <div className="lg:col-span-3 space-y-3">
-              <h2 className="text-sm font-bold text-white tracking-wide">
-                মূল ৩টি বিভাগ ·{" "}
-                <span className="font-en text-[#DFB15B]" lang="en">
-                  Courses · Services · Books
-                </span>
+              <h2 className="text-sm font-bold text-[#DFB15B] tracking-wide">
+                মূল বিভাগ · Courses · Services · Books
               </h2>
-              <ul className="space-y-2.5 text-white/85">
+              <ul className="space-y-2 text-white/85">
                 {MASTER_THREE_PILLARS.map((pillar) => (
                   <li key={pillar.id}>
                     <Link
                       href={pillar.href}
                       data-footer-pillar={pillar.id}
-                      className="group block hover:text-surface-lavender-muted"
+                      className="group block hover:text-[#E2E3FF]"
                     >
                       <span
                         className="font-en font-bold text-white group-hover:text-[#DFB15B] group-hover:underline underline-offset-4"
@@ -101,49 +93,38 @@ export function Footer({ siteConfig }: FooterProps) {
                 ))}
               </ul>
 
-              <div className="pt-3 border-t border-white/10 space-y-2">
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-white/60">
-                  সহায়ক সমাধান
-                </p>
-                <ul className="space-y-1 text-xs text-white/75">
-                  <li>
-                    <Link
-                      href="/licensing"
-                      className="inline-flex items-center min-h-6 py-0.5 hover:text-surface-lavender-muted hover:underline underline-offset-4"
-                    >
-                      লাইসেন্সিং ও নিবন্ধন (Services)
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="/consultancy"
-                      className="inline-flex items-center min-h-6 py-0.5 hover:text-surface-lavender-muted hover:underline underline-offset-4"
-                    >
-                      বিশেষজ্ঞ কনসালটেন্সি (Services)
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="/tools"
-                      className="inline-flex items-center min-h-6 py-0.5 hover:text-surface-lavender-muted hover:underline underline-offset-4"
-                    >
-                      প্রস্তুতি ও রোডম্যাপ টুলস
-                    </Link>
-                  </li>
-                </ul>
+              <div className="pt-2.5 border-t border-white/15 flex flex-wrap gap-x-4 gap-y-1 text-xs text-white/80">
+                <Link
+                  href="/licensing"
+                  className="hover:text-[#E2E3FF] hover:underline underline-offset-4"
+                >
+                  লাইসেন্সিং
+                </Link>
+                <Link
+                  href="/consultancy"
+                  className="hover:text-[#E2E3FF] hover:underline underline-offset-4"
+                >
+                  কনসালটেন্সি
+                </Link>
+                <Link
+                  href="/tools"
+                  className="hover:text-[#E2E3FF] hover:underline underline-offset-4"
+                >
+                  রোডম্যাপ টুলস
+                </Link>
               </div>
             </div>
 
-            {/* Column 3: Company & Legal */}
+            {/* Column 3: Quick Links & Legal */}
             <div className="lg:col-span-2 space-y-3">
-              <h2 className="text-sm font-bold text-white tracking-wide">
+              <h2 className="text-sm font-bold text-[#DFB15B] tracking-wide">
                 তথ্য ও নীতিমালা
               </h2>
-              <ul className="space-y-2 text-white/80">
+              <ul className="space-y-1.5 text-xs sm:text-sm text-white/85">
                 <li>
                   <Link
                     href="/about"
-                    className="hover:text-[#CCCEFF] hover:underline underline-offset-4"
+                    className="hover:text-[#E2E3FF] hover:underline underline-offset-4"
                   >
                     আমাদের সম্পর্কে
                   </Link>
@@ -151,7 +132,7 @@ export function Footer({ siteConfig }: FooterProps) {
                 <li>
                   <Link
                     href="/faq"
-                    className="hover:text-[#CCCEFF] hover:underline underline-offset-4"
+                    className="hover:text-[#E2E3FF] hover:underline underline-offset-4"
                   >
                     সচরাচর জিজ্ঞাসা (FAQ)
                   </Link>
@@ -159,7 +140,7 @@ export function Footer({ siteConfig }: FooterProps) {
                 <li>
                   <Link
                     href="/contact"
-                    className="hover:text-[#CCCEFF] hover:underline underline-offset-4"
+                    className="hover:text-[#E2E3FF] hover:underline underline-offset-4"
                   >
                     যোগাযোগ
                   </Link>
@@ -167,7 +148,7 @@ export function Footer({ siteConfig }: FooterProps) {
                 <li>
                   <Link
                     href="/portal"
-                    className="hover:text-[#CCCEFF] hover:underline underline-offset-4"
+                    className="hover:text-[#E2E3FF] hover:underline underline-offset-4"
                   >
                     কাস্টমার পোর্টাল
                   </Link>
@@ -175,7 +156,7 @@ export function Footer({ siteConfig }: FooterProps) {
                 <li>
                   <Link
                     href="/privacy"
-                    className="hover:text-[#CCCEFF] hover:underline underline-offset-4"
+                    className="hover:text-[#E2E3FF] hover:underline underline-offset-4"
                   >
                     গোপনীয়তা নীতি
                   </Link>
@@ -183,7 +164,7 @@ export function Footer({ siteConfig }: FooterProps) {
                 <li>
                   <Link
                     href="/terms"
-                    className="hover:text-[#CCCEFF] hover:underline underline-offset-4"
+                    className="hover:text-[#E2E3FF] hover:underline underline-offset-4"
                   >
                     শর্তাবলি
                   </Link>
@@ -191,9 +172,9 @@ export function Footer({ siteConfig }: FooterProps) {
                 <li>
                   <Link
                     href="/disclaimer"
-                    className="hover:text-[#CCCEFF] hover:underline underline-offset-4"
+                    className="hover:text-[#E2E3FF] hover:underline underline-offset-4"
                   >
-                    আইনি ও রেগুলেটরি ডিসক্লেইমার
+                    আইনি ডিসক্লেইমার
                   </Link>
                 </li>
               </ul>
@@ -201,11 +182,11 @@ export function Footer({ siteConfig }: FooterProps) {
 
             {/* Column 4: Verified Contact Channels ONLY */}
             <div className="lg:col-span-3 space-y-3">
-              <h2 className="text-sm font-bold text-white tracking-wide">
-                যোগাযোগের মাধ্যম
+              <h2 className="text-sm font-bold text-[#DFB15B] tracking-wide">
+                যোগাযোগ
               </h2>
               {hasAnyVerifiedContact ? (
-                <ul className="space-y-2.5 text-white/80 text-xs sm:text-sm">
+                <ul className="space-y-2 text-white/85 text-xs sm:text-sm">
                   {siteConfig.verifiedPhone ? (
                     <li className="flex items-center gap-2">
                       <Phone
@@ -214,7 +195,7 @@ export function Footer({ siteConfig }: FooterProps) {
                       />
                       <a
                         href={`tel:${siteConfig.verifiedPhone.replace(/\s+/g, "")}`}
-                        className="hover:text-[#CCCEFF]"
+                        className="hover:text-[#E2E3FF]"
                         dir="ltr"
                       >
                         {siteConfig.verifiedPhone}
@@ -232,7 +213,7 @@ export function Footer({ siteConfig }: FooterProps) {
                         target="_blank"
                         rel="noopener noreferrer"
                         data-whatsapp-cta="true"
-                        className="hover:text-[#CCCEFF] transition-colors"
+                        className="hover:text-[#E2E3FF] transition-colors"
                       >
                         <span className="block font-semibold text-white">
                           WhatsApp সহায়তা
@@ -253,7 +234,7 @@ export function Footer({ siteConfig }: FooterProps) {
                       />
                       <a
                         href={`mailto:${siteConfig.verifiedEmail}`}
-                        className="hover:text-[#CCCEFF]"
+                        className="hover:text-[#E2E3FF]"
                         dir="ltr"
                       >
                         {siteConfig.verifiedEmail}
@@ -271,29 +252,24 @@ export function Footer({ siteConfig }: FooterProps) {
                   ) : null}
                 </ul>
               ) : (
-                <div className="rounded-[12px] border border-white/15 bg-[#102B55]/60 p-4 space-y-2.5">
-                  <p className="text-xs text-white/80 leading-relaxed">
-                    চূড়ান্ত অফিস ফোন, ঠিকানা ও হোয়াটসঅ্যাপ নম্বর ক্লায়েন্ট অনুমোদনের পর
-                    এখানে যুক্ত হবে।
+                <div className="rounded-[12px] border border-white/15 bg-white/[0.06] p-3.5 space-y-2">
+                  <p className="text-xs text-white/85 leading-relaxed">
+                    অফিস ফোন, ঠিকানা ও হোয়াটসঅ্যাপ তথ্য অনুমোদনের পর এখানে যুক্ত হবে।
                   </p>
                   <Link
                     href="/consultancy"
                     className="inline-flex items-center text-xs font-semibold text-[#DFB15B] hover:underline underline-offset-4"
                   >
-                    সরাসরি পরামর্শের অনুরোধ পাঠান →
+                    পরামর্শের অনুরোধ পাঠান →
                   </Link>
                 </div>
               )}
             </div>
           </div>
 
-          <div className="ps-gold-rule" aria-hidden="true" />
-
-          <div className="space-y-2 text-xs text-white/75 leading-relaxed">
-            <p className="font-medium text-white/90">
-              {siteConfig.legalDisclaimerBn}
-            </p>
-            <p className="text-white/60">
+          <div className="border-t border-white/15 pt-5 space-y-2 text-xs text-white/80 leading-relaxed">
+            <p className="text-white/90">{siteConfig.legalDisclaimerBn}</p>
+            <p className="text-white/70">
               © {new Date().getUTCFullYear()} {siteConfig.brandName}.
               সর্বস্বত্ব সংরক্ষিত।
             </p>
