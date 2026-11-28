@@ -101,12 +101,12 @@ export function EcosystemInfographics() {
   return (
     <section
       aria-label="অফিসিয়াল মাস্টার ইনফোগ্রাফিক গ্যালারি"
-      className="py-14 sm:py-16 bg-[#F2EFF8]/65 border-b border-[#D4CCE3]"
+      className="py-14 sm:py-16 bg-[#FBFAFF]/65 border-b border-[#E1E4F2]"
     >
       <div className="ps-container space-y-10">
         <div className="text-center max-w-3xl mx-auto space-y-3">
-          <p className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#51406F]">
-            <ShieldCheck className="w-4 h-4 text-[#51406F]" aria-hidden="true" />
+          <p className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#243FBA]">
+            <ShieldCheck className="w-4 h-4 text-[#243FBA]" aria-hidden="true" />
             <span>অফিসিয়াল মাস্টার ইনফোগ্রাফিক ও সমাধান চিত্র</span>
           </p>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#081838]">
@@ -128,8 +128,8 @@ export function EcosystemInfographics() {
                 className={cn(
                   "min-h-11 px-4 py-2 rounded-[10px] text-xs sm:text-sm font-semibold transition-all border cursor-pointer",
                   isSelected
-                    ? "bg-[#51406F] text-white border-[#51406F] shadow-sm"
-                    : "bg-white text-[#081838] border-[#D4CCE3] hover:border-[#51406F] hover:bg-[#F2EFF8]",
+                    ? "bg-[#243FBA] text-white border-[#243FBA] shadow-sm"
+                    : "bg-white text-[#081838] border-[#E1E4F2] hover:border-[#243FBA] hover:bg-[#FBFAFF]",
                 )}
               >
                 <span>{tab.badgeBn}</span>
@@ -138,10 +138,10 @@ export function EcosystemInfographics() {
           })}
         </div>
 
-        <div className="rounded-[18px] bg-white border border-[#D4CCE3] p-4 sm:p-6 shadow-sm max-w-4xl mx-auto space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#D4CCE3]">
+        <div className="rounded-[18px] bg-white border border-[#E1E4F2] p-4 sm:p-6 shadow-sm max-w-4xl mx-auto space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#E1E4F2]">
             <div>
-              <span className="text-xs font-bold uppercase tracking-wider text-[#51406F]">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#243FBA]">
                 {activeItem.badgeBn}
               </span>
               <h3 className="text-lg sm:text-xl font-bold text-[#081838]">
@@ -155,7 +155,7 @@ export function EcosystemInfographics() {
               <button
                 type="button"
                 onClick={() => setIsFullscreen(true)}
-                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-[8px] text-xs font-semibold bg-[#F2EFF8] hover:bg-[#DDD6EB] text-[#51406F] transition-colors border border-[#D4CCE3] cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-[8px] text-xs font-semibold bg-[#FBFAFF] hover:bg-[#E2E3FF] text-[#243FBA] transition-colors border border-[#E1E4F2] cursor-pointer"
                 title="পূর্ণ পর্দায় দেখুন"
               >
                 <Expand className="w-3.5 h-3.5" aria-hidden="true" />
@@ -163,7 +163,7 @@ export function EcosystemInfographics() {
               </button>
               <Link
                 href={activeItem.ctaHref}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[8px] text-xs font-semibold bg-[#51406F] text-white hover:bg-[#3F315A] transition-colors"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[8px] text-xs font-semibold bg-[#243FBA] text-white hover:bg-[#1D329B] transition-colors"
               >
                 <span>{activeItem.ctaTextBn}</span>
                 <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
@@ -171,7 +171,7 @@ export function EcosystemInfographics() {
             </div>
           </div>
 
-          <div className="relative w-full aspect-[4/5] sm:aspect-[1/1] max-h-[750px] rounded-xl overflow-hidden bg-[#F2EFF8]/40 border border-[#D4CCE3]/60 flex items-center justify-center">
+          <div className="relative w-full aspect-[4/5] sm:aspect-[1/1] max-h-[750px] rounded-xl overflow-hidden bg-[#FBFAFF]/40 border border-[#E1E4F2]/60 flex items-center justify-center">
             <Image
               src={activeItem.src}
               alt={activeItem.titleBn}
@@ -199,7 +199,7 @@ export function EcosystemInfographics() {
             <button
               type="button"
               onClick={() => setIsFullscreen(false)}
-              className="px-4 py-2 rounded-lg bg-[#51406F] text-white font-bold text-xs hover:bg-[#3F315A] cursor-pointer"
+              className="px-4 py-2 rounded-lg bg-[#243FBA] text-white font-bold text-xs hover:bg-[#1D329B] cursor-pointer"
             >
               বন্ধ করুন (Close)
             </button>

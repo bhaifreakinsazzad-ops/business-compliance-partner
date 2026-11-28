@@ -13,86 +13,116 @@ import Link from "next/link";
 import { animate } from "animejs";
 import {
   ArrowRight,
+  BookOpen,
+  BriefcaseBusiness,
+  CheckCircle2,
   ChevronLeft,
   ChevronRight,
+  GraduationCap,
   Pause,
   Play,
+  ShieldCheck,
 } from "lucide-react";
-import { LazyHeroStudio3D } from "@/components/three/LazyHeroStudio3D";
 import { MOTION_DURATIONS, MOTION_EASES } from "@/lib/motion/tokens";
 import { cn } from "@/lib/utils";
 
 interface PromoSlide {
   id: string;
+  orderCode: string;
   badgeBn: string;
   titleBn: string;
   subtitleBn: string;
+  highlightsBn: string[];
   ctaHref: string;
   ctaLabelBn: string;
   secondaryHref: string;
   secondaryLabelBn: string;
-  tertiaryHref?: string;
-  tertiaryLabelBn?: string;
+  visualTagEn: string;
+  visualHeadingBn: string;
+  visualTone: "courses" | "services" | "books" | "overview";
 }
 
 const PROMO_SLIDES: PromoSlide[] = [
   {
     id: "ecosystem-overview",
-    badgeBn: "Courses · Services · Books — Business Compliance Partner",
+    orderCode: "01",
+    badgeBn: "Courses · Services · Books",
     titleBn:
-      "ব্যবসা শুরু থেকে সফল পরিচালনা—কোর্স, পেশাদার সেবা ও বই একই প্ল্যাটফর্মে।",
+      "ব্যবসা শুরু থেকে কমপ্লায়েন্স পরিচালনা—কোর্স, পেশাদার সেবা ও বই এক প্ল্যাটফর্মে",
     subtitleBn:
-      "Learn with confidence. Get professional assistance. Discover practical knowledge — দক্ষতা অর্জন করুন, পেশাদার সহায়তা নিন এবং প্র্যাকটিক্যাল বই দিয়ে জ্ঞান সমৃদ্ধ করুন।",
+      "বাংলাদেশের উদ্যোক্তা ও পেশাজীবীদের জন্য ব্যবহারিক প্রশিক্ষণ, আয়কর-ভ্যাট-আরজেএসসি সেবা এবং রেফারেন্স প্রকাশনা।",
+    highlightsBn: [
+      "দক্ষতা উন্নয়নে ব্যবহারিক Courses",
+      "ব্যবসার জন্য পেশাদার Services ও WhatsApp সহায়তা",
+      "অফিসিয়াল রেফারেন্স হ্যান্ডবুক ও Books",
+    ],
     ctaHref: "/courses",
-    ctaLabelBn: "Explore Courses · কোর্সসমূহ",
+    ctaLabelBn: "কোর্সসমূহ দেখুন",
     secondaryHref: "/services",
-    secondaryLabelBn: "Explore Services · সেবাসমূহ",
-    tertiaryHref: "/books",
-    tertiaryLabelBn: "Explore Books · বইসমূহ",
+    secondaryLabelBn: "সেবাসমূহ দেখুন",
+    visualTagEn: "ONE PARTNER · COMPLETE SOLUTIONS",
+    visualHeadingBn: "সমন্বিত ব্যবসায়িক শিক্ষা ও কমপ্লায়েন্স",
+    visualTone: "overview",
   },
   {
     id: "professional-courses",
+    orderCode: "02",
     badgeBn: "01 · Courses — দক্ষতা উন্নয়ন ও প্রশিক্ষণ",
     titleBn: "Tax, VAT, e-GP, E-commerce ও RJSC ব্যবহারিক কোর্স",
     subtitleBn:
-      "পেশাদার দক্ষতা অর্জন করুন এবং নিজেকে প্রস্তুত করুন — ১০টি ব্যবহারিক প্রশিক্ষণ ট্র্যাক ও স্পষ্ট সিলেবাস।",
+      "পেশাদার দক্ষতা অর্জন করুন এবং নিজেকে প্রস্তুত করুন—১০টি ব্যবহারিক প্রশিক্ষণ ট্র্যাক ও স্পষ্ট সিলেবাস।",
+    highlightsBn: [
+      "আয়কর ও কর্পোরেট ট্যাক্স রিটার্ন",
+      "ভ্যাট ও মূসক ৯.১ অনলাইন দাখিল",
+      "BPPA e-GP দরপত্র ও ই-কমার্স DBID",
+    ],
     ctaHref: "/courses",
-    ctaLabelBn: "Explore Courses · সব কোর্স দেখুন",
-    secondaryHref: "/services",
-    secondaryLabelBn: "Explore Services · সেবাসমূহ",
+    ctaLabelBn: "Explore Courses",
+    secondaryHref: "/consultancy",
+    secondaryLabelBn: "আগ্রহ নিবন্ধন",
+    visualTagEn: "01 · COURSES GATEWAY",
+    visualHeadingBn: "আমাদের সকল কোর্সসমূহ",
+    visualTone: "courses",
   },
   {
     id: "tax-vat-services",
-    badgeBn: "02 · Services — সরাসরি WhatsApp ও কমপ্লায়েন্স সহায়তা",
-    titleBn: "আয়কর, ভ্যাট, মূসক ও কর্পোরেট কমপ্লায়েন্স পেশাদার সেবা",
+    orderCode: "03",
+    badgeBn: "02 · Services — পেশাদার ও লাইসেন্সিং সহায়তা",
+    titleBn: "আয়কর, ভ্যাট, Smart RJSC ও ব্যবসার লাইসেন্সিং সেবা",
     subtitleBn:
-      "ব্যবসার প্রয়োজনীয় পেশাদার সহায়তা ও সমাধান নিন — e-TIN, BIN, মূসক ৯.১, Smart RJSC ও লাইসেন্সিং সহায়তা।",
+      "ব্যবসার প্রয়োজনীয় পেশাদার সহায়তা ও সমাধান নিন—সরাসরি পরামর্শ ও WhatsApp সহায়তা।",
+    highlightsBn: [
+      "e-TIN, আয়কর রিটার্ন ও BIN নিবন্ধন",
+      "Smart RJSC কোম্পানি গঠন ও রিটার্ন",
+      "ট্রেড লাইসেন্স, DIFE, ফায়ার ও IRC/ERC",
+    ],
     ctaHref: "/services",
-    ctaLabelBn: "Explore Services · সব সেবা দেখুন",
-    secondaryHref: "/consultancy",
-    secondaryLabelBn: "বিশেষজ্ঞ পরামর্শ নিন",
+    ctaLabelBn: "Explore Services",
+    secondaryHref: "/licensing",
+    secondaryLabelBn: "লাইসেন্সিং নির্দেশিকা",
+    visualTagEn: "02 · SERVICES GATEWAY",
+    visualHeadingBn: "আমাদের সকল সেবাসমূহ",
+    visualTone: "services",
   },
   {
     id: "books-storefront",
+    orderCode: "04",
     badgeBn: "03 · Books — প্রকাশনা ও রেফারেন্স বইসমূহ",
-    titleBn: "প্রয়োজনীয় বই ও প্রকাশনার মাধ্যমে আপনার কমপ্লায়েন্স জ্ঞান সমৃদ্ধ করুন",
+    titleBn: "ব্যবহারিক কমপ্লায়েন্স হ্যান্ডবুক ও প্রকাশনা মার্কেটপ্লেস",
     subtitleBn:
-      "আয়কর, ভ্যাট, e-GP, RJSC ও ই-কমার্স সংক্রান্ত ব্যবহারিক হ্যান্ডবুকের প্রিভিউ দেখুন ও প্রকাশনা আগ্রহ জানান।",
+      "প্রয়োজনীয় বই ও প্রকাশনার মাধ্যমে আপনার কমপ্লায়েন্স জ্ঞান সমৃদ্ধ করুন—আয়কর, ভ্যাট ও কর্পোরেট গাইড।",
+    highlightsBn: [
+      "আয়কর ও মূসক ৯.১ ফিল্ড গাইড",
+      "e-GP ও সরকারি টেন্ডার ম্যানুয়াল",
+      "RJSC কোম্পানি আইন ও উদ্যোক্তা গাইড",
+    ],
     ctaHref: "/books",
-    ctaLabelBn: "Explore Books · সব বই দেখুন",
-    secondaryHref: "/courses",
-    secondaryLabelBn: "সংশ্লিষ্ট কোর্সসমূহ",
-  },
-  {
-    id: "licensing-registration",
-    badgeBn: "Services Extension · নিবন্ধন ও লাইসেন্সিং",
-    titleBn: "ট্রেড লাইসেন্স, Smart RJSC, DIFE ও ফায়ার লাইসেন্স সহায়তা",
-    subtitleBn:
-      "সরকারি কর্তৃপক্ষের সঠিক তথ্যসূত্র, প্রয়োজনীয় নথিপত্র ও ধাপে ধাপে আবেদন নির্দেশিকা।",
-    ctaHref: "/licensing",
-    ctaLabelBn: "লাইসেন্সিং নির্দেশিকা",
-    secondaryHref: "/tools",
-    secondaryLabelBn: "ডকুমেন্ট চেকলিস্ট",
+    ctaLabelBn: "Explore Books",
+    secondaryHref: "/contact",
+    secondaryLabelBn: "যোগাযোগ করুন",
+    visualTagEn: "03 · BOOKS MARKETPLACE",
+    visualHeadingBn: "আমাদের সকল বইসমূহ",
+    visualTone: "books",
   },
 ];
 
@@ -157,8 +187,8 @@ export function PromotionalHeroSlider({
     const panel = textPanelRef.current;
     if (!panel) return;
     const anim = animate(panel, {
-      opacity: [0.65, 1],
-      translateY: [8, 0],
+      opacity: [0.7, 1],
+      translateY: [6, 0],
       duration: MOTION_DURATIONS.standard,
       ease: MOTION_EASES.crisp,
     });
@@ -195,6 +225,14 @@ export function PromotionalHeroSlider({
   };
 
   const activeSlide = PROMO_SLIDES[activeIndex] ?? PROMO_SLIDES[0]!;
+  const SlideVisualIcon =
+    activeSlide.visualTone === "courses"
+      ? GraduationCap
+      : activeSlide.visualTone === "services"
+        ? BriefcaseBusiness
+        : activeSlide.visualTone === "books"
+          ? BookOpen
+          : ShieldCheck;
 
   return (
     <section
@@ -211,184 +249,198 @@ export function PromotionalHeroSlider({
       onKeyDown={handleKeyDown}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
-      className="relative bg-gradient-to-br from-surface-lavender via-surface-lavender-tint to-[#E2D9F0] text-text-body border-b border-border-subtle overflow-hidden"
+      className="bcp-periwinkle-hero-gradient relative text-[#181D26] border-b border-[#E1E4F2] overflow-hidden"
     >
-      {/* Subtle Executive Lavender radial glow & decorative gold curve edge */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(81,64,111,0.08),transparent_48%),radial-gradient(circle_at_bottom_right,rgba(197,144,40,0.08),transparent_45%)] pointer-events-none"
-      />
-
-      <div className="ps-container relative py-5 sm:py-6 lg:py-7">
-        <div className="min-h-[250px] lg:min-h-[300px] grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
-          {/* Left Column — Editorial Value Proposition & Actions */}
-          <div
-            ref={textPanelRef}
-            aria-live={isPaused ? "polite" : "off"}
-            className="lg:col-span-7 space-y-3 sm:space-y-3.5"
-          >
-            <div className="flex items-center gap-2.5">
-              {logoAssetPath ? (
-                <Image
-                  src={logoAssetPath}
-                  alt={`${brandName} অফিসিয়াল ব্যাজ`}
-                  width={30}
-                  height={30}
-                  priority
-                  referrerPolicy="no-referrer"
-                  className="rounded-full border border-[#C59028]/70 bg-white object-contain shrink-0"
-                />
-              ) : null}
-              <span className="text-xs sm:text-sm font-bold tracking-wide text-[#51406F]">
-                {activeSlide.badgeBn}
-              </span>
-              <span className="text-xs text-[#596775] tabular-nums hidden sm:inline">
-                · {activeIndex + 1}/{PROMO_SLIDES.length}
-              </span>
-            </div>
-
-            {activeIndex === 0 ? (
-              <h1 className="text-2xl sm:text-3xl lg:text-[2.1rem] font-extrabold leading-[1.24] text-[#081838] [text-wrap:balance] max-w-2xl">
-                {activeSlide.titleBn}
-              </h1>
-            ) : (
-              <>
-                <h1 className="visually-hidden">
-                  {PROMO_SLIDES[0]!.titleBn}
-                </h1>
-                <p className="text-2xl sm:text-3xl lg:text-[2.1rem] font-extrabold leading-[1.24] text-[#081838] [text-wrap:balance] max-w-2xl">
-                  {activeSlide.titleBn}
-                </p>
-              </>
-            )}
-
-            <p className="text-sm sm:text-base text-[#181D26]/85 leading-relaxed max-w-xl">
-              {activeSlide.subtitleBn}
-            </p>
-
-            {/* Primary & Secondary CTAs + Tertiary Books Link */}
-            <div className="pt-1 flex flex-wrap items-center gap-2.5 sm:gap-3">
-              <Link
-                href={activeSlide.ctaHref}
-                className="inline-flex items-center justify-center gap-2 min-h-11 px-4 sm:px-5 py-2.5 rounded-[10px] bg-[#51406F] text-white font-semibold text-xs sm:text-sm whitespace-nowrap shrink-0 hover:bg-[#3F315A] transition-colors duration-150 shadow-sm focus-visible:outline-3 focus-visible:outline-[#C59028] focus-visible:outline-offset-2"
-              >
-                <span>{activeSlide.ctaLabelBn}</span>
-                <ArrowRight className="w-4 h-4" aria-hidden="true" />
-              </Link>
-
-              <Link
-                href={activeSlide.secondaryHref}
-                className="inline-flex items-center justify-center min-h-11 px-4 py-2.5 rounded-[10px] border border-[#51406F]/35 bg-white/95 text-[#081838] font-semibold text-xs sm:text-sm whitespace-nowrap shrink-0 hover:bg-white hover:border-[#51406F] transition-colors duration-150 focus-visible:outline-3 focus-visible:outline-[#C59028] focus-visible:outline-offset-2"
-              >
-                {activeSlide.secondaryLabelBn}
-              </Link>
-
-              {activeSlide.tertiaryHref && activeSlide.tertiaryLabelBn ? (
-                <Link
-                  href={activeSlide.tertiaryHref}
-                  className="inline-flex items-center justify-center min-h-11 px-4 py-2.5 rounded-[10px] border border-[#D4CCE3] bg-[#DDD6EB]/75 text-[#081838] font-semibold text-xs sm:text-sm whitespace-nowrap shrink-0 hover:bg-[#DDD6EB] hover:border-[#51406F] transition-colors duration-150 focus-visible:outline-3 focus-visible:outline-[#C59028] focus-visible:outline-offset-2"
-                >
-                  {activeSlide.tertiaryLabelBn}
-                </Link>
-              ) : null}
-            </div>
-
-            {/* Pagination Dots + Prev / Pause / Next */}
-            <div className="pt-1 flex flex-wrap items-center justify-between gap-3 max-w-xl">
-              <div
-                className="flex items-center gap-1"
-                role="group"
-                aria-label="স্লাইড নির্বাচন"
-              >
-                {PROMO_SLIDES.map((slide, idx) => {
-                  const isCurrent = idx === activeIndex;
-                  return (
-                    <button
-                      key={slide.id}
-                      type="button"
-                      onClick={() => goTo(idx)}
-                      aria-label={`স্লাইড ${idx + 1}: ${slide.badgeBn}`}
-                      aria-current={isCurrent ? "true" : undefined}
-                      className="inline-flex items-center justify-center min-w-7 min-h-7 px-0.5 rounded-full cursor-pointer"
-                    >
-                      <span
-                        className={cn(
-                          "block h-2 rounded-full transition-all duration-150",
-                          isCurrent
-                            ? "w-6 bg-[#51406F]"
-                            : "w-2 bg-[#A599C2]/70 hover:bg-[#51406F]/70",
-                        )}
-                        aria-hidden="true"
-                      />
-                    </button>
-                  );
-                })}
+      <div className="ps-container relative pt-6 pb-5 sm:pt-8 sm:pb-6 lg:pt-9 lg:pb-7 space-y-6">
+        {/* Compact Reference-Style Promotional Banner Card */}
+        <div className="rounded-[22px] border border-white/90 bg-white/88 shadow-[0_18px_48px_rgba(32,45,114,0.08)] p-5 sm:p-7 lg:p-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
+            {/* Left Column — Editorial Value Proposition & Actions */}
+            <div
+              ref={textPanelRef}
+              aria-live={isPaused ? "polite" : "off"}
+              className="lg:col-span-7 space-y-3.5"
+            >
+              <div className="inline-flex items-center gap-2.5">
+                {logoAssetPath ? (
+                  <Image
+                    src={logoAssetPath}
+                    alt={`${brandName} অফিসিয়াল ব্যাজ`}
+                    width={30}
+                    height={30}
+                    priority
+                    referrerPolicy="no-referrer"
+                    className="rounded-full border border-[#C59028]/70 bg-white object-contain shrink-0"
+                  />
+                ) : null}
+                <span className="text-xs sm:text-sm font-bold tracking-wide text-[#243FBA]">
+                  {activeSlide.badgeBn}
+                </span>
               </div>
 
-              <div className="flex items-center gap-1.5">
-                <button
-                  type="button"
-                  onClick={goPrev}
-                  aria-label="পূর্ববর্তী স্লাইড"
-                  className="inline-flex items-center justify-center w-9 h-9 rounded-[8px] border border-[#D4CCE3] bg-white/95 text-[#081838] hover:border-[#51406F] hover:text-[#51406F] transition-colors duration-150 cursor-pointer"
-                >
-                  <ChevronLeft className="w-4 h-4" aria-hidden="true" />
-                </button>
+              {activeIndex === 0 ? (
+                <h1 className="text-2xl sm:text-3xl lg:text-[2.15rem] font-extrabold leading-[1.24] text-[#081838] [text-wrap:balance] max-w-2xl">
+                  {activeSlide.titleBn}
+                </h1>
+              ) : (
+                <>
+                  <h1 className="visually-hidden">
+                    {PROMO_SLIDES[0]!.titleBn}
+                  </h1>
+                  <p className="text-2xl sm:text-3xl lg:text-[2.15rem] font-extrabold leading-[1.24] text-[#081838] [text-wrap:balance] max-w-2xl">
+                    {activeSlide.titleBn}
+                  </p>
+                </>
+              )}
 
-                <button
-                  type="button"
-                  onClick={() => setIsPaused((prev) => !prev)}
-                  aria-pressed={isPaused}
-                  aria-label="স্লাইডার অটোপ্লে থামান"
-                  className="inline-flex items-center justify-center gap-1 h-9 px-3 rounded-[8px] border border-[#D4CCE3] bg-white/95 text-xs font-semibold text-[#081838] hover:border-[#51406F] hover:text-[#51406F] transition-colors duration-150 whitespace-nowrap shrink-0 cursor-pointer"
-                >
-                  {isPaused ? (
-                    <>
-                      <Play className="w-3.5 h-3.5" aria-hidden="true" />
-                      <span>চালু</span>
-                    </>
-                  ) : (
-                    <>
-                      <Pause className="w-3.5 h-3.5" aria-hidden="true" />
-                      <span>থামান</span>
-                    </>
-                  )}
-                </button>
+              <p className="text-sm sm:text-base text-[#596775] leading-relaxed max-w-xl">
+                {activeSlide.subtitleBn}
+              </p>
 
-                <button
-                  type="button"
-                  onClick={goNext}
-                  aria-label="পরবর্তী স্লাইড"
-                  className="inline-flex items-center justify-center w-9 h-9 rounded-[8px] border border-[#D4CCE3] bg-white/95 text-[#081838] hover:border-[#51406F] hover:text-[#51406F] transition-colors duration-150 cursor-pointer"
+              <div className="pt-1 flex flex-wrap items-center gap-3">
+                <Link
+                  href={activeSlide.ctaHref}
+                  className="inline-flex items-center justify-center gap-2 min-h-11 px-5 py-2.5 rounded-[10px] bg-[#243FBA] text-white font-semibold text-xs sm:text-sm whitespace-nowrap shrink-0 hover:bg-[#1D329B] transition-colors shadow-sm"
                 >
-                  <ChevronRight className="w-4 h-4" aria-hidden="true" />
-                </button>
+                  <span>{activeSlide.ctaLabelBn}</span>
+                  <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                </Link>
+
+                <Link
+                  href={activeSlide.secondaryHref}
+                  className="inline-flex items-center justify-center min-h-11 px-4 py-2.5 rounded-[10px] border border-[#E1E4F2] bg-[#FBFAFF] text-[#081838] font-semibold text-xs sm:text-sm whitespace-nowrap shrink-0 hover:bg-[#E2E3FF] hover:border-[#243FBA] transition-colors"
+                >
+                  {activeSlide.secondaryLabelBn}
+                </Link>
+              </div>
+            </div>
+
+            {/* Right Column — Clean 16:9 Promotional Visual Showcase Frame */}
+            <div className="hidden sm:block lg:col-span-5">
+              <div className="rounded-[18px] border border-[#B8BBFF]/80 bg-gradient-to-br from-[#081838] via-[#13295B] to-[#243FBA] text-white p-5 sm:p-6 shadow-md relative overflow-hidden">
+                <div
+                  aria-hidden="true"
+                  className="absolute -right-8 -top-8 w-36 h-36 rounded-full bg-[#B8BBFF]/20"
+                />
+                <div className="relative space-y-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="inline-flex items-center gap-2 text-[11px] font-en font-bold uppercase tracking-[0.14em] text-[#CCCEFF]">
+                      <SlideVisualIcon className="w-4 h-4 text-[#DFB15B]" aria-hidden="true" />
+                      <span>{activeSlide.visualTagEn}</span>
+                    </span>
+                    <span className="font-en text-xs font-bold text-[#DFB15B] tabular-nums">
+                      {activeSlide.orderCode} / 0{PROMO_SLIDES.length}
+                    </span>
+                  </div>
+
+                  <p className="text-lg sm:text-xl font-extrabold leading-snug text-white">
+                    {activeSlide.visualHeadingBn}
+                  </p>
+
+                  <ul className="space-y-2 text-xs sm:text-sm text-white/90">
+                    {activeSlide.highlightsBn.map((point) => (
+                      <li key={point} className="flex items-center gap-2">
+                        <CheckCircle2
+                          className="w-4 h-4 text-[#5de2a5] shrink-0"
+                          aria-hidden="true"
+                        />
+                        <span className="line-clamp-1">{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Right Column — Interactive 3D Executive Knowledge Studio */}
-          <div className="hidden sm:block lg:col-span-5">
-            <LazyHeroStudio3D
-              activeSlideIndex={activeIndex}
-              logoAssetPath={logoAssetPath}
-              brandName={brandName}
-            />
+        {/* Bunyanum-style Centered Segmented Progress Bar + Counter + Pause Control */}
+        <div className="flex flex-col items-center gap-4">
+          <div className="inline-flex items-center justify-center gap-2 sm:gap-3 rounded-[14px] border border-[#B8BBFF]/90 bg-white/90 px-3 sm:px-4 py-1.5 sm:py-2 shadow-sm max-w-full">
+            <span className="font-en text-xs font-extrabold text-[#243FBA] tabular-nums whitespace-nowrap">
+              {activeSlide.orderCode}
+              <span className="text-[#596775] mx-1">—</span>
+              0{PROMO_SLIDES.length}
+            </span>
+
+            <div
+              className="flex items-center gap-1 sm:gap-1.5"
+              role="group"
+              aria-label="স্লাইড নির্বাচন"
+            >
+              {PROMO_SLIDES.map((slide, idx) => {
+                const isCurrent = idx === activeIndex;
+                return (
+                  <button
+                    key={slide.id}
+                    type="button"
+                    onClick={() => goTo(idx)}
+                    aria-label={`স্লাইড ${idx + 1}: ${slide.badgeBn}`}
+                    aria-current={isCurrent ? "true" : undefined}
+                    className="py-1.5 px-0.5 cursor-pointer"
+                  >
+                    <span
+                      className={cn(
+                        "block h-1.5 rounded-full transition-all duration-200",
+                        isCurrent
+                          ? "w-7 sm:w-12 bg-[#243FBA]"
+                          : "w-3.5 sm:w-8 bg-[#CFD1FF] hover:bg-[#B8BBFF]",
+                      )}
+                      aria-hidden="true"
+                    />
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="flex items-center gap-1 border-s border-[#E1E4F2] ps-2 sm:ps-2.5 shrink-0">
+              <button
+                type="button"
+                onClick={goPrev}
+                aria-label="পূর্ববর্তী স্লাইড"
+                className="inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-[8px] border border-[#E1E4F2] bg-white text-[#081838] hover:border-[#243FBA] hover:text-[#243FBA] transition-colors cursor-pointer"
+              >
+                <ChevronLeft className="w-4 h-4" aria-hidden="true" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsPaused((prev) => !prev)}
+                aria-pressed={isPaused}
+                aria-label={isPaused ? "স্লাইডার চালু করুন" : "স্লাইডার থামান"}
+                className="inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-[8px] border border-[#B8BBFF] bg-[#E2E3FF] text-[#243FBA] hover:bg-[#243FBA] hover:text-white transition-colors cursor-pointer"
+              >
+                {isPaused ? (
+                  <Play className="w-3.5 h-3.5" aria-hidden="true" />
+                ) : (
+                  <Pause className="w-3.5 h-3.5" aria-hidden="true" />
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={goNext}
+                aria-label="পরবর্তী স্লাইড"
+                className="inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-[8px] border border-[#E1E4F2] bg-white text-[#081838] hover:border-[#243FBA] hover:text-[#243FBA] transition-colors cursor-pointer"
+              >
+                <ChevronRight className="w-4 h-4" aria-hidden="true" />
+              </button>
+            </div>
+          </div>
+
+          {/* Reference Tagline Divider */}
+          <div className="flex items-center justify-center gap-3 w-full max-w-2xl">
+            <span className="h-[1.5px] flex-1 bg-gradient-to-r from-transparent to-[#243FBA]/50" aria-hidden="true" />
+            <p
+              className="font-en text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em] text-[#202D72] text-center"
+              lang="en"
+            >
+              One Partner · Complete Solutions · Confident Growth
+            </p>
+            <span className="h-[1.5px] flex-1 bg-gradient-to-l from-transparent to-[#243FBA]/50" aria-hidden="true" />
           </div>
         </div>
       </div>
-
-      {/* Subtle Deep Plum + Gold hairline progress bar */}
-      {!prefersReducedMotion && !isPaused && !isHovered && !isFocused ? (
-        <div
-          key={`progress-${activeIndex}`}
-          aria-hidden="true"
-          className="h-0.5 w-full bg-gradient-to-r from-[#51406F] via-[#51406F] to-[#C59028] origin-left"
-          style={{
-            animation: `bcp-slide-progress ${AUTO_ADVANCE_MS}ms linear 1`,
-          }}
-        />
-      ) : null}
     </section>
   );
 }

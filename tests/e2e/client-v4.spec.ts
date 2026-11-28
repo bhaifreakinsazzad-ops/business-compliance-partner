@@ -11,13 +11,13 @@ test.describe("BCP V4.0 Client Acceptance Criteria", () => {
     });
     await expect(carousel).toBeVisible();
     await expect(carousel.locator("h1")).toContainText(
-      "ব্যবসা শুরু থেকে সফল পরিচালনা",
+      "ব্যবসা শুরু থেকে কমপ্লায়েন্স পরিচালনা",
     );
 
     const nextBtn = carousel.getByRole("button", { name: "পরবর্তী স্লাইড" });
     const prevBtn = carousel.getByRole("button", { name: "পূর্ববর্তী স্লাইড" });
     const pauseBtn = carousel.getByRole("button", {
-      name: "স্লাইডার অটোপ্লে থামান",
+      name: "স্লাইডার থামান",
     });
 
     await expect(nextBtn).toBeVisible();
@@ -28,12 +28,12 @@ test.describe("BCP V4.0 Client Acceptance Criteria", () => {
     await expect(carousel).toContainText("Tax, VAT, e-GP, E-commerce ও RJSC");
 
     await prevBtn.click();
-    await expect(carousel).toContainText("ব্যবসা শুরু থেকে সফল পরিচালনা");
+    await expect(carousel).toContainText("ব্যবসা শুরু থেকে কমপ্লায়েন্স পরিচালনা");
 
     await pauseBtn.click();
     await expect(pauseBtn).toHaveAttribute("aria-pressed", "true");
 
-    // Two flagship buttons remain visible regardless of slide
+    // Three flagship buttons remain visible regardless of slide
     const coursesCta = page.locator('a[data-flagship-cta="courses"]');
     const servicesCta = page.locator('a[data-flagship-cta="services"]');
     await expect(coursesCta).toBeVisible();
@@ -55,7 +55,7 @@ test.describe("BCP V4.0 Client Acceptance Criteria", () => {
       name: "প্রচারণামূলক ব্যানার স্লাইডার",
     });
     await expect(carousel).toBeVisible();
-    await expect(carousel).toContainText("ব্যবসা শুরু থেকে সফল পরিচালনা");
+    await expect(carousel).toContainText("ব্যবসা শুরু থেকে কমপ্লায়েন্স পরিচালনা");
   });
 
   test("courses page prioritizes Tax, VAT, e-GP, E-commerce, RJSC category cards", async ({

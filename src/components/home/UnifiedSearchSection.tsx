@@ -112,12 +112,12 @@ export function UnifiedSearchSection() {
   return (
     <div
       id="unified-search"
-      className="rounded-[16px] bg-white border border-[#D4CCE3] p-6 sm:p-8 shadow-sm space-y-5"
+      className="rounded-[16px] bg-white border border-[#E1E4F2] p-6 sm:p-8 shadow-sm space-y-5"
     >
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div className="space-y-1.5 max-w-2xl">
           <p
-            className="font-en text-xs font-bold uppercase tracking-[0.14em] text-[#51406F]"
+            className="font-en text-xs font-bold uppercase tracking-[0.14em] text-[#243FBA]"
             lang="en"
           >
             Search Across Courses · Services · Books
@@ -149,8 +149,8 @@ export function UnifiedSearchSection() {
                 className={cn(
                   "inline-flex items-center gap-1.5 min-h-9 px-3 py-1.5 rounded-[9px] text-xs font-semibold border transition-colors cursor-pointer",
                   isSelected
-                    ? "bg-[#51406F] text-white border-[#51406F]"
-                    : "bg-[#F2EFF8] text-[#081838] border-[#D4CCE3] hover:bg-[#DDD6EB]",
+                    ? "bg-[#243FBA] text-white border-[#243FBA]"
+                    : "bg-[#FBFAFF] text-[#081838] border-[#E1E4F2] hover:bg-[#E2E3FF]",
                 )}
               >
                 <span className="font-en" lang="en">
@@ -161,7 +161,7 @@ export function UnifiedSearchSection() {
                   <span
                     className={cn(
                       "tabular-nums text-[11px]",
-                      isSelected ? "text-[#DFB15B]" : "text-[#51406F]",
+                      isSelected ? "text-[#DFB15B]" : "text-[#243FBA]",
                     )}
                   >
                     ({tab.count})
@@ -183,7 +183,7 @@ export function UnifiedSearchSection() {
           </label>
           <div className="relative flex-1">
             <Search
-              className="w-4 h-4 text-[#51406F] absolute start-4 top-1/2 -translate-y-1/2 pointer-events-none"
+              className="w-4 h-4 text-[#243FBA] absolute start-4 top-1/2 -translate-y-1/2 pointer-events-none"
               aria-hidden="true"
             />
             <input
@@ -196,7 +196,7 @@ export function UnifiedSearchSection() {
               autoCapitalize="none"
               spellCheck={false}
               enterKeyHint="search"
-              className="w-full min-h-12 ps-11 pe-4 py-2.5 rounded-[12px] border border-[#D4CCE3] bg-[#F2EFF8]/60 text-[#181D26] text-base placeholder:text-[#596775]/80 focus:border-[#51406F]"
+              className="w-full min-h-12 ps-11 pe-4 py-2.5 rounded-[12px] border border-[#E1E4F2] bg-[#FBFAFF]/60 text-[#181D26] text-base placeholder:text-[#596775]/80 focus:border-[#243FBA]"
             />
           </div>
           <button
@@ -226,7 +226,7 @@ export function UnifiedSearchSection() {
               setQuery(tag);
               void runSearch(tag);
             }}
-            className="inline-flex items-center min-h-9 rounded-[8px] border border-[#D4CCE3] bg-[#F2EFF8] px-3 py-1.5 font-semibold text-[#51406F] hover:border-[#51406F] hover:bg-[#DDD6EB] transition-colors cursor-pointer"
+            className="inline-flex items-center min-h-9 rounded-[8px] border border-[#E1E4F2] bg-[#FBFAFF] px-3 py-1.5 font-semibold text-[#243FBA] hover:border-[#243FBA] hover:bg-[#E2E3FF] transition-colors cursor-pointer"
           >
             {tag}
           </button>
@@ -239,7 +239,7 @@ export function UnifiedSearchSection() {
               setResults(null);
               setSearchedQuery(null);
             }}
-            className="inline-flex items-center min-h-9 rounded-[8px] border border-[#D4CCE3] bg-white px-3 py-1.5 font-semibold text-[#596775] hover:text-[#081838] transition-colors cursor-pointer"
+            className="inline-flex items-center min-h-9 rounded-[8px] border border-[#E1E4F2] bg-white px-3 py-1.5 font-semibold text-[#596775] hover:text-[#081838] transition-colors cursor-pointer"
           >
             মুছুন
           </button>
@@ -254,18 +254,18 @@ export function UnifiedSearchSection() {
 
       {results && searchedQuery ? (
         <div
-          className="pt-4 border-t border-[#D4CCE3] space-y-5"
+          className="pt-4 border-t border-[#E1E4F2] space-y-5"
           aria-live="polite"
         >
           {totalCount === 0 ? (
-            <div className="rounded-[12px] bg-[#F2EFF8] border border-[#D4CCE3] p-5 text-sm text-[#181D26] flex flex-wrap items-center justify-between gap-3">
+            <div className="rounded-[12px] bg-[#FBFAFF] border border-[#E1E4F2] p-5 text-sm text-[#181D26] flex flex-wrap items-center justify-between gap-3">
               <span>
                 “{searchedQuery}” এর জন্য প্রকাশিত কোনো ফলাফল পাওয়া যায়নি। সরাসরি আপনার
                 প্রয়োজন লিখে পাঠাতে পারেন।
               </span>
               <Link
                 href="/consultancy"
-                className="font-semibold text-[#51406F] underline underline-offset-4"
+                className="font-semibold text-[#243FBA] underline underline-offset-4"
               >
                 পরামর্শের অনুরোধ করুন →
               </Link>
@@ -300,13 +300,13 @@ export function UnifiedSearchSection() {
                         <li key={item.slug}>
                           <Link
                             href={`/courses/${item.slug}`}
-                            className="flex items-center justify-between gap-2 rounded-[10px] border border-[#D4CCE3] p-3 text-sm text-[#081838] hover:bg-[#F2EFF8]"
+                            className="flex items-center justify-between gap-2 rounded-[10px] border border-[#E1E4F2] p-3 text-sm text-[#081838] hover:bg-[#FBFAFF]"
                           >
                             <span className="font-medium line-clamp-1">
                               {item.titleBn}
                             </span>
                             <ArrowRight
-                              className="w-3.5 h-3.5 text-[#51406F] shrink-0"
+                              className="w-3.5 h-3.5 text-[#243FBA] shrink-0"
                               aria-hidden="true"
                             />
                           </Link>
@@ -340,13 +340,13 @@ export function UnifiedSearchSection() {
                         <li key={item.slug}>
                           <Link
                             href={`/services/${item.slug}`}
-                            className="flex items-center justify-between gap-2 rounded-[10px] border border-[#D4CCE3] p-3 text-sm text-[#081838] hover:bg-[#F2EFF8]"
+                            className="flex items-center justify-between gap-2 rounded-[10px] border border-[#E1E4F2] p-3 text-sm text-[#081838] hover:bg-[#FBFAFF]"
                           >
                             <span className="font-medium line-clamp-1">
                               {item.titleBn}
                             </span>
                             <ArrowRight
-                              className="w-3.5 h-3.5 text-[#51406F] shrink-0"
+                              className="w-3.5 h-3.5 text-[#243FBA] shrink-0"
                               aria-hidden="true"
                             />
                           </Link>
@@ -380,13 +380,13 @@ export function UnifiedSearchSection() {
                         <li key={item.slug}>
                           <Link
                             href={`/books/${item.slug}`}
-                            className="flex items-center justify-between gap-2 rounded-[10px] border border-[#D4CCE3] p-3 text-sm text-[#081838] hover:bg-[#F2EFF8]"
+                            className="flex items-center justify-between gap-2 rounded-[10px] border border-[#E1E4F2] p-3 text-sm text-[#081838] hover:bg-[#FBFAFF]"
                           >
                             <span className="font-medium line-clamp-1">
                               {item.titleBn}
                             </span>
                             <ArrowRight
-                              className="w-3.5 h-3.5 text-[#51406F] shrink-0"
+                              className="w-3.5 h-3.5 text-[#243FBA] shrink-0"
                               aria-hidden="true"
                             />
                           </Link>
@@ -410,13 +410,13 @@ export function UnifiedSearchSection() {
                         <li key={item.slug}>
                           <Link
                             href={`/licensing/${item.slug}`}
-                            className="flex items-center justify-between gap-2 rounded-[10px] border border-[#D4CCE3] p-3 text-sm text-[#081838] hover:bg-[#F2EFF8]"
+                            className="flex items-center justify-between gap-2 rounded-[10px] border border-[#E1E4F2] p-3 text-sm text-[#081838] hover:bg-[#FBFAFF]"
                           >
                             <span className="font-medium line-clamp-1">
                               {item.titleBn}
                             </span>
                             <ArrowRight
-                              className="w-3.5 h-3.5 text-[#51406F] shrink-0"
+                              className="w-3.5 h-3.5 text-[#243FBA] shrink-0"
                               aria-hidden="true"
                             />
                           </Link>

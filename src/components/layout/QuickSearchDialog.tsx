@@ -264,7 +264,7 @@ export function QuickSearchDialog({
                 autoCorrect="off"
                 autoCapitalize="none"
                 spellCheck={false}
-                className="w-full min-h-12 ps-11 pe-4 py-2.5 rounded-[12px] border border-border-subtle bg-[#F8F7FB] text-text-body text-base placeholder:text-text-muted/75"
+                className="w-full min-h-12 ps-11 pe-4 py-2.5 rounded-[12px] border border-[#E1E4F2] bg-[#F5F6FA] text-text-body text-base placeholder:text-text-muted/75"
               />
             </div>
 
@@ -286,8 +286,8 @@ export function QuickSearchDialog({
                       className={cn(
                         "inline-flex items-center gap-1 min-h-8 px-2.5 rounded-[7px] text-xs font-semibold border transition-colors cursor-pointer",
                         isSelected
-                          ? "bg-[#51406F] text-white border-[#51406F]"
-                          : "bg-surface-lavender text-text-primary border-border-subtle hover:bg-surface-lavender-muted",
+                          ? "bg-[#243FBA] text-white border-[#243FBA]"
+                          : "bg-[#E2E3FF] text-[#081838] border-[#E1E4F2] hover:bg-[#CFD1FF]",
                       )}
                     >
                       <span className="font-en" lang="en">
@@ -309,7 +309,7 @@ export function QuickSearchDialog({
                     key={chip}
                     type="button"
                     onClick={() => setQuery(chip)}
-                    className="inline-flex items-center min-h-8 px-2.5 rounded-[8px] border border-border-subtle bg-white text-xs font-semibold text-text-accent hover:bg-surface-lavender transition-colors cursor-pointer"
+                    className="inline-flex items-center min-h-8 px-2.5 rounded-[8px] border border-[#E1E4F2] bg-white text-xs font-semibold text-[#243FBA] hover:bg-[#E2E3FF] transition-colors cursor-pointer"
                   >
                     {chip}
                   </button>
@@ -336,13 +336,13 @@ export function QuickSearchDialog({
                 <Link
                   href="/courses"
                   onClick={closeDialog}
-                  className="rounded-[12px] border border-[#D4CCE3] bg-[#DDD6EB]/55 p-4 hover:bg-[#DDD6EB] transition-colors space-y-1"
+                  className="rounded-[12px] border border-[#E1E4F2] bg-[#E2E3FF]/60 p-4 hover:bg-[#CFD1FF]/70 transition-colors space-y-1"
                 >
                   <GraduationCap
-                    className="w-4 h-4 text-[#51406F]"
+                    className="w-4 h-4 text-[#243FBA]"
                     aria-hidden="true"
                   />
-                  <p className="font-en text-xs font-bold uppercase text-[#51406F]">
+                  <p className="font-en text-xs font-bold uppercase text-[#243FBA]">
                     01 · Courses
                   </p>
                   <p className="font-bold text-[#081838]">আমাদের সকল কোর্সসমূহ</p>
@@ -351,13 +351,13 @@ export function QuickSearchDialog({
                 <Link
                   href="/services"
                   onClick={closeDialog}
-                  className="rounded-[12px] border border-[#D4CCE3] bg-[#DDD6EB]/55 p-4 hover:bg-[#DDD6EB] transition-colors space-y-1"
+                  className="rounded-[12px] border border-[#E1E4F2] bg-[#E2E3FF]/60 p-4 hover:bg-[#CFD1FF]/70 transition-colors space-y-1"
                 >
                   <BriefcaseBusiness
-                    className="w-4 h-4 text-[#51406F]"
+                    className="w-4 h-4 text-[#243FBA]"
                     aria-hidden="true"
                   />
-                  <p className="font-en text-xs font-bold uppercase text-[#51406F]">
+                  <p className="font-en text-xs font-bold uppercase text-[#243FBA]">
                     02 · Services
                   </p>
                   <p className="font-bold text-[#081838]">আমাদের সকল সেবাসমূহ</p>
@@ -366,13 +366,13 @@ export function QuickSearchDialog({
                 <Link
                   href="/books"
                   onClick={closeDialog}
-                  className="rounded-[12px] border border-[#D4CCE3] bg-[#DDD6EB]/55 p-4 hover:bg-[#DDD6EB] transition-colors space-y-1"
+                  className="rounded-[12px] border border-[#E1E4F2] bg-[#E2E3FF]/60 p-4 hover:bg-[#CFD1FF]/70 transition-colors space-y-1"
                 >
                   <BookOpen
-                    className="w-4 h-4 text-[#51406F]"
+                    className="w-4 h-4 text-[#243FBA]"
                     aria-hidden="true"
                   />
-                  <p className="font-en text-xs font-bold uppercase text-[#51406F]">
+                  <p className="font-en text-xs font-bold uppercase text-[#243FBA]">
                     03 · Books
                   </p>
                   <p className="font-bold text-[#081838]">আমাদের সকল বইসমূহ</p>
@@ -381,13 +381,13 @@ export function QuickSearchDialog({
                 <Link
                   href="/licensing"
                   onClick={closeDialog}
-                  className="rounded-[12px] border border-[#D4CCE3] bg-[#F2EFF8]/70 p-4 hover:bg-[#DDD6EB]/70 transition-colors space-y-1"
+                  className="rounded-[12px] border border-[#E1E4F2] bg-[#FBFAFF] p-4 hover:bg-[#E2E3FF]/70 transition-colors space-y-1"
                 >
                   <FileCheck2
-                    className="w-4 h-4 text-[#51406F]"
+                    className="w-4 h-4 text-[#243FBA]"
                     aria-hidden="true"
                   />
-                  <p className="font-en text-xs font-bold uppercase text-[#51406F]">
+                  <p className="font-en text-xs font-bold uppercase text-[#243FBA]">
                     Services · Licensing
                   </p>
                   <p className="font-bold text-[#081838]">লাইসেন্সিং</p>
@@ -395,14 +395,14 @@ export function QuickSearchDialog({
                 </Link>
               </div>
             ) : results && totalCount === 0 ? (
-              <div className="rounded-[12px] bg-[#F2EFF8] p-5 text-sm text-[#181D26] space-y-3">
+              <div className="rounded-[12px] bg-[#FBFAFF] border border-[#E1E4F2] p-5 text-sm text-[#181D26] space-y-3">
                 <p>
                   “{query.trim()}” এর জন্য প্রকাশিত কোনো ফলাফল পাওয়া যায়নি।
                 </p>
                 <Link
                   href="/consultancy"
                   onClick={closeDialog}
-                  className="inline-flex items-center gap-1.5 font-semibold text-[#51406F] underline underline-offset-4"
+                  className="inline-flex items-center gap-1.5 font-semibold text-[#243FBA] underline underline-offset-4"
                 >
                   <span>সরাসরি পরামর্শের অনুরোধ পাঠান</span>
                   <ArrowRight className="w-4 h-4" aria-hidden="true" />
@@ -412,7 +412,7 @@ export function QuickSearchDialog({
               <div className="space-y-4">
                 {showCourses && results.courses.length > 0 ? (
                   <div className="space-y-2">
-                    <p className="text-xs font-bold uppercase tracking-wider text-[#51406F]">
+                    <p className="text-xs font-bold uppercase tracking-wider text-[#243FBA]">
                       Courses · কোর্স ({results.courses.length})
                     </p>
                     <ul className="space-y-1.5">
@@ -421,7 +421,7 @@ export function QuickSearchDialog({
                           <Link
                             href={`/courses/${item.slug}`}
                             onClick={closeDialog}
-                            className="flex items-center justify-between gap-3 rounded-[10px] border border-[#D4CCE3] px-3.5 py-2.5 text-sm hover:bg-[#F2EFF8] transition-colors"
+                            className="flex items-center justify-between gap-3 rounded-[10px] border border-[#E1E4F2] px-3.5 py-2.5 text-sm hover:bg-[#FBFAFF] transition-colors"
                           >
                             <span className="font-semibold text-[#081838] line-clamp-1">
                               {item.titleBn}
@@ -438,7 +438,7 @@ export function QuickSearchDialog({
 
                 {showServices && results.services.length > 0 ? (
                   <div className="space-y-2">
-                    <p className="text-xs font-bold uppercase tracking-wider text-[#51406F]">
+                    <p className="text-xs font-bold uppercase tracking-wider text-[#243FBA]">
                       Services · পেশাদার সেবা ({results.services.length})
                     </p>
                     <ul className="space-y-1.5">
@@ -447,7 +447,7 @@ export function QuickSearchDialog({
                           <Link
                             href={`/services/${item.slug}`}
                             onClick={closeDialog}
-                            className="flex items-center justify-between gap-3 rounded-[10px] border border-[#D4CCE3] px-3.5 py-2.5 text-sm hover:bg-[#F2EFF8] transition-colors"
+                            className="flex items-center justify-between gap-3 rounded-[10px] border border-[#E1E4F2] px-3.5 py-2.5 text-sm hover:bg-[#FBFAFF] transition-colors"
                           >
                             <span className="font-semibold text-[#081838] line-clamp-1">
                               {item.titleBn}
@@ -464,7 +464,7 @@ export function QuickSearchDialog({
 
                 {showBooks && booksResults.length > 0 ? (
                   <div className="space-y-2">
-                    <p className="text-xs font-bold uppercase tracking-wider text-[#51406F]">
+                    <p className="text-xs font-bold uppercase tracking-wider text-[#243FBA]">
                       Books · আমাদের বইসমূহ ({booksResults.length})
                     </p>
                     <ul className="space-y-1.5">
@@ -473,12 +473,12 @@ export function QuickSearchDialog({
                           <Link
                             href={`/books/${item.slug}`}
                             onClick={closeDialog}
-                            className="flex items-center justify-between gap-3 rounded-[10px] border border-[#D4CCE3] px-3.5 py-2.5 text-sm hover:bg-[#F2EFF8] transition-colors"
+                            className="flex items-center justify-between gap-3 rounded-[10px] border border-[#E1E4F2] px-3.5 py-2.5 text-sm hover:bg-[#FBFAFF] transition-colors"
                           >
                             <span className="font-semibold text-[#081838] line-clamp-1">
                               {item.titleBn}
                             </span>
-                            <span className="text-xs text-[#51406F] shrink-0">
+                            <span className="text-xs text-[#243FBA] shrink-0">
                               {item.categoryNameBn} · আসন্ন
                             </span>
                           </Link>
@@ -490,7 +490,7 @@ export function QuickSearchDialog({
 
                 {showLicensing && results.licensing.length > 0 ? (
                   <div className="space-y-2">
-                    <p className="text-xs font-bold uppercase tracking-wider text-[#51406F]">
+                    <p className="text-xs font-bold uppercase tracking-wider text-[#243FBA]">
                       লাইসেন্সিং ({results.licensing.length})
                     </p>
                     <ul className="space-y-1.5">
@@ -499,7 +499,7 @@ export function QuickSearchDialog({
                           <Link
                             href={`/licensing/${item.slug}`}
                             onClick={closeDialog}
-                            className="flex items-center justify-between gap-3 rounded-[10px] border border-[#D4CCE3] px-3.5 py-2.5 text-sm hover:bg-[#F2EFF8] transition-colors"
+                            className="flex items-center justify-between gap-3 rounded-[10px] border border-[#E1E4F2] px-3.5 py-2.5 text-sm hover:bg-[#FBFAFF] transition-colors"
                           >
                             <span className="font-semibold text-[#081838] line-clamp-1">
                               {item.titleBn}

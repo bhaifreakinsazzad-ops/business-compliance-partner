@@ -7,7 +7,7 @@ interface PublicRouteSpec {
 }
 
 const PUBLIC_ROUTES: ReadonlyArray<PublicRouteSpec> = [
-  { path: "/", label: "Homepage", h1Contains: "শিখুন, সেবা নিন" },
+  { path: "/", label: "Homepage", h1Contains: "ব্যবসা শুরু থেকে কমপ্লায়েন্স পরিচালনা" },
   {
     path: "/courses",
     label: "Courses catalogue",
@@ -56,7 +56,7 @@ const PUBLIC_ROUTES: ReadonlyArray<PublicRouteSpec> = [
   {
     path: "/contact",
     label: "Contact page",
-    h1Contains: "যোগাযোগ ও অনুসন্ধান",
+    h1Contains: "আমাদের সাথে যোগাযোগ করুন",
   },
   {
     path: "/privacy",
@@ -110,7 +110,7 @@ test.describe("Business Compliance Partner smoke & responsiveness", () => {
     await expect(page.locator("html")).toHaveAttribute("lang", "bn");
     await expect(page.locator("h1")).toHaveCount(1);
     await expect(page.locator("h1")).toBeVisible();
-    await expect(page.locator("h1")).toContainText("ব্যবসা শুরু থেকে সফল পরিচালনা");
+    await expect(page.locator("h1")).toContainText("ব্যবসা শুরু থেকে কমপ্লায়েন্স পরিচালনা");
     await expect(page.locator('a[href="#main-content"]')).toBeAttached();
     await expect(page.locator("main#main-content")).toBeVisible();
 
@@ -272,15 +272,18 @@ test.describe("Course category filtering & catalogue search", () => {
   });
 });
 
-test.describe("Homepage unified search (#unified-search)", () => {
-  test("searches RJSC across all 3 pillars and navigates to course detail", async ({
+test.describe("Homepage QuickSearch dialog & Services Gateway", () => {
+  test("searches RJSC across all pillars via header quick-search and navigates to course detail", async ({
     page,
   }) => {
     await page.goto("/");
 
-    const searchSection = page.locator("#unified-search");
-    const input = searchSection.locator("#unified-search-input");
-    const submitBtn = searchSection.locator('button[type="submit"]');
+    await page
+      .locator("button[data-quick-search-trigger]:visible")
+      .first()
+      .click();
+    const dialog = page.locator("dialog[open]");
+    await expect(dialog).toBeVisible();
 
     const searchResponsePromise = page.waitForResponse(
       (res) =>
@@ -289,18 +292,16 @@ test.describe("Homepage unified search (#unified-search)", () => {
         res.status() === 200,
     );
 
-    await input.fill("RJSC");
-    await submitBtn.click();
+    await dialog.locator('input[type="search"]').fill("RJSC");
     await searchResponsePromise;
 
-    const resultsRegion = searchSection.locator('[aria-live="polite"]');
-    const courseResult = resultsRegion.locator(
+    const courseResult = dialog.locator(
       'a[href="/courses/company-formation-rjsc-practical-course"]',
     );
-    const serviceResult = resultsRegion.locator(
+    const serviceResult = dialog.locator(
       'a[href="/services/smart-rjsc-company-secretarial-support"]',
     );
-    const licensingResult = resultsRegion.locator(
+    const licensingResult = dialog.locator(
       'a[href="/licensing/rjsc-company-partnership-incorporation"]',
     );
 
@@ -315,40 +316,16 @@ test.describe("Homepage unified search (#unified-search)", () => {
     await expect(page.locator("h1")).toBeVisible();
   });
 
-  test("quick chip Fire populates matching licensing result", async ({
+  test("Services Gateway tabs switch active compliance checklist dynamically", async ({
     page,
   }) => {
     await page.goto("/");
-
-    const searchSection = page.locator("#unified-search");
-    const fireResponsePromise = page.waitForResponse(
-      (res) =>
-        res.url().includes("/api/catalogue/search") &&
-        res.url().includes("q=Fire") &&
-        res.status() === 200,
-    );
-
-    await searchSection
-      .getByRole("button", { name: "Fire", exact: true })
-      .click();
-    await fireResponsePromise;
-
-    const resultsRegion = searchSection.locator('[aria-live="polite"]');
-    await expect(
-      resultsRegion.locator('a[href="/licensing/fire-service-e-fire-licence"]'),
-    ).toBeVisible();
-  });
-});
-
-test.describe("Business Solution Finder", () => {
-  test("returns a deterministic explained next step", async ({ page }) => {
-    await page.goto("/");
-    const finder = page.locator("#solution-finder");
-    await finder.locator("select").first().selectOption("start");
-    await expect(finder.getByText("ব্যবসা গঠন ও নিবন্ধন সেবা দেখুন")).toBeVisible();
-    await expect(finder.getByRole("link", { name: /পরবর্তী ধাপে যান/ })).toHaveAttribute(
-      "href",
-      "/services?category=business-formation-and-rjsc",
+    const servicesSection = page.locator('section[data-home-pillar="services"]');
+    const vatTab = servicesSection.getByRole("tab", { name: "ভ্যাট ও মূসক ৯.১" });
+    await vatTab.click();
+    await expect(vatTab).toHaveAttribute("aria-selected", "true");
+    await expect(servicesSection).toContainText(
+      "ভ্যাট (BIN) নিবন্ধন ও মাসিক মূসক কমপ্লায়েন্স",
     );
   });
 });

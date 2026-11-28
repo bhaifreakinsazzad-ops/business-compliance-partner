@@ -111,7 +111,7 @@ export default async function BookDetailPage({ params }: BookDetailPageProps) {
 
       <main id="main-content" tabIndex={-1} className="flex-1">
         {/* Executive Lavender Detail Header */}
-        <section className="bg-gradient-to-br from-[#F2EFF8] via-[#ECE7F5] to-[#E5DDF2] text-[#081838] py-10 sm:py-12 border-b border-[#D4CCE3]">
+        <section className="bcp-periwinkle-contact-header text-[#081838] py-10 sm:py-12 border-b border-[#E1E4F2]">
           <div className="ps-container space-y-5">
             <Breadcrumbs
               items={[
@@ -122,8 +122,8 @@ export default async function BookDetailPage({ params }: BookDetailPageProps) {
             />
             <div className="max-w-3xl space-y-3">
               <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs font-semibold">
-                <span className="text-[#51406F]">{book.categoryNameBn}</span>
-                <span aria-hidden="true" className="text-[#D4CCE3]">
+                <span className="text-[#243FBA]">{book.categoryNameBn}</span>
+                <span aria-hidden="true" className="text-[#E1E4F2]">
                   ·
                 </span>
                 {book.availabilityState === "PUBLISHED_PRICED" &&
@@ -138,7 +138,7 @@ export default async function BookDetailPage({ params }: BookDetailPageProps) {
               <h1 className="text-2xl sm:text-4xl font-extrabold leading-snug text-[#081838]">
                 {book.titleBn}
               </h1>
-              <p className="font-en text-sm font-semibold text-[#51406F]" lang="en">
+              <p className="font-en text-sm font-semibold text-[#243FBA]" lang="en">
                 {book.titleEn}
               </p>
               <p className="text-sm sm:text-base text-[#181D26]/85 leading-relaxed">
@@ -156,8 +156,8 @@ export default async function BookDetailPage({ params }: BookDetailPageProps) {
               <BookPreview3D book={book} />
 
               {/* Publication & Pricing Notice */}
-              <div className="rounded-[16px] border border-[#D4CCE3] bg-[#F2EFF8] p-5 sm:p-6 flex items-start gap-3">
-                <Info className="w-5 h-5 text-[#51406F] shrink-0 mt-0.5" aria-hidden="true" />
+              <div className="rounded-[16px] border border-[#E1E4F2] bg-[#FBFAFF] p-5 sm:p-6 flex items-start gap-3">
+                <Info className="w-5 h-5 text-[#243FBA] shrink-0 mt-0.5" aria-hidden="true" />
                 <div className="space-y-1">
                   <p className="text-sm font-bold text-[#081838]">
                     প্রকাশনা ও মূল্য সম্পর্কিত তথ্য
@@ -169,9 +169,9 @@ export default async function BookDetailPage({ params }: BookDetailPageProps) {
               </div>
 
               {/* Book Overview */}
-              <div className="rounded-[16px] border border-[#D4CCE3] bg-white p-6 space-y-3">
+              <div className="rounded-[16px] border border-[#E1E4F2] bg-white p-6 space-y-3">
                 <h2 className="text-xl font-bold text-[#081838] inline-flex items-center gap-2">
-                  <BookOpen className="w-5 h-5 text-[#51406F]" aria-hidden="true" />
+                  <BookOpen className="w-5 h-5 text-[#243FBA]" aria-hidden="true" />
                   <span>বইয়ের সারসংক্ষেপ</span>
                 </h2>
                 <p className="text-sm sm:text-base text-[#181D26]/90 leading-relaxed">
@@ -180,9 +180,9 @@ export default async function BookDetailPage({ params }: BookDetailPageProps) {
               </div>
 
               {/* Audience */}
-              <div className="rounded-[16px] border border-[#D4CCE3] bg-white p-6 space-y-3">
+              <div className="rounded-[16px] border border-[#E1E4F2] bg-white p-6 space-y-3">
                 <h2 className="text-xl font-bold text-[#081838] inline-flex items-center gap-2">
-                  <Users className="w-5 h-5 text-[#51406F]" aria-hidden="true" />
+                  <Users className="w-5 h-5 text-[#243FBA]" aria-hidden="true" />
                   <span>বইটি কাদের জন্য উপযোগী</span>
                 </h2>
                 <p className="text-sm sm:text-base text-[#181D26]/90 leading-relaxed">
@@ -191,7 +191,7 @@ export default async function BookDetailPage({ params }: BookDetailPageProps) {
               </div>
 
               {/* Proposed Topics / Outline */}
-              <div className="rounded-[16px] border border-[#D4CCE3] bg-white p-6 space-y-4">
+              <div className="rounded-[16px] border border-[#E1E4F2] bg-white p-6 space-y-4">
                 <h2 className="text-xl font-bold text-[#081838]">
                   প্রস্তাবিত সূচিপত্র ও মূল বিষয়সমূহ
                 </h2>
@@ -277,7 +277,7 @@ export default async function BookDetailPage({ params }: BookDetailPageProps) {
 
         {/* Cross-Division Discovery: Related Courses & Services */}
         {relatedCourses.length > 0 || relatedServices.length > 0 ? (
-          <section className="py-10 sm:py-14 bg-[#F2EFF8]/65 border-t border-[#D4CCE3]">
+          <section className="py-10 sm:py-14 bg-[#FBFAFF]/65 border-t border-[#E1E4F2]">
             <div className="ps-container space-y-10">
               {relatedCourses.length > 0 ? (
                 <div className="space-y-5">
@@ -289,7 +289,7 @@ export default async function BookDetailPage({ params }: BookDetailPageProps) {
                       href={`/courses?category=${encodeURIComponent(
                         book.relatedCourseCategorySlug ?? "",
                       )}`}
-                      className="text-sm font-semibold text-[#51406F] hover:underline underline-offset-4"
+                      className="text-sm font-semibold text-[#243FBA] hover:underline underline-offset-4"
                     >
                       সকল কোর্স দেখুন →
                     </Link>
@@ -317,7 +317,7 @@ export default async function BookDetailPage({ params }: BookDetailPageProps) {
                       href={`/services?category=${encodeURIComponent(
                         book.relatedServiceCategorySlug ?? "",
                       )}`}
-                      className="text-sm font-semibold text-[#51406F] hover:underline underline-offset-4"
+                      className="text-sm font-semibold text-[#243FBA] hover:underline underline-offset-4"
                     >
                       সকল সেবা দেখুন →
                     </Link>
@@ -339,7 +339,7 @@ export default async function BookDetailPage({ params }: BookDetailPageProps) {
         ) : null}
 
         {/* More Upcoming Books */}
-        <section className="py-10 sm:py-12 bg-white border-t border-[#D4CCE3]">
+        <section className="py-10 sm:py-12 bg-white border-t border-[#E1E4F2]">
           <div className="ps-container space-y-6">
             <div className="flex items-center justify-between gap-3">
               <h2 className="text-xl sm:text-2xl font-bold text-[#081838]">
@@ -347,7 +347,7 @@ export default async function BookDetailPage({ params }: BookDetailPageProps) {
               </h2>
               <Link
                 href="/books"
-                className="text-sm font-semibold text-[#51406F] hover:underline underline-offset-4"
+                className="text-sm font-semibold text-[#243FBA] hover:underline underline-offset-4"
               >
                 সব বই দেখুন →
               </Link>

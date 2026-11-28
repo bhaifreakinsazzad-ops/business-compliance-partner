@@ -38,9 +38,9 @@ interface HeroKnowledgeStudio3DProps {
 
 const HERO_BOOK_SPINES = [
   { title: "E-commerce & DBID", bg: "#1B2E59", accent: "#C59028" },
-  { title: "e-GP & Tender", bg: "#51406F", accent: "#DFB15B" },
+  { title: "e-GP & Tender", bg: "#243FBA", accent: "#DFB15B" },
   { title: "RJSC & Company Law", bg: "#0E224A", accent: "#C59028" },
-  { title: "VAT & Mushak 9.1", bg: "#3F315A", accent: "#DFB15B" },
+  { title: "VAT & Mushak 9.1", bg: "#202D72", accent: "#DFB15B" },
   { title: "Income Tax Guide", bg: "#081838", accent: "#C59028" },
 ];
 
@@ -461,7 +461,7 @@ export function HeroKnowledgeStudio3D({
       {
         title: "Income Tax",
         subtitle: "Courses & Returns",
-        accentHex: "#51406F",
+        accentHex: "#243FBA",
         pos: [-1.85, 1.15, -0.82] as const,
         rot: 0.18,
       },
@@ -840,7 +840,7 @@ export function HeroKnowledgeStudio3D({
       <div
         data-testid="hero-studio-3d"
         data-webgl-state="fallback"
-        className="w-full h-[220px] sm:h-[260px] rounded-[16px] border border-[#D4CCE3] bg-gradient-to-br from-white via-[#F2EFF8] to-[#DDD6EB] p-5 flex items-center justify-between gap-4 shadow-sm"
+        className="w-full h-[220px] sm:h-[260px] rounded-[16px] border border-[#E1E4F2] bg-gradient-to-br from-white via-[#FBFAFF] to-[#E2E3FF] p-5 flex items-center justify-between gap-4 shadow-sm"
       >
         <div className="space-y-2.5">
           {logoAssetPath ? (
@@ -903,7 +903,7 @@ export function HeroKnowledgeStudio3D({
           isCinemaMode ? "translate-y-[calc(100%+8px)]" : "translate-y-0"
         }`}
       >
-        <div className="rounded-[12px] bg-white/95 border border-[#D4CCE3] shadow-md px-2.5 py-1.5 flex items-center justify-between gap-1.5 text-xs">
+        <div className="rounded-[12px] bg-white/95 border border-[#E1E4F2] shadow-md px-2.5 py-1.5 flex items-center justify-between gap-1.5 text-xs">
           {/* Preset Buttons */}
           <div className="flex items-center gap-1 overflow-x-auto py-0.5 no-scrollbar">
             {STUDIO_PRESETS.map((preset) => {
@@ -916,8 +916,8 @@ export function HeroKnowledgeStudio3D({
                   aria-pressed={isActive}
                   className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-[7px] font-semibold text-[11px] transition-colors cursor-pointer shrink-0 ${
                     isActive
-                      ? "bg-[#51406F] text-white shadow-xs"
-                      : "bg-[#F2EFF8] text-[#081838] hover:bg-[#DDD6EB]"
+                      ? "bg-[#243FBA] text-white shadow-xs"
+                      : "bg-[#E2E3FF] text-[#081838] hover:bg-[#CFD1FF]"
                   }`}
                 >
                   {preset.id === "studio" && <Compass className="w-3 h-3" />}
@@ -931,12 +931,12 @@ export function HeroKnowledgeStudio3D({
           </div>
 
           {/* Reset & Cinema Toggle */}
-          <div className="flex items-center gap-1 shrink-0 border-l border-[#D4CCE3] pl-1.5">
+          <div className="flex items-center gap-1 shrink-0 border-l border-[#E1E4F2] pl-1.5">
             <button
               type="button"
               onClick={() => selectPreset("studio")}
               title="রিসেট ভিউ"
-              className="p-1 rounded-[6px] text-[#596775] hover:text-[#081838] hover:bg-[#F2EFF8] transition-colors cursor-pointer"
+              className="p-1 rounded-[6px] text-[#596775] hover:text-[#081838] hover:bg-[#E2E3FF] transition-colors cursor-pointer"
             >
               <RotateCcw className="w-3.5 h-3.5" />
             </button>
@@ -944,7 +944,7 @@ export function HeroKnowledgeStudio3D({
               type="button"
               onClick={() => setIsCinemaMode(true)}
               title="হাইড প্যানেল (সিনেমা মোড)"
-              className="p-1 rounded-[6px] text-[#596775] hover:text-[#081838] hover:bg-[#F2EFF8] transition-colors cursor-pointer"
+              className="p-1 rounded-[6px] text-[#596775] hover:text-[#081838] hover:bg-[#E2E3FF] transition-colors cursor-pointer"
             >
               <Minimize2 className="w-3.5 h-3.5" />
             </button>
@@ -957,7 +957,7 @@ export function HeroKnowledgeStudio3D({
         <button
           type="button"
           onClick={() => setIsCinemaMode(false)}
-          className="absolute bottom-2.5 right-3 px-2.5 py-1 rounded-[8px] bg-white/90 text-[#081838] text-[11px] font-bold border border-[#D4CCE3] shadow-md hover:bg-white transition-colors cursor-pointer inline-flex items-center gap-1"
+          className="absolute bottom-2.5 right-3 px-2.5 py-1 rounded-[8px] bg-white/90 text-[#081838] text-[11px] font-bold border border-[#E1E4F2] shadow-md hover:bg-white transition-colors cursor-pointer inline-flex items-center gap-1"
         >
           <Maximize2 className="w-3 h-3" />
           <span>কন্ট্রোল দেখান</span>

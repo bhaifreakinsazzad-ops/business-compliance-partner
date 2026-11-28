@@ -101,7 +101,7 @@ export default async function CourseDetailPage({
       <AppHeader siteConfig={siteConfig} />
 
       <main id="main-content" tabIndex={-1} className="flex-1">
-        <section className="bg-gradient-to-br from-[#F2EFF8] via-[#ECE7F5] to-[#E5DDF2] text-[#081838] py-10 sm:py-12 border-b border-[#D4CCE3]">
+        <section className="bcp-periwinkle-contact-header text-[#081838] py-10 sm:py-12 border-b border-[#E1E4F2]">
           <div className="ps-container space-y-5">
             <Breadcrumbs
               items={[
@@ -119,7 +119,7 @@ export default async function CourseDetailPage({
                 {course.titleBn}
               </h1>
               {course.titleEn ? (
-                <p className="font-en text-sm font-semibold text-[#51406F]" lang="en">
+                <p className="font-en text-sm font-semibold text-[#243FBA]" lang="en">
                   {course.titleEn}
                 </p>
               ) : null}
@@ -138,9 +138,9 @@ export default async function CourseDetailPage({
                 verifiedBy={course.verifiedBy}
               />
 
-              <div className="rounded-[16px] border border-[#D4CCE3] bg-white p-6 space-y-3">
+              <div className="rounded-[16px] border border-[#E1E4F2] bg-white p-6 space-y-3">
                 <h2 className="text-xl font-bold text-[#081838] inline-flex items-center gap-2">
-                  <Users className="w-5 h-5 text-[#51406F]" aria-hidden="true" />
+                  <Users className="w-5 h-5 text-[#243FBA]" aria-hidden="true" />
                   <span>কোর্সটি কাদের জন্য</span>
                 </h2>
                 <p className="text-sm sm:text-base text-[#181D26]/90 leading-relaxed">
@@ -148,7 +148,7 @@ export default async function CourseDetailPage({
                 </p>
               </div>
 
-              <div className="rounded-[16px] border border-[#D4CCE3] bg-white p-6 space-y-4">
+              <div className="rounded-[16px] border border-[#E1E4F2] bg-white p-6 space-y-4">
                 <h2 className="text-xl font-bold text-[#081838]">
                   এই কোর্স থেকে যা শিখবেন
                 </h2>
@@ -172,7 +172,7 @@ export default async function CourseDetailPage({
             </div>
 
             <aside className="lg:col-span-4 space-y-5 lg:sticky lg:top-24">
-              <div className="rounded-[16px] border border-[#D4CCE3] bg-white p-6 space-y-5 shadow-sm">
+              <div className="rounded-[16px] border border-[#E1E4F2] bg-white p-6 space-y-5 shadow-sm">
                 <div className="space-y-2">
                   <h2 className="text-lg font-bold text-[#081838]">
                     কোর্স তথ্য ও আগ্রহ নিবন্ধন
@@ -183,7 +183,7 @@ export default async function CourseDetailPage({
                   </p>
                 </div>
 
-                <dl className="space-y-3 text-sm border-y border-[#D4CCE3] py-4">
+                <dl className="space-y-3 text-sm border-y border-[#E1E4F2] py-4">
                   <div className="flex justify-between gap-2">
                     <dt className="text-[#596775]">ক্যাটাগরি</dt>
                     <dd className="font-semibold text-[#081838] text-end">
@@ -249,7 +249,7 @@ export default async function CourseDetailPage({
 
         {/* Cross-Division Professional Services Discovery */}
         {relatedServices.length > 0 ? (
-          <section className="py-10 sm:py-12 bg-[#F2EFF8]/65 border-t border-[#D4CCE3]">
+          <section className="py-10 sm:py-12 bg-[#FBFAFF]/65 border-t border-[#E1E4F2]">
             <div className="ps-container space-y-6">
               <div className="flex items-center justify-between gap-3">
                 <h2 className="text-xl sm:text-2xl font-bold text-[#081838]">
@@ -257,7 +257,7 @@ export default async function CourseDetailPage({
                 </h2>
                 <Link
                   href="/services"
-                  className="text-sm font-semibold text-[#51406F] hover:underline underline-offset-4 whitespace-nowrap"
+                  className="text-sm font-semibold text-[#243FBA] hover:underline underline-offset-4 whitespace-nowrap"
                 >
                   Explore Services · সকল সেবা →
                 </Link>
@@ -278,7 +278,7 @@ export default async function CourseDetailPage({
 
         {/* Cross-Division Books Discovery */}
         {relatedBooks.length > 0 ? (
-          <section className="py-10 sm:py-12 bg-white border-t border-[#D4CCE3]">
+          <section className="py-10 sm:py-12 bg-white border-t border-[#E1E4F2]">
             <div className="ps-container space-y-6">
               <div className="flex items-center justify-between gap-3">
                 <h2 className="text-xl sm:text-2xl font-bold text-[#081838]">
@@ -286,7 +286,7 @@ export default async function CourseDetailPage({
                 </h2>
                 <Link
                   href="/books"
-                  className="text-sm font-semibold text-[#51406F] hover:underline underline-offset-4 whitespace-nowrap"
+                  className="text-sm font-semibold text-[#243FBA] hover:underline underline-offset-4 whitespace-nowrap"
                 >
                   Explore Books · সব বই প্রিভিউ →
                 </Link>
@@ -306,7 +306,7 @@ export default async function CourseDetailPage({
         ) : null}
 
         {relatedCourses.length > 0 ? (
-          <section className="py-10 sm:py-12 bg-[#F2EFF8]/45 border-t border-[#D4CCE3]">
+          <section className="py-10 sm:py-12 bg-[#FBFAFF]/45 border-t border-[#E1E4F2]">
             <div className="ps-container space-y-6">
               <div className="flex items-center justify-between gap-3">
                 <h2 className="text-xl sm:text-2xl font-bold text-[#081838]">
@@ -314,7 +314,7 @@ export default async function CourseDetailPage({
                 </h2>
                 <Link
                   href={`/courses?category=${encodeURIComponent(course.categorySlug)}`}
-                  className="text-sm font-semibold text-[#51406F] hover:underline underline-offset-4 whitespace-nowrap"
+                  className="text-sm font-semibold text-[#243FBA] hover:underline underline-offset-4 whitespace-nowrap"
                 >
                   এই বিভাগের সব কোর্স →
                 </Link>

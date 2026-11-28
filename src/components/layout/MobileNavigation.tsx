@@ -162,10 +162,10 @@ export function MobileNavigation({
                         href={pillar.href}
                         data-mobile-pillar={pillar.id}
                         onClick={closeMenu}
-                        className="flex items-center justify-between gap-3 min-h-14 px-3.5 py-2.5 rounded-[14px] border border-border-subtle bg-[#DDD6EB] hover:bg-[#D5CCE8] text-text-primary transition-colors"
+                        className="bcp-periwinkle-gateway flex items-center justify-between gap-3 min-h-14 px-3.5 py-2.5 rounded-[14px] border border-[#B8BBFF] text-[#081838] transition-colors"
                       >
                         <div className="flex items-center gap-3 min-w-0">
-                          <span className="inline-flex items-center justify-center w-10 h-10 rounded-[10px] bg-action-primary text-white shrink-0">
+                          <span className="inline-flex items-center justify-center w-10 h-10 rounded-[10px] bg-[#243FBA] text-white shrink-0">
                             <Icon className="w-5 h-5" aria-hidden="true" />
                           </span>
                           <div className="min-w-0">
@@ -175,13 +175,13 @@ export function MobileNavigation({
                             >
                               {pillar.orderLabel}. {pillar.labelEn}
                             </span>
-                            <span className="block text-xs font-semibold text-[#51406F] truncate">
+                            <span className="block text-xs font-semibold text-[#243FBA] truncate">
                               {pillar.labelBn}
                             </span>
                           </div>
                         </div>
                         <ArrowRight
-                          className="w-4 h-4 text-[#51406F] shrink-0"
+                          className="w-4 h-4 text-[#243FBA] shrink-0"
                           aria-hidden="true"
                         />
                       </Link>

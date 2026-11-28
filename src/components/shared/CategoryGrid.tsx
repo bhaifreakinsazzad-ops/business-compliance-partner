@@ -205,7 +205,7 @@ export function CategoryGrid({
               isActive
                 ? "bg-action-primary text-white border-action-primary shadow-md"
                 : isFeaturedShowcase
-                  ? "bg-gradient-to-br from-white via-[#F9F7FC] to-surface-lavender text-text-primary border-border-subtle hover:border-action-primary/55 hover:-translate-y-0.5 hover:shadow-md"
+                  ? "bg-gradient-to-br from-white via-[#FBFAFF] to-surface-lavender text-text-primary border-border-subtle hover:border-action-primary/55 hover:-translate-y-0.5 hover:shadow-md"
                   : isPriority
                     ? "bg-surface-lavender/70 text-text-primary border-border-subtle hover:border-action-primary/50 hover:-translate-y-0.5 hover:shadow-sm"
                     : "bg-surface-card text-text-primary border-border-subtle hover:border-action-primary/50 hover:-translate-y-0.5 hover:shadow-sm",
@@ -218,7 +218,7 @@ export function CategoryGrid({
                   isFeaturedShowcase ? "w-12 h-12" : "w-11 h-11",
                   isActive
                     ? "bg-white/15 text-white"
-                    : "bg-[#F2EFF8] text-[#51406F] border border-[#D4CCE3] group-hover:bg-[#51406F] group-hover:text-white group-hover:border-[#51406F]",
+                    : "bg-[#FBFAFF] text-[#243FBA] border border-[#E1E4F2] group-hover:bg-[#243FBA] group-hover:text-white group-hover:border-[#243FBA]",
                 )}
               >
                 <Icon
@@ -242,7 +242,7 @@ export function CategoryGrid({
                 <ArrowRight
                   className={cn(
                     "w-4 h-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1",
-                    isActive ? "text-white" : "text-[#51406F]",
+                    isActive ? "text-white" : "text-[#243FBA]",
                   )}
                   aria-hidden="true"
                 />
@@ -263,7 +263,7 @@ export function CategoryGrid({
               <p
                 className={cn(
                   "font-en font-semibold tracking-wide text-xs",
-                  isActive ? "text-white/80" : "text-[#51406F]",
+                  isActive ? "text-white/80" : "text-[#243FBA]",
                 )}
                 lang="en"
               >

@@ -263,7 +263,7 @@ export function ConsultancyForm({
   }
 
   const inputBaseClass =
-    "w-full min-h-12 px-4 py-2.5 rounded-[12px] border border-[#D4CCE3] bg-white text-[#181D26] text-base placeholder:text-[#596775]/70 transition-colors focus:outline-none focus:border-[#51406F] focus:ring-2 focus:ring-[#51406F]/20";
+    "w-full min-h-12 px-4 py-2.5 rounded-[12px] border border-[#E1E4F2] bg-[#F5F6FA] text-[#181D26] text-base placeholder:text-[#596775]/75 transition-colors focus:outline-none focus:bg-white focus:border-[#243FBA] focus:ring-2 focus:ring-[#243FBA]/20";
 
   return (
     <form
@@ -274,12 +274,12 @@ export function ConsultancyForm({
       className={cn(
         "rounded-[16px] border p-6 sm:p-8 space-y-5",
         compact
-          ? "bg-white text-[#181D26] border-[#D4CCE3] shadow-xl"
-          : "bg-white text-[#181D26] border-[#D4CCE3] shadow-sm",
+          ? "bg-white text-[#181D26] border-[#E1E4F2] shadow-xl"
+          : "bg-white text-[#181D26] border-[#E1E4F2] shadow-sm",
       )}
     >
       <div className="space-y-1.5">
-        <h3 id={`${formId}-heading`} className="text-xl font-bold text-[#081838]">
+        <h3 id={`${formId}-heading`} className="text-xl font-bold text-[#202D72]">
           পরামর্শের অনুরোধ ফর্ম
         </h3>
         <p className="text-xs sm:text-sm text-[#596775] leading-relaxed">
@@ -288,8 +288,8 @@ export function ConsultancyForm({
       </div>
 
       {targetTitle ? (
-        <div className="rounded-[12px] bg-[#F2EFF8] border border-[#D4CCE3] px-4 py-3 text-xs sm:text-sm text-[#081838] font-medium">
-          নির্বাচিত বিষয়: <span className="font-bold text-[#51406F]">{targetTitle}</span>
+        <div className="rounded-[12px] bg-[#E2E3FF]/55 border border-[#B8BBFF] px-4 py-3 text-xs sm:text-sm text-[#081838] font-medium">
+          নির্বাচিত বিষয়: <span className="font-bold text-[#243FBA]">{targetTitle}</span>
         </div>
       ) : null}
 
@@ -502,7 +502,7 @@ export function ConsultancyForm({
           }
           placeholder="আপনার ব্যবসা বা শেখার প্রয়োজন সম্পর্কে সংক্ষেপে লিখুন..."
           className={cn(
-            "w-full px-4 py-3 rounded-[12px] border border-[#D4CCE3] bg-white text-[#181D26] text-base placeholder:text-[#596775]/70 transition-colors focus:outline-none focus:border-[#51406F] focus:ring-2 focus:ring-[#51406F]/20",
+            "w-full px-4 py-3 rounded-[12px] border border-[#E1E4F2] bg-[#F5F6FA] text-[#181D26] text-base placeholder:text-[#596775]/75 transition-colors focus:outline-none focus:bg-white focus:border-[#243FBA] focus:ring-2 focus:ring-[#243FBA]/20",
             fieldErrors.problemDescription && "border-ps-danger",
           )}
         />
@@ -596,8 +596,8 @@ export function ConsultancyForm({
                   className={cn(
                     "flex items-center gap-2 min-h-11 px-3 py-2 rounded-[10px] border text-xs sm:text-sm cursor-pointer transition-colors",
                     preferredContact === opt.value
-                      ? "border-[#51406F] bg-[#F2EFF8] font-semibold text-[#081838]"
-                      : "border-[#D4CCE3] bg-white text-[#181D26] hover:bg-[#F2EFF8]/50",
+                      ? "border-[#243FBA] bg-[#E2E3FF]/60 font-semibold text-[#081838]"
+                      : "border-[#E1E4F2] bg-white text-[#181D26] hover:bg-[#FBFAFF]",
                   )}
                 >
                   <input
@@ -606,7 +606,7 @@ export function ConsultancyForm({
                     value={opt.value}
                     checked={preferredContact === opt.value}
                     onChange={() => setPreferredContact(opt.value)}
-                    className="accent-[#51406F]"
+                    className="accent-[#243FBA]"
                   />
                   <span>{opt.label}</span>
                 </label>
@@ -633,7 +633,7 @@ export function ConsultancyForm({
             aria-describedby={
               fieldErrors.consentAccepted ? `${formId}-consent-err` : undefined
             }
-            className="mt-1 w-5 h-5 rounded accent-[#51406F] shrink-0 cursor-pointer"
+            className="mt-1 w-5 h-5 rounded accent-[#243FBA] shrink-0 cursor-pointer"
           />
           <label
             htmlFor={`${formId}-consent`}
@@ -643,7 +643,7 @@ export function ConsultancyForm({
             সংরক্ষণ করা হবে।{" "}
             <Link
               href="/privacy"
-              className="font-semibold text-[#51406F] underline underline-offset-4 hover:text-[#081838]"
+              className="font-semibold text-[#243FBA] underline underline-offset-4 hover:text-[#081838]"
             >
               গোপনীয়তা নীতি দেখুন
             </Link>

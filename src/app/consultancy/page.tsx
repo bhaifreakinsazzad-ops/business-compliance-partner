@@ -49,7 +49,7 @@ export default async function ConsultancyPage({
       <AppHeader siteConfig={siteConfig} />
 
       <main id="main-content" tabIndex={-1} className="flex-1">
-        <section className="bg-gradient-to-br from-[#F2EFF8] via-[#ECE7F5] to-[#E5DDF2] text-[#081838] py-10 sm:py-12 border-b border-[#D4CCE3]">
+        <section className="bcp-periwinkle-contact-header text-[#081838] py-10 sm:py-12 border-b border-[#E1E4F2]">
           <div className="ps-container space-y-5">
             <Breadcrumbs
               items={[
@@ -58,8 +58,8 @@ export default async function ConsultancyPage({
               ]}
             />
             <div className="max-w-3xl space-y-3">
-              <p className="inline-flex items-center gap-2 text-xs font-en font-semibold uppercase tracking-[0.14em] text-[#51406F]">
-                <MessageSquareText className="w-4 h-4 text-[#51406F]" aria-hidden="true" />
+              <p className="inline-flex items-center gap-2 text-xs font-en font-semibold uppercase tracking-[0.14em] text-[#243FBA]">
+                <MessageSquareText className="w-4 h-4 text-[#243FBA]" aria-hidden="true" />
                 <span>Consultancy &amp; Business Advisory</span>
               </p>
               <h1 className="text-3xl sm:text-4xl font-extrabold leading-snug text-[#081838]">
@@ -112,7 +112,7 @@ export default async function ConsultancyPage({
                 </div>
               ) : null}
 
-              <div className="rounded-[16px] border border-[#D4CCE3] bg-white p-6 space-y-4">
+              <div className="rounded-[16px] border border-[#E1E4F2] bg-white p-6 space-y-4">
                 <h2 className="text-lg font-bold text-[#081838]">
                   জমা দেওয়ার পরবর্তী ধাপ
                 </h2>
@@ -126,9 +126,9 @@ export default async function ConsultancyPage({
                 </ol>
               </div>
 
-              <div className="rounded-[16px] border border-[#D4CCE3] bg-[#F2EFF8] p-6 space-y-3">
+              <div className="rounded-[16px] border border-[#E1E4F2] bg-[#FBFAFF] p-6 space-y-3">
                 <div className="flex items-center gap-2 text-[#081838] font-bold text-sm">
-                  <Lock className="w-4 h-4 text-[#51406F] shrink-0" aria-hidden="true" />
+                  <Lock className="w-4 h-4 text-[#243FBA] shrink-0" aria-hidden="true" />
                   <span>সংবেদনশীল নথি আপলোড নিষেধ</span>
                 </div>
                 <p className="text-xs sm:text-sm text-[#181D26]/85 leading-relaxed">
@@ -138,9 +138,9 @@ export default async function ConsultancyPage({
                 </p>
               </div>
 
-              <div className="rounded-[16px] border border-[#D4CCE3] bg-white p-6 space-y-2">
+              <div className="rounded-[16px] border border-[#E1E4F2] bg-white p-6 space-y-2">
                 <div className="flex items-center gap-2 text-[#081838] font-bold text-sm">
-                  <ShieldCheck className="w-4 h-4 text-[#51406F] shrink-0" aria-hidden="true" />
+                  <ShieldCheck className="w-4 h-4 text-[#243FBA] shrink-0" aria-hidden="true" />
                   <span>স্বাধীন পরামর্শ প্ল্যাটফর্ম</span>
                 </div>
                 <p className="text-xs text-[#596775] leading-relaxed">

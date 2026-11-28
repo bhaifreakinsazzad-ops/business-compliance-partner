@@ -96,7 +96,7 @@ export default async function ServiceDetailPage({
       <AppHeader siteConfig={siteConfig} />
 
       <main id="main-content" tabIndex={-1} className="flex-1">
-        <section className="bg-gradient-to-br from-[#F2EFF8] via-[#ECE7F5] to-[#E5DDF2] text-[#081838] py-10 sm:py-12 border-b border-[#D4CCE3]">
+        <section className="bcp-periwinkle-contact-header text-[#081838] py-10 sm:py-12 border-b border-[#E1E4F2]">
           <div className="ps-container space-y-5">
             <Breadcrumbs
               items={[
@@ -114,7 +114,7 @@ export default async function ServiceDetailPage({
                 {service.titleBn}
               </h1>
               {service.titleEn ? (
-                <p className="font-en text-sm font-semibold text-[#51406F]" lang="en">
+                <p className="font-en text-sm font-semibold text-[#243FBA]" lang="en">
                   {service.titleEn}
                 </p>
               ) : null}
@@ -133,7 +133,7 @@ export default async function ServiceDetailPage({
                 verifiedBy={service.verifiedBy}
               />
 
-              <div className="rounded-[16px] border border-[#D4CCE3] bg-white p-6 space-y-3">
+              <div className="rounded-[16px] border border-[#E1E4F2] bg-white p-6 space-y-3">
                 <h2 className="text-xl font-bold text-[#081838]">
                   এই সেবাটি কাদের প্রয়োজন
                 </h2>
@@ -142,7 +142,7 @@ export default async function ServiceDetailPage({
                 </p>
               </div>
 
-              <div className="rounded-[16px] border border-[#D4CCE3] bg-white p-6 space-y-3">
+              <div className="rounded-[16px] border border-[#E1E4F2] bg-white p-6 space-y-3">
                 <h2 className="text-xl font-bold text-[#081838]">
                   আমাদের সহায়তার পরিধি
                 </h2>
@@ -172,7 +172,7 @@ export default async function ServiceDetailPage({
             </div>
 
             <aside className="lg:col-span-4 space-y-5 lg:sticky lg:top-24">
-              <div className="rounded-[16px] border border-[#D4CCE3] bg-white p-6 space-y-5 shadow-sm">
+              <div className="rounded-[16px] border border-[#E1E4F2] bg-white p-6 space-y-5 shadow-sm">
                 <h2 className="text-lg font-bold text-[#081838]">
                   এই সেবাটি সম্পর্কে পরামর্শ নিন
                 </h2>
@@ -181,7 +181,7 @@ export default async function ServiceDetailPage({
                 </p>
 
                 {(service.serviceFeeNoteBn || service.govtFeeNoteBn) ? (
-                  <div className="space-y-2 rounded-[12px] bg-[#F2EFF8] border border-[#D4CCE3] p-4 text-xs">
+                  <div className="space-y-2 rounded-[12px] bg-[#FBFAFF] border border-[#E1E4F2] p-4 text-xs">
                     {service.serviceFeeNoteBn ? (
                       <p>
                         <strong>সার্ভিস চার্জ:</strong> {service.serviceFeeNoteBn}
@@ -216,7 +216,7 @@ export default async function ServiceDetailPage({
 
         {/* Cross-Division Courses Discovery */}
         {relatedCourses.length > 0 ? (
-          <section className="py-10 sm:py-12 bg-[#F2EFF8]/65 border-t border-[#D4CCE3]">
+          <section className="py-10 sm:py-12 bg-[#FBFAFF]/65 border-t border-[#E1E4F2]">
             <div className="ps-container space-y-6">
               <div className="flex items-center justify-between gap-3">
                 <h2 className="text-xl sm:text-2xl font-bold text-[#081838]">
@@ -224,7 +224,7 @@ export default async function ServiceDetailPage({
                 </h2>
                 <Link
                   href="/courses"
-                  className="text-sm font-semibold text-[#51406F] hover:underline underline-offset-4 whitespace-nowrap"
+                  className="text-sm font-semibold text-[#243FBA] hover:underline underline-offset-4 whitespace-nowrap"
                 >
                   Explore Courses · সকল কোর্স →
                 </Link>
@@ -245,7 +245,7 @@ export default async function ServiceDetailPage({
 
         {/* Cross-Division Books Discovery */}
         {relatedBooks.length > 0 ? (
-          <section className="py-10 sm:py-12 bg-white border-t border-[#D4CCE3]">
+          <section className="py-10 sm:py-12 bg-white border-t border-[#E1E4F2]">
             <div className="ps-container space-y-6">
               <div className="flex items-center justify-between gap-3">
                 <h2 className="text-xl sm:text-2xl font-bold text-[#081838]">
@@ -253,7 +253,7 @@ export default async function ServiceDetailPage({
                 </h2>
                 <Link
                   href="/books"
-                  className="text-sm font-semibold text-[#51406F] hover:underline underline-offset-4 whitespace-nowrap"
+                  className="text-sm font-semibold text-[#243FBA] hover:underline underline-offset-4 whitespace-nowrap"
                 >
                   Explore Books · সব বই প্রিভিউ →
                 </Link>
@@ -273,7 +273,7 @@ export default async function ServiceDetailPage({
         ) : null}
 
         {relatedServices.length > 0 ? (
-          <section className="py-10 sm:py-12 bg-[#F2EFF8]/45 border-t border-[#D4CCE3]">
+          <section className="py-10 sm:py-12 bg-[#FBFAFF]/45 border-t border-[#E1E4F2]">
             <div className="ps-container space-y-6">
               <div className="flex items-center justify-between gap-3">
                 <h2 className="text-xl sm:text-2xl font-bold text-[#081838]">
@@ -281,7 +281,7 @@ export default async function ServiceDetailPage({
                 </h2>
                 <Link
                   href={`/services?category=${encodeURIComponent(service.categorySlug)}`}
-                  className="text-sm font-semibold text-[#51406F] hover:underline underline-offset-4 whitespace-nowrap"
+                  className="text-sm font-semibold text-[#243FBA] hover:underline underline-offset-4 whitespace-nowrap"
                 >
                   এই বিভাগের সব সেবা →
                 </Link>

@@ -86,11 +86,11 @@ export function ConnectedEcosystemShowcase() {
     CONNECTED_DOMAINS.find((d) => d.id === selectedId) ?? CONNECTED_DOMAINS[0]!;
 
   return (
-    <div className="rounded-[18px] border border-[#D4CCE3] bg-white p-5 sm:p-7 shadow-sm space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#D4CCE3] pb-5">
+    <div className="rounded-[18px] border border-[#E1E4F2] bg-white p-5 sm:p-7 shadow-sm space-y-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#E1E4F2] pb-5">
         <div className="space-y-1">
           <p
-            className="font-en text-xs font-bold uppercase tracking-[0.16em] text-[#51406F]"
+            className="font-en text-xs font-bold uppercase tracking-[0.16em] text-[#243FBA]"
             lang="en"
           >
             One Business Ecosystem · Three Ways To Grow
@@ -117,8 +117,8 @@ export function ConnectedEcosystemShowcase() {
                 className={cn(
                   "px-3.5 py-2 rounded-[10px] text-xs font-semibold border transition-colors cursor-pointer",
                   isSelected
-                    ? "bg-[#51406F] text-white border-[#51406F] shadow-xs"
-                    : "bg-[#F2EFF8] text-[#081838] border-[#D4CCE3] hover:bg-[#DDD6EB]",
+                    ? "bg-[#243FBA] text-white border-[#243FBA] shadow-xs"
+                    : "bg-[#FBFAFF] text-[#081838] border-[#E1E4F2] hover:bg-[#E2E3FF]",
                 )}
               >
                 <span className="font-en" lang="en">
@@ -140,18 +140,18 @@ export function ConnectedEcosystemShowcase() {
       >
         <Link
           href={active.courseHref}
-          className="group rounded-[14px] border border-[#D4CCE3] bg-[#F2EFF8]/70 hover:bg-[#DDD6EB]/75 p-5 flex flex-col justify-between gap-4 transition-colors"
+          className="group rounded-[14px] border border-[#E1E4F2] bg-[#FBFAFF]/70 hover:bg-[#E2E3FF]/75 p-5 flex flex-col justify-between gap-4 transition-colors"
         >
           <div className="space-y-2.5">
             <div className="flex items-center justify-between gap-2">
               <span
-                className="font-en text-xs font-bold uppercase tracking-[0.12em] text-[#51406F]"
+                className="font-en text-xs font-bold uppercase tracking-[0.12em] text-[#243FBA]"
                 lang="en"
               >
                 01 · Courses
               </span>
               <GraduationCap
-                className="w-5 h-5 text-[#51406F]"
+                className="w-5 h-5 text-[#243FBA]"
                 aria-hidden="true"
               />
             </div>
@@ -162,7 +162,7 @@ export function ConnectedEcosystemShowcase() {
               বিষয়টি নিজে শিখতে ও দক্ষতা অর্জন করতে কোর্স ট্র্যাক দেখুন।
             </p>
           </div>
-          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#51406F] group-hover:underline underline-offset-4">
+          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#243FBA] group-hover:underline underline-offset-4">
             <span className="font-en" lang="en">
               Explore Courses
             </span>
@@ -172,12 +172,12 @@ export function ConnectedEcosystemShowcase() {
 
         <Link
           href={active.serviceHref}
-          className="group rounded-[14px] border border-[#D4CCE3] bg-[#F2EFF8]/70 hover:bg-[#DDD6EB]/75 p-5 flex flex-col justify-between gap-4 transition-colors"
+          className="group rounded-[14px] border border-[#E1E4F2] bg-[#FBFAFF]/70 hover:bg-[#E2E3FF]/75 p-5 flex flex-col justify-between gap-4 transition-colors"
         >
           <div className="space-y-2.5">
             <div className="flex items-center justify-between gap-2">
               <span
-                className="font-en text-xs font-bold uppercase tracking-[0.12em] text-[#51406F]"
+                className="font-en text-xs font-bold uppercase tracking-[0.12em] text-[#243FBA]"
                 lang="en"
               >
                 02 · Services
@@ -204,17 +204,17 @@ export function ConnectedEcosystemShowcase() {
 
         <Link
           href={active.bookHref}
-          className="group rounded-[14px] border border-[#D4CCE3] bg-[#F2EFF8]/70 hover:bg-[#DDD6EB]/75 p-5 flex flex-col justify-between gap-4 transition-colors"
+          className="group rounded-[14px] border border-[#E1E4F2] bg-[#FBFAFF]/70 hover:bg-[#E2E3FF]/75 p-5 flex flex-col justify-between gap-4 transition-colors"
         >
           <div className="space-y-2.5">
             <div className="flex items-center justify-between gap-2">
               <span
-                className="font-en text-xs font-bold uppercase tracking-[0.12em] text-[#51406F]"
+                className="font-en text-xs font-bold uppercase tracking-[0.12em] text-[#243FBA]"
                 lang="en"
               >
                 03 · Books
               </span>
-              <BookOpen className="w-5 h-5 text-[#51406F]" aria-hidden="true" />
+              <BookOpen className="w-5 h-5 text-[#243FBA]" aria-hidden="true" />
             </div>
             <p className="text-base font-bold text-[#081838] leading-snug">
               {active.bookTitleBn}
@@ -223,7 +223,7 @@ export function ConnectedEcosystemShowcase() {
               হাতের নাগালে প্র্যাকটিক্যাল রেফারেন্স গাইড ও প্রকাশনা প্রিভিউ।
             </p>
           </div>
-          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#51406F] group-hover:underline underline-offset-4">
+          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#243FBA] group-hover:underline underline-offset-4">
             <span className="font-en" lang="en">
               Explore Books
             </span>

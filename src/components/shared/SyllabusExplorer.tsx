@@ -44,7 +44,7 @@ export function SyllabusExplorer({ modules }: SyllabusExplorerProps) {
   };
 
   return (
-    <div className="rounded-[16px] border border-[#D4CCE3] bg-white p-6 space-y-4">
+    <div className="rounded-[16px] border border-[#E1E4F2] bg-white p-6 space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-xl font-bold text-[#081838]">
@@ -58,7 +58,7 @@ export function SyllabusExplorer({ modules }: SyllabusExplorerProps) {
         <button
           type="button"
           onClick={toggleAll}
-          className="inline-flex items-center justify-center gap-1.5 min-h-10 px-3.5 rounded-[10px] border border-[#D4CCE3] bg-[#F2EFF8] text-xs font-semibold text-[#51406F] hover:bg-[#DDD6EB] transition-colors cursor-pointer self-start sm:self-auto"
+          className="inline-flex items-center justify-center gap-1.5 min-h-10 px-3.5 rounded-[10px] border border-[#E1E4F2] bg-[#FBFAFF] text-xs font-semibold text-[#243FBA] hover:bg-[#E2E3FF] transition-colors cursor-pointer self-start sm:self-auto"
         >
           <ChevronsUpDown className="w-3.5 h-3.5" aria-hidden="true" />
           <span>{allExpanded ? "সব সংকুচিত করুন" : "সব মডিউল খুলুন"}</span>
@@ -68,7 +68,7 @@ export function SyllabusExplorer({ modules }: SyllabusExplorerProps) {
       {modules.length > 2 ? (
         <div className="relative">
           <Search
-            className="w-4 h-4 text-[#51406F] absolute start-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
+            className="w-4 h-4 text-[#243FBA] absolute start-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
             aria-hidden="true"
           />
           <input
@@ -77,7 +77,7 @@ export function SyllabusExplorer({ modules }: SyllabusExplorerProps) {
             onChange={(e) => setFilterText(e.target.value)}
             placeholder="সিলেবাসের বিষয় খুঁজুন..."
             aria-label="সিলেবাসের বিষয় খুঁজুন"
-            className="w-full min-h-11 ps-10 pe-4 py-2 rounded-[10px] border border-[#D4CCE3] bg-[#F2EFF8]/50 text-sm text-[#181D26] placeholder:text-[#596775]/75 focus:border-[#51406F]"
+            className="w-full min-h-11 ps-10 pe-4 py-2 rounded-[10px] border border-[#E1E4F2] bg-[#FBFAFF]/50 text-sm text-[#181D26] placeholder:text-[#596775]/75 focus:border-[#243FBA]"
           />
         </div>
       ) : null}
@@ -102,16 +102,16 @@ export function SyllabusExplorer({ modules }: SyllabusExplorerProps) {
                     return next;
                   });
                 }}
-                className="ps-disclosure group rounded-[12px] border border-[#D4CCE3] bg-[#F2EFF8]/50 open:border-[#51406F]/55"
+                className="ps-disclosure group rounded-[12px] border border-[#E1E4F2] bg-[#FBFAFF]/50 open:border-[#243FBA]/55"
               >
                 <summary className="flex items-center justify-between gap-3 p-4 font-bold text-[#081838] text-sm sm:text-base cursor-pointer">
                   <span>{mod.titleBn}</span>
                   <ChevronDown
-                    className="w-4 h-4 text-[#51406F] shrink-0 transition-transform duration-200 group-open:rotate-180"
+                    className="w-4 h-4 text-[#243FBA] shrink-0 transition-transform duration-200 group-open:rotate-180"
                     aria-hidden="true"
                   />
                 </summary>
-                <ul className="px-4 pb-4 space-y-1.5 text-sm text-[#181D26]/85 list-disc list-inside border-t border-[#D4CCE3]/70 pt-3">
+                <ul className="px-4 pb-4 space-y-1.5 text-sm text-[#181D26]/85 list-disc list-inside border-t border-[#E1E4F2]/70 pt-3">
                   {mod.topicsBn.map((topic, tIdx) => (
                     <li key={tIdx}>{topic}</li>
                   ))}

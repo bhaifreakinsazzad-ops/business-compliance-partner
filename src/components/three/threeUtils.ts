@@ -92,10 +92,10 @@ export function createAmbientLavenderShaderBackdrop(
         vec2 center = vec2(0.5 + sin(uTime * 0.25) * 0.04, 0.52);
         float dist = distance(vUv, center);
         float soft = smoothstep(0.75, 0.05, dist);
-        vec3 lavender = vec3(0.867, 0.839, 0.922);
-        vec3 plumHint = vec3(0.647, 0.600, 0.761);
-        vec3 col = mix(lavender, plumHint, smoothstep(0.0, 1.0, vUv.x) * 0.22);
-        gl_FragColor = vec4(col, soft * 0.28);
+        vec3 periwinkle = vec3(0.886, 0.890, 1.000);
+        vec3 periwinkleDeep = vec3(0.702, 0.714, 1.000);
+        vec3 col = mix(periwinkle, periwinkleDeep, smoothstep(0.0, 1.0, vUv.x) * 0.26);
+        gl_FragColor = vec4(col, soft * 0.30);
       }
     `,
   });
@@ -224,8 +224,8 @@ export function createContactShadowTexture(): THREE.CanvasTexture {
   if (ctx) {
     const grad = ctx.createRadialGradient(128, 128, 16, 128, 128, 124);
     grad.addColorStop(0, "rgba(8, 24, 56, 0.34)");
-    grad.addColorStop(0.55, "rgba(81, 64, 111, 0.14)");
-    grad.addColorStop(1, "rgba(81, 64, 111, 0)");
+    grad.addColorStop(0.55, "rgba(36, 63, 186, 0.14)");
+    grad.addColorStop(1, "rgba(36, 63, 186, 0)");
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, 256, 256);
   }
@@ -421,15 +421,15 @@ export function createLaptopScreenTexture(
     } else {
       // Default: Mode 0 - Brand Executive Command Center
       const bg = ctx.createLinearGradient(0, 0, 768, 480);
-      bg.addColorStop(0, "#1D1536");
-      bg.addColorStop(0.55, "#51406F");
+      bg.addColorStop(0, "#0E1D4A");
+      bg.addColorStop(0.55, "#243FBA");
       bg.addColorStop(1, "#081838");
       ctx.fillStyle = bg;
       ctx.fillRect(0, 0, 768, 480);
 
       const glow = ctx.createRadialGradient(384, 210, 20, 384, 210, 290);
-      glow.addColorStop(0, "rgba(221, 214, 235, 0.34)");
-      glow.addColorStop(1, "rgba(221, 214, 235, 0)");
+      glow.addColorStop(0, "rgba(207, 209, 255, 0.36)");
+      glow.addColorStop(1, "rgba(207, 209, 255, 0)");
       ctx.fillStyle = glow;
       ctx.fillRect(0, 0, 768, 480);
 
@@ -499,11 +499,11 @@ export function createDocumentCardTexture(params: {
     ctx.fillStyle = "#FFFFFF";
     ctx.fillRect(0, 0, 360, 128);
 
-    ctx.strokeStyle = "#D4CCE3";
+    ctx.strokeStyle = "#E1E4F2";
     ctx.lineWidth = 4;
     ctx.strokeRect(2, 2, 356, 124);
 
-    ctx.fillStyle = "#F2EFF8";
+    ctx.fillStyle = "#E2E3FF";
     ctx.fillRect(20, 24, 80, 80);
     ctx.fillStyle = params.accentHex;
     ctx.fillRect(36, 44, 48, 8);
@@ -516,7 +516,7 @@ export function createDocumentCardTexture(params: {
     ctx.textBaseline = "top";
     ctx.fillText(params.title, 118, 32, 220);
 
-    ctx.fillStyle = "#51406F";
+    ctx.fillStyle = "#243FBA";
     ctx.font = "500 17px Inter, sans-serif";
     ctx.fillText(params.subtitle, 118, 68, 220);
   }

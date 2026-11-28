@@ -29,7 +29,7 @@ export function SectionHeading({
         <p
           className={cn(
             "font-en text-xs uppercase tracking-[0.16em] font-semibold inline-flex items-center gap-2",
-            dark ? "text-[#DFB15B]" : "text-[#51406F]",
+            dark ? "text-[#DFB15B]" : "text-[#243FBA]",
           )}
           lang="en"
         >

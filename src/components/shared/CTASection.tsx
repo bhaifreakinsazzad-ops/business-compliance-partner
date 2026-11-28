@@ -25,9 +25,9 @@ export function CTASection({
   tertiaryLabelBn,
 }: CTASectionProps) {
   return (
-    <section className="py-12 sm:py-16 bg-[#F2EFF8] border-t border-[#D4CCE3]">
+    <section className="py-12 sm:py-16 bg-[#FBFAFF] border-t border-[#E1E4F2]">
       <div className="ps-container">
-        <div className="rounded-[20px] bg-gradient-to-br from-[#51406F] via-[#453561] to-[#081838] border border-[#D4CCE3]/40 p-7 sm:p-10 md:p-12 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 text-white shadow-md">
+        <div className="rounded-[20px] bg-gradient-to-br from-[#202D72] via-[#243FBA] to-[#081838] border border-[#B8BBFF]/40 p-7 sm:p-10 md:p-12 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 text-white shadow-md">
           <div className="space-y-2.5 max-w-2xl">
             {eyebrowEn ? (
               <p
@@ -48,10 +48,10 @@ export function CTASection({
           <div className="flex flex-col sm:flex-row flex-wrap gap-3 shrink-0">
             <Link
               href={primaryHref}
-              className="inline-flex items-center justify-center gap-2 min-h-12 px-5 py-3 rounded-[12px] bg-white text-[#081838] font-semibold text-sm hover:bg-[#F2EFF8] transition-colors shadow-xs whitespace-nowrap"
+              className="inline-flex items-center justify-center gap-2 min-h-12 px-5 py-3 rounded-[12px] bg-white text-[#081838] font-semibold text-sm hover:bg-[#E2E3FF] transition-colors shadow-xs whitespace-nowrap"
             >
               <span>{primaryLabelBn}</span>
-              <ArrowRight className="w-4 h-4 text-[#51406F]" aria-hidden="true" />
+              <ArrowRight className="w-4 h-4 text-[#243FBA]" aria-hidden="true" />
             </Link>
             {secondaryHref && secondaryLabelBn ? (
               <Link

@@ -67,14 +67,14 @@ export default async function CoursesPage({ searchParams }: CoursesPageProps) {
       <AppHeader siteConfig={siteConfig} />
 
       <main id="main-content" tabIndex={-1} className="flex-1">
-        <section className="bg-gradient-to-br from-[#F2EFF8] via-[#ECE7F5] to-[#E5DDF2] text-[#081838] py-10 sm:py-12 border-b border-[#D4CCE3]">
+        <section className="bcp-periwinkle-contact-header text-[#081838] py-10 sm:py-12 border-b border-[#E1E4F2]">
           <div className="ps-container space-y-4">
             <Breadcrumbs
               items={[{ labelBn: "হোম", href: "/" }, { labelBn: "কোর্স ও প্রশিক্ষণ" }]}
             />
             <div className="max-w-3xl space-y-2.5">
-              <p className="inline-flex items-center gap-2 text-xs font-en font-semibold uppercase tracking-[0.14em] text-[#51406F]">
-                <BookOpen className="w-4 h-4 text-[#51406F]" aria-hidden="true" />
+              <p className="inline-flex items-center gap-2 text-xs font-en font-semibold uppercase tracking-[0.14em] text-[#243FBA]">
+                <BookOpen className="w-4 h-4 text-[#243FBA]" aria-hidden="true" />
                 <span>01 · Courses · I Want To Learn · 10 Tracks</span>
               </p>
               <h1 className="text-3xl sm:text-4xl font-extrabold leading-snug text-[#081838]">
@@ -90,7 +90,7 @@ export default async function CoursesPage({ searchParams }: CoursesPageProps) {
 
         <section className="py-8 sm:py-12">
           <div className="ps-container space-y-8">
-            <div className="rounded-[16px] bg-white border border-[#D4CCE3] p-5 sm:p-6 space-y-4 shadow-sm">
+            <div className="rounded-[16px] bg-white border border-[#E1E4F2] p-5 sm:p-6 space-y-4 shadow-sm">
               <SearchBox
                 action="/courses"
                 defaultValue={q}
@@ -112,7 +112,7 @@ export default async function CoursesPage({ searchParams }: CoursesPageProps) {
                   </p>
                   <Link
                     href="/courses"
-                    className="inline-flex items-center gap-1.5 rounded-[8px] border border-[#D4CCE3] bg-[#F2EFF8] px-3 py-1.5 text-xs font-semibold text-[#51406F] hover:bg-[#DDD6EB]"
+                    className="inline-flex items-center gap-1.5 rounded-[8px] border border-[#E1E4F2] bg-[#FBFAFF] px-3 py-1.5 text-xs font-semibold text-[#243FBA] hover:bg-[#E2E3FF]"
                   >
                     <X className="w-3.5 h-3.5" aria-hidden="true" />
                     <span>ফিল্টার মুছুন</span>
@@ -150,7 +150,7 @@ export default async function CoursesPage({ searchParams }: CoursesPageProps) {
 
             {paginatedItems.length > 0 ? (
               <div className="space-y-6">
-                <div className="flex items-center justify-between gap-3 border-b border-[#D4CCE3] pb-3">
+                <div className="flex items-center justify-between gap-3 border-b border-[#E1E4F2] pb-3">
                   <h2 className="text-lg sm:text-xl font-bold text-[#081838]">
                     {activeCategory
                       ? `${activeCategory.nameBn} — কোর্স তালিকা`
@@ -180,7 +180,7 @@ export default async function CoursesPage({ searchParams }: CoursesPageProps) {
                     {currentPage > 1 ? (
                       <Link
                         href={buildPageHref(currentPage - 1)}
-                        className="inline-flex items-center gap-1 min-h-11 px-4 rounded-[10px] border border-[#D4CCE3] bg-white text-sm font-semibold text-[#51406F] hover:bg-[#F2EFF8]"
+                        className="inline-flex items-center gap-1 min-h-11 px-4 rounded-[10px] border border-[#E1E4F2] bg-white text-sm font-semibold text-[#243FBA] hover:bg-[#FBFAFF]"
                       >
                         <ChevronLeft className="w-4 h-4" aria-hidden="true" />
                         <span>পূর্ববর্তী</span>
@@ -192,7 +192,7 @@ export default async function CoursesPage({ searchParams }: CoursesPageProps) {
                     {currentPage < totalPages ? (
                       <Link
                         href={buildPageHref(currentPage + 1)}
-                        className="inline-flex items-center gap-1 min-h-11 px-4 rounded-[10px] border border-[#D4CCE3] bg-white text-sm font-semibold text-[#51406F] hover:bg-[#F2EFF8]"
+                        className="inline-flex items-center gap-1 min-h-11 px-4 rounded-[10px] border border-[#E1E4F2] bg-white text-sm font-semibold text-[#243FBA] hover:bg-[#FBFAFF]"
                       >
                         <span>পরবর্তী</span>
                         <ChevronRight className="w-4 h-4" aria-hidden="true" />

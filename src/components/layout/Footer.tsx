@@ -143,7 +143,7 @@ export function Footer({ siteConfig }: FooterProps) {
                 <li>
                   <Link
                     href="/about"
-                    className="hover:text-[#DDD6EB] hover:underline underline-offset-4"
+                    className="hover:text-[#CCCEFF] hover:underline underline-offset-4"
                   >
                     আমাদের সম্পর্কে
                   </Link>
@@ -151,7 +151,7 @@ export function Footer({ siteConfig }: FooterProps) {
                 <li>
                   <Link
                     href="/faq"
-                    className="hover:text-[#DDD6EB] hover:underline underline-offset-4"
+                    className="hover:text-[#CCCEFF] hover:underline underline-offset-4"
                   >
                     সচরাচর জিজ্ঞাসা (FAQ)
                   </Link>
@@ -159,7 +159,7 @@ export function Footer({ siteConfig }: FooterProps) {
                 <li>
                   <Link
                     href="/contact"
-                    className="hover:text-[#DDD6EB] hover:underline underline-offset-4"
+                    className="hover:text-[#CCCEFF] hover:underline underline-offset-4"
                   >
                     যোগাযোগ
                   </Link>
@@ -167,7 +167,7 @@ export function Footer({ siteConfig }: FooterProps) {
                 <li>
                   <Link
                     href="/portal"
-                    className="hover:text-[#DDD6EB] hover:underline underline-offset-4"
+                    className="hover:text-[#CCCEFF] hover:underline underline-offset-4"
                   >
                     কাস্টমার পোর্টাল
                   </Link>
@@ -175,7 +175,7 @@ export function Footer({ siteConfig }: FooterProps) {
                 <li>
                   <Link
                     href="/privacy"
-                    className="hover:text-[#DDD6EB] hover:underline underline-offset-4"
+                    className="hover:text-[#CCCEFF] hover:underline underline-offset-4"
                   >
                     গোপনীয়তা নীতি
                   </Link>
@@ -183,7 +183,7 @@ export function Footer({ siteConfig }: FooterProps) {
                 <li>
                   <Link
                     href="/terms"
-                    className="hover:text-[#DDD6EB] hover:underline underline-offset-4"
+                    className="hover:text-[#CCCEFF] hover:underline underline-offset-4"
                   >
                     শর্তাবলি
                   </Link>
@@ -191,7 +191,7 @@ export function Footer({ siteConfig }: FooterProps) {
                 <li>
                   <Link
                     href="/disclaimer"
-                    className="hover:text-[#DDD6EB] hover:underline underline-offset-4"
+                    className="hover:text-[#CCCEFF] hover:underline underline-offset-4"
                   >
                     আইনি ও রেগুলেটরি ডিসক্লেইমার
                   </Link>
@@ -214,7 +214,7 @@ export function Footer({ siteConfig }: FooterProps) {
                       />
                       <a
                         href={`tel:${siteConfig.verifiedPhone.replace(/\s+/g, "")}`}
-                        className="hover:text-[#DDD6EB]"
+                        className="hover:text-[#CCCEFF]"
                         dir="ltr"
                       >
                         {siteConfig.verifiedPhone}
@@ -232,7 +232,7 @@ export function Footer({ siteConfig }: FooterProps) {
                         target="_blank"
                         rel="noopener noreferrer"
                         data-whatsapp-cta="true"
-                        className="hover:text-[#DDD6EB] transition-colors"
+                        className="hover:text-[#CCCEFF] transition-colors"
                       >
                         <span className="block font-semibold text-white">
                           WhatsApp সহায়তা
@@ -253,7 +253,7 @@ export function Footer({ siteConfig }: FooterProps) {
                       />
                       <a
                         href={`mailto:${siteConfig.verifiedEmail}`}
-                        className="hover:text-[#DDD6EB]"
+                        className="hover:text-[#CCCEFF]"
                         dir="ltr"
                       >
                         {siteConfig.verifiedEmail}

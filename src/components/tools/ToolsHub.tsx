@@ -78,7 +78,7 @@ export function ToolsHub() {
       <div
         role="tablist"
         aria-label="ব্যবসায়িক টুলস"
-        className="flex flex-wrap gap-2 rounded-xl bg-white p-2 border border-[#D4CCE3] shadow-sm"
+        className="flex flex-wrap gap-2 rounded-xl bg-white p-2 border border-[#E1E4F2] shadow-sm"
       >
         <button
           type="button"
@@ -89,8 +89,8 @@ export function ToolsHub() {
           onClick={() => setActiveTab("readiness")}
           className={`flex items-center gap-2 px-5 py-3 rounded-lg text-sm font-semibold transition-colors cursor-pointer ${
             activeTab === "readiness"
-              ? "bg-[#51406F] text-white shadow-sm"
-              : "text-[#596775] hover:text-[#081838] hover:bg-[#F2EFF8]"
+              ? "bg-[#243FBA] text-white shadow-sm"
+              : "text-[#596775] hover:text-[#081838] hover:bg-[#FBFAFF]"
           }`}
         >
           <Sparkles className="w-4 h-4" aria-hidden="true" />
@@ -106,8 +106,8 @@ export function ToolsHub() {
           onClick={() => setActiveTab("checklists")}
           className={`flex items-center gap-2 px-5 py-3 rounded-lg text-sm font-semibold transition-colors cursor-pointer ${
             activeTab === "checklists"
-              ? "bg-[#51406F] text-white shadow-sm"
-              : "text-[#596775] hover:text-[#081838] hover:bg-[#F2EFF8]"
+              ? "bg-[#243FBA] text-white shadow-sm"
+              : "text-[#596775] hover:text-[#081838] hover:bg-[#FBFAFF]"
           }`}
         >
           <CheckSquare className="w-4 h-4" aria-hidden="true" />
@@ -123,8 +123,8 @@ export function ToolsHub() {
           onClick={() => setActiveTab("roadmap")}
           className={`flex items-center gap-2 px-5 py-3 rounded-lg text-sm font-semibold transition-colors cursor-pointer ${
             activeTab === "roadmap"
-              ? "bg-[#51406F] text-white shadow-sm"
-              : "text-[#596775] hover:text-[#081838] hover:bg-[#F2EFF8]"
+              ? "bg-[#243FBA] text-white shadow-sm"
+              : "text-[#596775] hover:text-[#081838] hover:bg-[#FBFAFF]"
           }`}
         >
           <Compass className="w-4 h-4" aria-hidden="true" />
@@ -141,8 +141,8 @@ export function ToolsHub() {
         hidden={activeTab !== "readiness"}
         className="space-y-6"
       >
-        <div className="bg-white rounded-2xl border border-[#D4CCE3] p-6 sm:p-8 shadow-sm">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#D4CCE3] pb-6">
+        <div className="bg-white rounded-2xl border border-[#E1E4F2] p-6 sm:p-8 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E1E4F2] pb-6">
             <div>
               <h2 className="text-xl sm:text-2xl font-bold text-[#081838]">
                 ব্যবসায়িক কমপ্লায়েন্স ও প্রস্তুতি মূল্যায়ন
@@ -155,7 +155,7 @@ export function ToolsHub() {
               <button
                 type="button"
                 onClick={resetReadiness}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#596775] hover:text-[#51406F] transition-colors self-start cursor-pointer"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#596775] hover:text-[#243FBA] transition-colors self-start cursor-pointer"
               >
                 <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />
                 <span>পুনরায় শুরু করুন</span>
@@ -169,7 +169,7 @@ export function ToolsHub() {
               return (
                 <div
                   key={question.id}
-                  className="p-5 rounded-xl border border-[#D4CCE3] bg-[#F2EFF8]/50 space-y-3"
+                  className="p-5 rounded-xl border border-[#E1E4F2] bg-[#FBFAFF]/50 space-y-3"
                 >
                   <p className="text-sm sm:text-base font-semibold text-[#081838]">
                     {index + 1}. {question.promptBn}
@@ -188,8 +188,8 @@ export function ToolsHub() {
                         onClick={() => handleReadinessAnswer(question.id, option.value)}
                         className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors border cursor-pointer ${
                           currentAnswer === option.value
-                            ? "bg-[#51406F] text-white border-[#51406F] shadow-xs"
-                            : "bg-white text-[#181D26] border-[#D4CCE3] hover:bg-[#F2EFF8]"
+                            ? "bg-[#243FBA] text-white border-[#243FBA] shadow-xs"
+                            : "bg-white text-[#181D26] border-[#E1E4F2] hover:bg-[#FBFAFF]"
                         }`}
                       >
                         {option.label}
@@ -202,12 +202,12 @@ export function ToolsHub() {
           </div>
 
           {/* Assessment Summary & Recommendations */}
-          <div className="mt-8 pt-6 border-t border-[#D4CCE3]">
+          <div className="mt-8 pt-6 border-t border-[#E1E4F2]">
             <div className="flex items-center justify-between gap-4 text-xs font-semibold text-[#596775] uppercase tracking-wider mb-2 tabular-nums">
               <span>অগ্রগতি: {readinessResult.answered}/{readinessResult.total} টি সম্পন্ন</span>
               <span>{readinessResult.progressPercent}%</span>
             </div>
-            <div className="h-2 w-full bg-[#DDD6EB] rounded-full overflow-hidden">
+            <div className="h-2 w-full bg-[#E2E3FF] rounded-full overflow-hidden">
               <div
                 className="h-full bg-[#00865A] transition-all duration-300"
                 style={{ width: `${readinessResult.progressPercent}%` }}
@@ -227,14 +227,14 @@ export function ToolsHub() {
                   {readinessResult.recommendations.map((rec) => (
                     <div
                       key={rec.id}
-                      className="p-4 rounded-xl border border-[#D4CCE3] bg-[#F2EFF8]/65 flex flex-col justify-between gap-3"
+                      className="p-4 rounded-xl border border-[#E1E4F2] bg-[#FBFAFF]/65 flex flex-col justify-between gap-3"
                     >
                       <p className="text-xs sm:text-sm text-[#181D26] leading-relaxed">
                         {rec.reviewBn}
                       </p>
                       <Link
                         href={rec.href}
-                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#51406F] hover:text-[#081838] transition-colors self-start"
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#243FBA] hover:text-[#081838] transition-colors self-start"
                       >
                         <span>সম্পর্কিত সেবা দেখুন</span>
                         <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
@@ -256,8 +256,8 @@ export function ToolsHub() {
         hidden={activeTab !== "checklists"}
         className="space-y-6"
       >
-        <div className="bg-white rounded-2xl border border-[#D4CCE3] p-6 sm:p-8 shadow-sm">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#D4CCE3] pb-6">
+        <div className="bg-white rounded-2xl border border-[#E1E4F2] p-6 sm:p-8 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E1E4F2] pb-6">
             <div>
               <h2 className="text-xl sm:text-2xl font-bold text-[#081838]">
                 স্মার্ট ডকুমেন্টেশন ও প্রস্তুতি চেকলিস্ট
@@ -270,7 +270,7 @@ export function ToolsHub() {
               <button
                 type="button"
                 onClick={resetChecklist}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#596775] hover:text-[#51406F] transition-colors self-start cursor-pointer"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#596775] hover:text-[#243FBA] transition-colors self-start cursor-pointer"
               >
                 <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />
                 <span>চেকলিস্ট রিসেট</span>
@@ -287,8 +287,8 @@ export function ToolsHub() {
                 onClick={() => setSelectedTemplateId(tpl.id)}
                 className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-colors border cursor-pointer ${
                   selectedTemplateId === tpl.id
-                    ? "bg-[#51406F] text-white border-[#51406F]"
-                    : "bg-[#F2EFF8]/60 text-[#181D26] border-[#D4CCE3] hover:bg-[#DDD6EB]/50"
+                    ? "bg-[#243FBA] text-white border-[#243FBA]"
+                    : "bg-[#FBFAFF]/60 text-[#181D26] border-[#E1E4F2] hover:bg-[#E2E3FF]/50"
                 }`}
               >
                 {tpl.titleBn}
@@ -296,7 +296,7 @@ export function ToolsHub() {
             ))}
           </div>
 
-          <div className="mt-6 p-4 rounded-xl bg-[#F2EFF8]/60 border border-[#D4CCE3] flex items-center justify-between gap-4">
+          <div className="mt-6 p-4 rounded-xl bg-[#FBFAFF]/60 border border-[#E1E4F2] flex items-center justify-between gap-4">
             <div>
               <h3 className="font-semibold text-[#081838] text-sm sm:text-base">
                 {currentTemplate.titleBn}
@@ -309,7 +309,7 @@ export function ToolsHub() {
               <span className="text-xs font-bold text-[#081838]">
                 {checklistProgress.completed}/{checklistProgress.total} সম্পন্ন
               </span>
-              <span className="block text-[11px] text-[#51406F] font-semibold">
+              <span className="block text-[11px] text-[#243FBA] font-semibold">
                 {checklistProgress.percent}%
               </span>
             </div>
@@ -324,15 +324,15 @@ export function ToolsHub() {
                   key={item.id}
                   className={`flex items-start gap-3 p-4 rounded-xl border transition-colors cursor-pointer ${
                     isChecked
-                      ? "bg-[#F2EFF8]/70 border-[#51406F]/45"
-                      : "bg-white border-[#D4CCE3] hover:bg-[#F2EFF8]/35"
+                      ? "bg-[#FBFAFF]/70 border-[#243FBA]/45"
+                      : "bg-white border-[#E1E4F2] hover:bg-[#FBFAFF]/35"
                   }`}
                 >
                   <input
                     type="checkbox"
                     checked={isChecked}
                     onChange={() => toggleChecklistItem(item.id)}
-                    className="mt-1 h-4 w-4 rounded border-[#D4CCE3] accent-[#51406F]"
+                    className="mt-1 h-4 w-4 rounded border-[#E1E4F2] accent-[#243FBA]"
                   />
                   <div className="min-w-0 flex-1">
                     <p
@@ -351,13 +351,13 @@ export function ToolsHub() {
             })}
           </div>
 
-          <div className="mt-8 pt-6 border-t border-[#D4CCE3] flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="mt-8 pt-6 border-t border-[#E1E4F2] flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-xs text-[#596775]">
               নোট: এই চেকলিস্ট আপনার ব্রাউজারে সুরক্ষিত থাকে। কোনো ব্যক্তিগত বা গোপনীয় তথ্য সংরক্ষণ করা হয় না।
             </p>
             <Link
               href="/consultancy"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#51406F] text-white text-xs sm:text-sm font-semibold hover:bg-[#3F315A] transition-colors shrink-0"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#243FBA] text-white text-xs sm:text-sm font-semibold hover:bg-[#1D329B] transition-colors shrink-0"
             >
               <span>পেশাদার পরামর্শের অনুরোধ পাঠান</span>
               <ArrowRight className="w-4 h-4" aria-hidden="true" />
@@ -374,8 +374,8 @@ export function ToolsHub() {
         hidden={activeTab !== "roadmap"}
         className="space-y-6"
       >
-        <div className="bg-white rounded-2xl border border-[#D4CCE3] p-6 sm:p-8 shadow-sm">
-          <div className="border-b border-[#D4CCE3] pb-6">
+        <div className="bg-white rounded-2xl border border-[#E1E4F2] p-6 sm:p-8 shadow-sm">
+          <div className="border-b border-[#E1E4F2] pb-6">
             <h2 className="text-xl sm:text-2xl font-bold text-[#081838]">
               ব্যবসায়িক রোডম্যাপ ও ধারাবাহিক পরিকল্পনা
             </h2>
@@ -393,7 +393,7 @@ export function ToolsHub() {
               <select
                 value={roadmapGoal}
                 onChange={(e) => setRoadmapGoal(e.target.value as RoadmapGoal)}
-                className="w-full min-h-12 rounded-xl border border-[#D4CCE3] bg-white px-3 text-sm text-[#181D26] focus:border-[#51406F] focus:outline-none focus:ring-2 focus:ring-[#51406F]/20"
+                className="w-full min-h-12 rounded-xl border border-[#E1E4F2] bg-white px-3 text-sm text-[#181D26] focus:border-[#243FBA] focus:outline-none focus:ring-2 focus:ring-[#243FBA]/20"
               >
                 <option value="start">নতুন ব্যবসা শুরু (Start)</option>
                 <option value="comply">নিয়মিত কমপ্লায়েন্স ও ট্যাক্স (Comply)</option>
@@ -410,7 +410,7 @@ export function ToolsHub() {
               <select
                 value={roadmapStage}
                 onChange={(e) => setRoadmapStage(e.target.value as BusinessStage)}
-                className="w-full min-h-12 rounded-xl border border-[#D4CCE3] bg-white px-3 text-sm text-[#181D26] focus:border-[#51406F] focus:outline-none focus:ring-2 focus:ring-[#51406F]/20"
+                className="w-full min-h-12 rounded-xl border border-[#E1E4F2] bg-white px-3 text-sm text-[#181D26] focus:border-[#243FBA] focus:outline-none focus:ring-2 focus:ring-[#243FBA]/20"
               >
                 <option value="idea">পরিকল্পনা / আইডিয়া পর্যায় (Idea)</option>
                 <option value="starting">শুরুর প্রস্তুতি চলছে (Starting)</option>
@@ -430,10 +430,10 @@ export function ToolsHub() {
               {roadmapSteps.map((step, index) => (
                 <div
                   key={step.id}
-                  className="p-5 rounded-xl border border-[#D4CCE3] bg-[#F2EFF8]/45 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                  className="p-5 rounded-xl border border-[#E1E4F2] bg-[#FBFAFF]/45 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
                 >
                   <div className="flex items-start gap-4">
-                    <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#51406F] text-xs font-bold text-white tabular-nums">
+                    <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#243FBA] text-xs font-bold text-white tabular-nums">
                       {index + 1}
                     </span>
                     <div>
@@ -448,7 +448,7 @@ export function ToolsHub() {
 
                   <Link
                     href={step.href}
-                    className="inline-flex items-center justify-center gap-1.5 min-h-10 px-4 py-2 rounded-lg bg-white border border-[#D4CCE3] text-xs sm:text-sm font-semibold text-[#51406F] hover:bg-[#DDD6EB]/50 hover:border-[#51406F] transition-colors shrink-0 self-start sm:self-center"
+                    className="inline-flex items-center justify-center gap-1.5 min-h-10 px-4 py-2 rounded-lg bg-white border border-[#E1E4F2] text-xs sm:text-sm font-semibold text-[#243FBA] hover:bg-[#E2E3FF]/50 hover:border-[#243FBA] transition-colors shrink-0 self-start sm:self-center"
                   >
                     <span>{step.ctaBn}</span>
                     <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />

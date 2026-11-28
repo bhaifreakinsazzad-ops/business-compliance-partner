@@ -206,11 +206,11 @@ function createInsideSpreadTexture(book: PublicBookPreview): THREE.CanvasTexture
     ctx.lineWidth = 1.8;
     ctx.strokeRect(32, 32, 448, 656);
 
-    ctx.strokeStyle = "#D4CCE3";
+    ctx.strokeStyle = "#E1E4F2";
     ctx.lineWidth = 0.8;
     ctx.strokeRect(38, 38, 436, 644);
 
-    ctx.fillStyle = "#51406F";
+    ctx.fillStyle = "#243FBA";
     ctx.font = "700 13px Inter, sans-serif";
     ctx.textAlign = "center";
     ctx.fillText("BCP OFFICIAL REFERENCE • বিষয় সূচিপত্র", 256, 70);
@@ -233,7 +233,7 @@ function createInsideSpreadTexture(book: PublicBookPreview): THREE.CanvasTexture
     let currentY = 192;
     ctx.textAlign = "left";
     chapters.forEach((ch) => {
-      ctx.fillStyle = "#51406F";
+      ctx.fillStyle = "#243FBA";
       ctx.font = "700 12px Inter, sans-serif";
       ctx.fillText(`অধ্যায় ${ch.num}`, 54, currentY);
 
@@ -247,7 +247,7 @@ function createInsideSpreadTexture(book: PublicBookPreview): THREE.CanvasTexture
       ctx.fillText(`পৃষ্ঠা ${ch.p}`, 455, currentY + 18);
       ctx.textAlign = "left";
 
-      ctx.strokeStyle = "#DDD6EB";
+      ctx.strokeStyle = "#E1E4F2";
       ctx.lineWidth = 1;
       ctx.setLineDash([3, 4]);
       ctx.beginPath();

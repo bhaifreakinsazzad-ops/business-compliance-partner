@@ -25,7 +25,7 @@ export function CourseCard({
       ? "text-[#00865A]"
       : course.availabilityStatus === "INTEREST_ONLY"
         ? "text-[#9A6300]"
-        : "text-[#51406F]";
+        : "text-[#243FBA]";
 
   const coursePath = `/courses/${course.slug}`;
   const enquiryHref = `/consultancy?pillar=COURSES&slug=${encodeURIComponent(
@@ -70,18 +70,18 @@ export function CourseCard({
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 pt-1 text-xs font-medium text-[#081838]">
             {course.deliveryMode ? (
               <span className="inline-flex items-center gap-1">
-                <Laptop className="w-3.5 h-3.5 text-[#51406F]" aria-hidden="true" />
+                <Laptop className="w-3.5 h-3.5 text-[#243FBA]" aria-hidden="true" />
                 <span>{course.deliveryMode}</span>
               </span>
             ) : null}
             {course.duration ? (
               <span className="inline-flex items-center gap-1">
-                <Clock className="w-3.5 h-3.5 text-[#51406F]" aria-hidden="true" />
+                <Clock className="w-3.5 h-3.5 text-[#243FBA]" aria-hidden="true" />
                 <span>{course.duration}</span>
               </span>
             ) : null}
             {course.feeDisplay ? (
-              <span className="font-bold text-[#081838] tabular-nums">
+              <span className="font-bold text-[#202D72] tabular-nums">
                 {course.feeDisplay}
               </span>
             ) : null}
@@ -89,7 +89,7 @@ export function CourseCard({
         ) : null}
       </div>
 
-      <div className="pt-3.5 border-t border-[#D4CCE3]/70 flex flex-wrap items-center justify-between gap-2.5">
+      <div className="pt-3.5 border-t border-[#E1E4F2] flex flex-wrap items-center justify-between gap-2.5">
         {verifiedWhatsapp ? (
           <WhatsAppEnquiryButton
             verifiedWhatsapp={verifiedWhatsapp}
@@ -105,7 +105,7 @@ export function CourseCard({
         ) : null}
         <Link
           href={coursePath}
-          className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#51406F] hover:text-[#3F315A] hover:underline underline-offset-4 whitespace-nowrap shrink-0 ms-auto"
+          className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#243FBA] hover:text-[#1D329B] hover:underline underline-offset-4 whitespace-nowrap shrink-0 ms-auto"
         >
           <span>কোর্স সম্পর্কে জানুন</span>
           <ArrowRight className="w-4 h-4" aria-hidden="true" />

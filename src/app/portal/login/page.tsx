@@ -41,11 +41,11 @@ export default function CustomerLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F2EFF8] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#FBFAFF] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md mb-4">
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#51406F] hover:text-[#081838] hover:underline underline-offset-4"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#243FBA] hover:text-[#081838] hover:underline underline-offset-4"
         >
           <ArrowLeft className="w-3.5 h-3.5" aria-hidden="true" />
           <span>মূল ওয়েবসাইটে ফিরে যান</span>
@@ -71,7 +71,7 @@ export default function CustomerLoginPage() {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow-xl sm:rounded-[16px] sm:px-10 border border-[#D4CCE3] space-y-6">
+        <div className="bg-white py-8 px-4 shadow-xl sm:rounded-[16px] sm:px-10 border border-[#E1E4F2] space-y-6">
           {error ? (
             <div
               role="alert"
@@ -101,7 +101,7 @@ export default function CustomerLoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@company.com"
-                  className="block w-full pl-10 pr-3 py-2.5 border border-[#D4CCE3] rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-[#51406F]/25 focus:border-[#51406F]"
+                  className="block w-full pl-10 pr-3 py-2.5 border border-[#E1E4F2] rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-[#243FBA]/25 focus:border-[#243FBA]"
                 />
               </div>
             </div>
@@ -125,13 +125,13 @@ export default function CustomerLoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="block w-full pl-10 pr-11 py-2.5 border border-[#D4CCE3] rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-[#51406F]/25 focus:border-[#51406F]"
+                  className="block w-full pl-10 pr-11 py-2.5 border border-[#E1E4F2] rounded-[10px] text-sm focus:outline-none focus:ring-2 focus:ring-[#243FBA]/25 focus:border-[#243FBA]"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((prev) => !prev)}
                   aria-label={showPassword ? "পাসওয়ার্ড লুকান" : "পাসওয়ার্ড দেখুন"}
-                  className="absolute inset-y-0 right-0 px-3 flex items-center text-[#596775] hover:text-[#51406F] cursor-pointer"
+                  className="absolute inset-y-0 right-0 px-3 flex items-center text-[#596775] hover:text-[#243FBA] cursor-pointer"
                 >
                   {showPassword ? (
                     <EyeOff className="h-4 w-4" aria-hidden="true" />
@@ -145,19 +145,19 @@ export default function CustomerLoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-[10px] shadow-sm text-sm font-bold text-white bg-[#51406F] hover:bg-[#3F315A] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#51406F] disabled:opacity-50 transition-colors cursor-pointer"
+              className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-[10px] shadow-sm text-sm font-bold text-white bg-[#243FBA] hover:bg-[#1D329B] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#243FBA] disabled:opacity-50 transition-colors cursor-pointer"
             >
               <span>{loading ? "যাচাই করা হচ্ছে..." : "লগইন করুন"}</span>
               <ArrowRight className="w-4 h-4" aria-hidden="true" />
             </button>
           </form>
 
-          <div className="border-t border-[#D4CCE3] pt-4 text-center space-y-2">
+          <div className="border-t border-[#E1E4F2] pt-4 text-center space-y-2">
             <p className="text-xs text-[#596775]">
               অ্যাকাউন্ট নেই?{" "}
               <Link
                 href="/portal/register"
-                className="font-bold text-[#51406F] hover:text-[#3F315A] hover:underline"
+                className="font-bold text-[#243FBA] hover:text-[#1D329B] hover:underline"
               >
                 নতুন অ্যাকাউন্ট খুলুন
               </Link>

@@ -29,7 +29,7 @@ export default async function ToolsPage() {
       <AppHeader siteConfig={siteConfig} />
 
       <main id="main-content" tabIndex={-1} className="flex-1">
-        <section className="bg-gradient-to-br from-[#F2EFF8] via-[#ECE7F5] to-[#E5DDF2] border-b border-[#D4CCE3] py-10 sm:py-12">
+        <section className="bcp-periwinkle-contact-header border-b border-[#E1E4F2] py-10 sm:py-12">
           <div className="ps-container">
             <SectionHeading
               eyebrowEn="Interactive Business Tools"

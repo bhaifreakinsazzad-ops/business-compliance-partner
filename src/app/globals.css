@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
-/* BUSINESS COMPLIANCE PARTNER | V6.0 Executive Interactive Design System */
+/* BUSINESS COMPLIANCE PARTNER | V8.0 Reference-Faithful Periwinkle Design System */
 :root {
-  /* Raw Brand & Executive Lavender Palette */
+  /* Raw Brand & AKIJ Periwinkle Palette */
   --bcp-navy: #081838;
   --bcp-gold: #c59028;
   --bcp-gold-light: #dfb15b;
-  --bcp-pearl: #f8f8f8;
+  --bcp-pearl: #f5f6fa;
   --bcp-emerald: #00865a;
   --bcp-emerald-hover: #006d49;
   --bcp-champagne: #e9c46a;
@@ -15,21 +15,34 @@
   --bcp-slate: #596775;
   --bcp-white: #ffffff;
 
-  /* Executive Lavender System (iBOS-inspired) */
-  --bcp-pearl-lavender: #f2eff8;
-  --bcp-muted-lavender: #ddd6eb;
-  --bcp-muted-lavender-hover: #d5cce8;
-  --bcp-dusty-purple: #a599c2;
-  --bcp-deep-plum: #51406f;
-  --bcp-deep-plum-hover: #3f315a;
-  --bcp-lavender-border: #d4cce3;
-  --bcp-lavender-tint: #ece7f5;
+  /* V8.0 AKIJ iBOS Periwinkle + Functional Blue System */
+  --bcp-periwinkle-strong: #b8bbff;
+  --bcp-periwinkle-mesh-stop: #b3b6ff;
+  --bcp-periwinkle-soft: #ccceff;
+  --bcp-periwinkle-surface: #cfd1ff;
+  --bcp-periwinkle-light: #e2e3ff;
+  --bcp-frosted-white: #fbfaff;
+  --bcp-surface-soft: #f5f6fa;
+  --bcp-border: #e1e4f2;
+  --bcp-blue-primary: #243fba;
+  --bcp-blue-hover: #1d329b;
+  --bcp-blue-deep: #202d72;
+
+  /* Mapped Legacy Token Aliases (so all semantic utilities inherit V8.0 Periwinkle) */
+  --bcp-pearl-lavender: var(--bcp-frosted-white);
+  --bcp-muted-lavender: var(--bcp-periwinkle-light);
+  --bcp-muted-lavender-hover: var(--bcp-periwinkle-surface);
+  --bcp-dusty-purple: var(--bcp-periwinkle-strong);
+  --bcp-deep-plum: var(--bcp-blue-primary);
+  --bcp-deep-plum-hover: var(--bcp-blue-hover);
+  --bcp-lavender-border: var(--bcp-border);
+  --bcp-lavender-tint: var(--bcp-periwinkle-light);
 
   /* Semantic Surface Tokens */
   --surface-canvas: var(--bcp-white);
-  --surface-lavender: var(--bcp-pearl-lavender);
-  --surface-lavender-muted: var(--bcp-muted-lavender);
-  --surface-lavender-tint: var(--bcp-lavender-tint);
+  --surface-lavender: var(--bcp-frosted-white);
+  --surface-lavender-muted: var(--bcp-periwinkle-light);
+  --surface-lavender-tint: var(--bcp-periwinkle-surface);
   --surface-card: var(--bcp-white);
   --surface-navy: var(--bcp-navy);
   --surface-ivory: var(--bcp-ivory);
@@ -38,20 +51,20 @@
   --text-primary: var(--bcp-navy);
   --text-body: var(--bcp-charcoal);
   --text-muted: var(--bcp-slate);
-  --text-accent: var(--bcp-deep-plum);
+  --text-accent: var(--bcp-blue-primary);
   --text-inverse: var(--bcp-white);
 
   /* Semantic Action Tokens */
-  --action-primary: var(--bcp-deep-plum);
-  --action-primary-hover: var(--bcp-deep-plum-hover);
+  --action-primary: var(--bcp-blue-primary);
+  --action-primary-hover: var(--bcp-blue-hover);
   --action-whatsapp: var(--bcp-emerald);
   --action-whatsapp-hover: var(--bcp-emerald-hover);
-  --action-flagship: var(--bcp-muted-lavender);
-  --action-flagship-hover: var(--bcp-muted-lavender-hover);
+  --action-flagship: var(--bcp-periwinkle-light);
+  --action-flagship-hover: var(--bcp-periwinkle-surface);
 
   /* Semantic Border & Status Tokens */
-  --border-subtle: var(--bcp-lavender-border);
-  --border-strong: var(--bcp-dusty-purple);
+  --border-subtle: var(--bcp-border);
+  --border-strong: var(--bcp-periwinkle-strong);
   --border-gold: var(--bcp-gold);
   --color-background: var(--surface-canvas);
   --color-foreground: var(--text-body);
@@ -64,23 +77,23 @@
   --color-success: var(--bcp-emerald);
   --color-warning: #8a5800;
   --color-error: #b42318;
-  --color-info: #1456a0;
+  --color-info: var(--bcp-blue-primary);
   --color-focus: var(--bcp-gold);
   --color-overlay: rgb(8 24 56 / 72%);
   --color-disabled: #9aa4b1;
 
   /* Compatibility aliases */
   --ps-midnight: var(--bcp-navy);
-  --ps-navy: #102b55;
+  --ps-navy: var(--bcp-blue-deep);
   --ps-gold: var(--bcp-gold);
   --ps-ivory: var(--bcp-ivory);
   --ps-ink: var(--bcp-charcoal);
-  --ps-cool: var(--bcp-pearl-lavender);
+  --ps-cool: var(--bcp-frosted-white);
   --ps-white: var(--bcp-white);
   --ps-success: var(--bcp-emerald);
   --ps-danger: var(--color-error);
   --ps-warning: var(--color-warning);
-  --ps-border: var(--bcp-lavender-border);
+  --ps-border: var(--bcp-border);
   --ps-muted: var(--bcp-slate);
 
   /* Motion & Layering Tokens */
@@ -128,13 +141,22 @@
   --color-ps-border: var(--ps-border);
   --color-ps-muted: var(--ps-muted);
 
-  --color-bcp-pearl: var(--bcp-pearl-lavender);
-  --color-bcp-lavender: var(--bcp-muted-lavender);
-  --color-bcp-dusty: var(--bcp-dusty-purple);
-  --color-bcp-plum: var(--bcp-deep-plum);
-  --color-bcp-plum-hover: var(--bcp-deep-plum-hover);
-  --color-bcp-border: var(--bcp-lavender-border);
-  --color-bcp-tint: var(--bcp-lavender-tint);
+  --color-bcp-pearl: var(--bcp-frosted-white);
+  --color-bcp-lavender: var(--bcp-periwinkle-light);
+  --color-bcp-dusty: var(--bcp-periwinkle-strong);
+  --color-bcp-plum: var(--bcp-blue-primary);
+  --color-bcp-plum-hover: var(--bcp-blue-hover);
+  --color-bcp-border: var(--bcp-border);
+  --color-bcp-tint: var(--bcp-periwinkle-surface);
+
+  --color-periwinkle-strong: var(--bcp-periwinkle-strong);
+  --color-periwinkle-soft: var(--bcp-periwinkle-soft);
+  --color-periwinkle-surface: var(--bcp-periwinkle-surface);
+  --color-periwinkle-light: var(--bcp-periwinkle-light);
+  --color-frosted-white: var(--bcp-frosted-white);
+  --color-blue-primary: var(--bcp-blue-primary);
+  --color-blue-hover: var(--bcp-blue-hover);
+  --color-blue-deep: var(--bcp-blue-deep);
 
   --color-surface-canvas: var(--surface-canvas);
   --color-surface-lavender: var(--surface-lavender);
@@ -225,8 +247,54 @@ body {
   }
 }
 
-/* Core Brand Buttons — Executive Lavender Deep Plum primary + White/Plum secondary */
-/* NOTE: Never use --ps-gold text on --ps-white or --bcp-pearl-lavender backgrounds (fails WCAG AA). */
+/* AKIJ iBOS Periwinkle Signature Gradient Surfaces */
+.bcp-periwinkle-hero-gradient {
+  background-color: #ffffff;
+  background-image:
+    radial-gradient(at 100% 96%, #b3b6ff 0px, transparent 50%),
+    radial-gradient(at 1% 2%, #b3b6ff 0px, transparent 50%),
+    radial-gradient(at 32% 65%, #f2f2f8 0px, transparent 50%),
+    linear-gradient(180deg, #fbfaff 0%, #e2e3ff 100%);
+}
+
+.bcp-periwinkle-gateway {
+  background-color: #e2e3ff;
+  background-image:
+    radial-gradient(at 0% 0%, #cfd1ff 0px, transparent 55%),
+    radial-gradient(at 100% 100%, #b8bbff 0px, transparent 60%);
+}
+
+.bcp-periwinkle-gateway:hover {
+  background-color: #cfd1ff;
+  background-image:
+    radial-gradient(at 0% 0%, #b8bbff 0px, transparent 60%),
+    radial-gradient(at 100% 100%, #b3b6ff 0px, transparent 65%);
+}
+
+.bcp-periwinkle-service-frame {
+  background-color: #fbfaff;
+  background-image:
+    radial-gradient(at 100% 96%, #b3b6ff 0px, transparent 52%),
+    radial-gradient(at 0% 4%, #b8bbff 0px, transparent 48%),
+    radial-gradient(at 45% 40%, #f2f2f8 0px, transparent 60%);
+}
+
+.bcp-periwinkle-contact-header {
+  background-color: #ffffff;
+  background-image:
+    radial-gradient(at 92% 18%, #ccceff 0px, transparent 48%),
+    radial-gradient(at 8% 85%, #e2e3ff 0px, transparent 52%),
+    linear-gradient(180deg, #fbfaff 0%, #ffffff 100%);
+}
+
+.bcp-periwinkle-soft {
+  background-color: #fbfaff;
+  background-image:
+    radial-gradient(at 95% 90%, rgba(179, 182, 255, 0.35) 0px, transparent 50%),
+    radial-gradient(at 5% 5%, rgba(207, 209, 255, 0.32) 0px, transparent 50%);
+}
+
+/* Core Brand Buttons — Primary Blue (#243FBA) + Crisp White/Blue Secondary */
 .ps-primary-button {
   display: inline-flex;
   align-items: center;
@@ -240,13 +308,13 @@ body {
   font-weight: 600;
   line-height: 1.3;
   cursor: pointer;
-  box-shadow: 0 2px 10px rgba(81, 64, 111, 0.16);
+  box-shadow: 0 4px 14px rgba(36, 63, 186, 0.2);
   transition: background-color var(--motion-fast) ease, transform var(--motion-fast) ease, box-shadow var(--motion-fast) ease;
 }
 
 .ps-primary-button:hover {
   background-color: var(--action-primary-hover);
-  box-shadow: 0 6px 18px rgba(81, 64, 111, 0.22);
+  box-shadow: 0 8px 20px rgba(36, 63, 186, 0.26);
 }
 
 .ps-secondary-button {
@@ -267,7 +335,7 @@ body {
 }
 
 .ps-secondary-button:hover {
-  background-color: var(--surface-lavender);
+  background-color: var(--bcp-periwinkle-light);
   border-color: var(--action-primary-hover);
   color: var(--action-primary-hover);
 }
@@ -277,28 +345,31 @@ body {
   background-color: var(--surface-card);
   border: 1px solid var(--border-subtle);
   border-radius: var(--ps-radius-card);
-  box-shadow: 0 4px 16px rgba(81, 64, 111, 0.05);
+  box-shadow: 0 4px 18px rgba(32, 45, 114, 0.05);
   transition: border-color var(--motion-fast) ease, box-shadow var(--motion-fast) ease, transform var(--motion-fast) ease;
 }
 
 .bcp-surface-card:hover {
-  border-color: rgb(81 64 111 / 42%);
-  box-shadow: 0 10px 26px rgba(81, 64, 111, 0.1);
+  border-color: rgb(36 63 186 / 40%);
+  box-shadow: 0 12px 28px rgba(36, 63, 186, 0.11);
 }
 
 .bcp-flagship-card {
-  background-color: var(--action-flagship);
+  background-color: #e2e3ff;
+  background-image:
+    radial-gradient(at 0% 0%, rgba(207, 209, 255, 0.9) 0px, transparent 58%),
+    radial-gradient(at 100% 100%, rgba(184, 187, 255, 0.72) 0px, transparent 62%);
   color: var(--text-primary);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--ps-radius-card);
-  box-shadow: 0 4px 16px rgba(81, 64, 111, 0.08);
+  border: 1px solid var(--bcp-periwinkle-strong);
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(36, 63, 186, 0.08);
   transition: background-color var(--motion-fast) ease, border-color var(--motion-fast) ease, box-shadow var(--motion-fast) ease;
 }
 
 .bcp-flagship-card:hover {
-  background-color: var(--action-flagship-hover);
-  border-color: rgb(81 64 111 / 45%);
-  box-shadow: 0 10px 24px rgba(81, 64, 111, 0.14);
+  background-color: #cfd1ff;
+  border-color: var(--bcp-blue-primary);
+  box-shadow: 0 12px 26px rgba(36, 63, 186, 0.15);
 }
 
 .ps-primary-button:focus-visible,
@@ -361,7 +432,7 @@ details.ps-disclosure::details-content {
   }
 }
 
-/* Editorial hairline divider in restrained champagne gold / dusty lavender */
+/* Editorial hairline divider in restrained champagne gold / soft periwinkle */
 .ps-gold-rule {
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--bcp-gold) 20%, var(--bcp-gold) 80%, transparent);
@@ -369,7 +440,7 @@ details.ps-disclosure::details-content {
 
 .bcp-lavender-rule {
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--bcp-dusty-purple) 20%, var(--bcp-dusty-purple) 80%, transparent);
+  background: linear-gradient(90deg, transparent, var(--bcp-periwinkle-strong) 20%, var(--bcp-periwinkle-strong) 80%, transparent);
 }
 
 @keyframes bcp-slide-progress {

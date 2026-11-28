@@ -18,7 +18,7 @@ function StaticHeroStudioPreview({
 }) {
   return (
     <div
-      className="w-full h-[220px] sm:h-[250px] lg:h-[290px] rounded-[16px] border border-[#D4CCE3] bg-gradient-to-br from-white/95 via-[#F2EFF8] to-[#DDD6EB]/75 p-5 flex items-center justify-between gap-4 shadow-sm"
+      className="w-full h-[220px] sm:h-[250px] lg:h-[290px] rounded-[16px] border border-[#E1E4F2] bg-gradient-to-br from-white/95 via-[#FBFAFF] to-[#E2E3FF]/85 p-5 flex items-center justify-between gap-4 shadow-sm"
       aria-hidden="true"
     >
       <div className="space-y-2.5 min-w-0">
@@ -43,9 +43,9 @@ function StaticHeroStudioPreview({
       <div className="space-y-1.5 w-36 sm:w-44 shrink-0">
         {[
           { label: "Income Tax", bg: "#081838" },
-          { label: "VAT & Mushak", bg: "#3F315A" },
+          { label: "VAT & Mushak", bg: "#202D72" },
           { label: "RJSC & Company Law", bg: "#0E224A" },
-          { label: "e-GP & Tender", bg: "#51406F" },
+          { label: "e-GP & Tender", bg: "#243FBA" },
           { label: "E-commerce", bg: "#1B2E59" },
         ].map((spine) => (
           <div

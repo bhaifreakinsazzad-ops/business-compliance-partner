@@ -67,7 +67,7 @@ export default async function AboutPage() {
       <AppHeader siteConfig={siteConfig} />
 
       <main id="main-content" tabIndex={-1} className="flex-1">
-        <section className="bg-gradient-to-br from-[#F2EFF8] via-[#ECE7F5] to-[#E5DDF2] text-[#081838] py-10 sm:py-12 border-b border-[#D4CCE3]">
+        <section className="bcp-periwinkle-contact-header text-[#081838] py-10 sm:py-12 border-b border-[#E1E4F2]">
           <div className="ps-container space-y-5">
             <Breadcrumbs
               items={[{ labelBn: "হোম", href: "/" }, { labelBn: "আমাদের সম্পর্কে" }]}
@@ -90,7 +90,7 @@ export default async function AboutPage() {
 
         <section className="py-12 sm:py-16">
           <div className="ps-container max-w-5xl space-y-10">
-            <div className="rounded-[16px] border border-[#D4CCE3] bg-white p-6 sm:p-8 space-y-4">
+            <div className="rounded-[16px] border border-[#E1E4F2] bg-white p-6 sm:p-8 space-y-4">
               <h2 className="text-2xl font-bold text-[#081838]">
                 আমাদের দৃষ্টিভঙ্গি: স্বচ্ছতা ও বাস্তবতা
               </h2>
@@ -114,10 +114,10 @@ export default async function AboutPage() {
                 return (
                   <article
                     key={pillar.href}
-                    className="rounded-[16px] border border-[#D4CCE3] bg-white p-6 flex flex-col justify-between gap-4 shadow-xs"
+                    className="rounded-[16px] border border-[#E1E4F2] bg-white p-6 flex flex-col justify-between gap-4 shadow-xs"
                   >
                     <div className="space-y-2.5">
-                      <span className="inline-flex items-center justify-center w-11 h-11 rounded-[12px] bg-[#F2EFF8] border border-[#D4CCE3] text-[#51406F]">
+                      <span className="inline-flex items-center justify-center w-11 h-11 rounded-[12px] bg-[#FBFAFF] border border-[#E1E4F2] text-[#243FBA]">
                         <Icon className="w-5 h-5" aria-hidden="true" />
                       </span>
                       <h3 className="text-lg font-bold text-[#081838]">
@@ -129,7 +129,7 @@ export default async function AboutPage() {
                     </div>
                     <Link
                       href={pillar.href}
-                      className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#51406F] hover:text-[#3F315A] hover:underline underline-offset-4 self-start"
+                      className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#243FBA] hover:text-[#1D329B] hover:underline underline-offset-4 self-start"
                     >
                       <span>{pillar.ctaBn}</span>
                       <ArrowRight className="w-4 h-4" aria-hidden="true" />
@@ -139,9 +139,9 @@ export default async function AboutPage() {
               })}
             </div>
 
-            <div className="rounded-[16px] border border-[#D4CCE3] bg-[#F2EFF8]/65 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="rounded-[16px] border border-[#E1E4F2] bg-[#FBFAFF]/65 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-start gap-3">
-                <MessageSquareText className="w-5 h-5 text-[#51406F] shrink-0 mt-0.5" aria-hidden="true" />
+                <MessageSquareText className="w-5 h-5 text-[#243FBA] shrink-0 mt-0.5" aria-hidden="true" />
                 <div className="space-y-1">
                   <h3 className="text-base font-bold text-[#081838]">
                     বিশেষজ্ঞ পরামর্শ (Consultancy &amp; Advisory)

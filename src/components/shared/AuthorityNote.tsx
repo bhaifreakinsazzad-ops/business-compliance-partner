@@ -17,10 +17,10 @@ export function AuthorityNote({
   return (
     <aside
       aria-label="কর্তৃপক্ষ ও স্বাধীন সহায়তা নির্দেশিকা"
-      className="rounded-[16px] border border-[#D4CCE3] bg-[#F2EFF8] p-5 sm:p-6 space-y-3"
+      className="rounded-[16px] border border-[#E1E4F2] bg-[#FBFAFF] p-5 sm:p-6 space-y-3"
     >
       <div className="flex items-start gap-3">
-        <ShieldAlert className="w-5 h-5 text-[#51406F] shrink-0 mt-0.5" aria-hidden="true" />
+        <ShieldAlert className="w-5 h-5 text-[#243FBA] shrink-0 mt-0.5" aria-hidden="true" />
         <div className="space-y-1.5">
           <h3 className="text-sm sm:text-base font-bold text-[#081838]">
             স্বাধীন প্ল্যাটফর্ম ও সরকারি কর্তৃপক্ষ সংক্রান্ত তথ্য
@@ -32,7 +32,7 @@ export function AuthorityNote({
       </div>
 
       {authorityName ? (
-        <div className="pt-3 border-t border-[#D4CCE3] flex flex-wrap items-center justify-between gap-2 text-xs text-[#181D26]">
+        <div className="pt-3 border-t border-[#E1E4F2] flex flex-wrap items-center justify-between gap-2 text-xs text-[#181D26]">
           <div>
             <span className="font-semibold text-[#081838]">সংশ্লিষ্ট কর্তৃপক্ষ: </span>
             <span lang="en">{authorityName}</span>
@@ -42,7 +42,7 @@ export function AuthorityNote({
               href={officialSourceUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 font-semibold text-[#51406F] hover:text-[#3F315A] hover:underline underline-offset-4"
+              className="inline-flex items-center gap-1 font-semibold text-[#243FBA] hover:text-[#1D329B] hover:underline underline-offset-4"
               lang="en"
             >
               <span>{officialSourceLabel || "Official Source"}</span>

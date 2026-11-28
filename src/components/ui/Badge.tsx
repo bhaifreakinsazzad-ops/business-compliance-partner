@@ -10,11 +10,11 @@ interface BadgeProps {
 }
 
 const VARIANT_CLASSES: Record<NonNullable<BadgeProps["variant"]>, string> = {
-  navy: "bg-[#51406F] text-white border-[#51406F]",
-  cool: "bg-[#F2EFF8] text-[#51406F] border-[#D4CCE3]",
+  navy: "bg-[#243FBA] text-white border-[#243FBA]",
+  cool: "bg-[#FBFAFF] text-[#243FBA] border-[#E1E4F2]",
   success: "bg-[#00865A]/10 text-[#00865A] border-[#00865A]/30",
   warning: "bg-[#F5F1E8] text-[#8A5800] border-[#C59028]/50",
-  outline: "bg-white text-[#081838] border-[#D4CCE3]",
+  outline: "bg-white text-[#081838] border-[#E1E4F2]",
 };
 
 export function Badge({

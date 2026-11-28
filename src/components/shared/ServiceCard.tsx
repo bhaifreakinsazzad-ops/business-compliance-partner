@@ -24,7 +24,7 @@ export function ServiceCard({
       ? "text-[#00865A]"
       : service.availabilityStatus === "INTEREST_ONLY"
         ? "text-[#9A6300]"
-        : "text-[#51406F]";
+        : "text-[#243FBA]";
 
   return (
     <article className="bcp-surface-card group p-6 flex flex-col justify-between gap-5">
@@ -60,13 +60,13 @@ export function ServiceCard({
             className="inline-flex items-center gap-1.5 text-xs text-[#596775] max-w-full"
             lang="en"
           >
-            <Landmark className="w-3.5 h-3.5 text-[#51406F] shrink-0" aria-hidden="true" />
+            <Landmark className="w-3.5 h-3.5 text-[#243FBA] shrink-0" aria-hidden="true" />
             <span className="truncate">{service.authorityName}</span>
           </p>
         ) : null}
       </div>
 
-      <div className="pt-3.5 border-t border-[#D4CCE3]/70 flex flex-col gap-2.5">
+      <div className="pt-3.5 border-t border-[#E1E4F2] flex flex-col gap-2.5">
         <WhatsAppEnquiryButton
           verifiedWhatsapp={verifiedWhatsapp}
           serviceName={service.titleBn}
@@ -78,7 +78,7 @@ export function ServiceCard({
         />
         <Link
           href={`/services/${service.slug}`}
-          className="inline-flex items-center justify-center gap-1.5 min-h-10 text-sm font-semibold text-[#51406F] hover:text-[#3F315A] hover:underline underline-offset-4 whitespace-nowrap"
+          className="inline-flex items-center justify-center gap-1.5 min-h-10 text-sm font-semibold text-[#243FBA] hover:text-[#1D329B] hover:underline underline-offset-4 whitespace-nowrap"
         >
           <span>বিস্তারিত দেখুন</span>
           <ArrowRight className="w-4 h-4" aria-hidden="true" />

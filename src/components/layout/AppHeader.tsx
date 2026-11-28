@@ -44,9 +44,9 @@ export function AppHeader({ siteConfig }: AppHeaderProps) {
 
   return (
     <>
-      {/* Slim Corporate Announcement & Verified Contact Bar */}
-      <div className="bg-surface-navy text-white border-b border-[#C59028]/30 text-xs">
-        <div className="ps-container py-1 sm:py-1.5 flex flex-wrap items-center justify-between gap-2">
+      {/* Slim Corporate Announcement & Verified WhatsApp Strip */}
+      <div className="bg-[#081838] text-white border-b border-[#C59028]/25 text-xs">
+        <div className="ps-container py-1.5 flex flex-wrap items-center justify-between gap-2">
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-white/85">
             <span className="inline-flex items-center gap-1.5">
               <ShieldCheck
@@ -54,7 +54,7 @@ export function AppHeader({ siteConfig }: AppHeaderProps) {
                 aria-hidden="true"
               />
               <span className="hidden sm:inline">
-                বাংলাদেশে স্বাধীন ব্যবসায়িক শিক্ষা, কমপ্লায়েন্স ও প্রকাশনা প্ল্যাটফর্ম
+                বাংলাদেশে স্বাধীন ব্যবসায়িক শিক্ষা, কমপ্লায়েন্স সেবা ও প্রকাশনা প্ল্যাটফর্ম
               </span>
               <span className="sm:hidden">BCP · বাংলাদেশ</span>
             </span>
@@ -75,54 +75,54 @@ export function AppHeader({ siteConfig }: AppHeaderProps) {
             ) : null}
           </div>
 
-          <div className="hidden md:flex items-center gap-4 text-white/80">
+          <div className="hidden md:flex items-center gap-4 text-white/85">
             <Link
               href="/licensing"
-              className="hover:text-[#DFB15B] transition-colors whitespace-nowrap"
+              className="hover:text-[#CCCEFF] transition-colors whitespace-nowrap"
             >
               লাইসেন্সিং
             </Link>
             <Link
               href="/tools"
-              className="hover:text-[#DFB15B] transition-colors whitespace-nowrap"
+              className="hover:text-[#CCCEFF] transition-colors whitespace-nowrap"
             >
               বিজনেস টুলস
             </Link>
             <Link
-              href="/portal"
-              className="hover:text-[#DFB15B] transition-colors whitespace-nowrap"
+              href="/faq"
+              className="hover:text-[#CCCEFF] transition-colors whitespace-nowrap"
             >
-              কাস্টমার পোর্টাল
+              জিজ্ঞাসা
             </Link>
           </div>
         </div>
       </div>
 
-      {/* Main Executive Lavender Sticky Header */}
-      <header className="sticky top-0 z-40 bg-surface-canvas/96 backdrop-blur-md border-b border-border-subtle shadow-[0_2px_14px_rgba(81,64,111,0.06)]">
-        <div className="ps-container py-2 lg:py-2.5 flex items-center justify-between gap-2 sm:gap-3">
+      {/* Main Sticky White Header with V8.0 Blue & Periwinkle Accents */}
+      <header className="sticky top-0 z-40 bg-white/97 backdrop-blur-md border-b border-[#E1E4F2] shadow-[0_2px_16px_rgba(32,45,114,0.06)]">
+        <div className="ps-container py-2.5 lg:py-3 flex items-center justify-between gap-2 sm:gap-4">
           <Link
             href="/"
-            className="flex items-center gap-2 sm:gap-3 rounded-lg min-w-0 flex-1 lg:flex-initial"
+            className="flex items-center gap-2 sm:gap-2.5 rounded-lg min-w-0 flex-1 lg:flex-initial lg:shrink-0"
           >
             {siteConfig.logoAssetPath ? (
               <Image
                 src={siteConfig.logoAssetPath}
                 alt={`${siteConfig.brandName} official brand mark`}
-                width={44}
-                height={44}
+                width={42}
+                height={42}
                 priority
-                className="w-9 h-9 sm:w-11 sm:h-11 rounded-full border border-[#C59028]/55 object-contain shrink-0 bg-white"
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-[#C59028]/55 object-contain shrink-0 bg-white"
               />
             ) : null}
             <div className="min-w-0 flex-1 lg:flex-initial">
               <span
-                className="block font-editorial text-[13px] sm:text-lg font-bold tracking-wide text-text-primary leading-tight truncate"
+                className="block font-editorial text-[11px] min-[380px]:text-[11.5px] sm:text-[15px] xl:text-[16px] font-bold tracking-normal text-[#081838] leading-tight truncate lg:overflow-visible lg:whitespace-nowrap"
                 lang="en"
               >
                 {siteConfig.brandDisplayName}
               </span>
-              <span className="block text-[11px] sm:text-xs text-text-accent font-medium truncate">
+              <span className="block text-[10.5px] sm:text-xs text-[#243FBA] font-semibold truncate">
                 {siteConfig.brandNameBn}
               </span>
             </div>
@@ -130,17 +130,17 @@ export function AppHeader({ siteConfig }: AppHeaderProps) {
 
           <nav
             aria-label="প্রধান নেভিগেশন"
-            className="hidden lg:flex items-center gap-4 xl:gap-5"
+            className="hidden lg:flex items-center gap-3 xl:gap-5"
           >
             <NavLinksClient links={PRIMARY_NAV_LINKS} />
           </nav>
 
-          <div className="hidden lg:flex items-center gap-2.5 shrink-0">
+          <div className="hidden lg:flex items-center gap-2 shrink-0">
             <QuickSearchDialog variant="desktop" />
 
             <Link
               href="/portal"
-              className="inline-flex items-center gap-1.5 h-10 px-3.5 rounded-[10px] border border-border-subtle bg-surface-lavender text-xs font-semibold text-text-accent hover:bg-surface-lavender-muted transition-colors whitespace-nowrap"
+              className="inline-flex items-center gap-1.5 h-10 px-3.5 rounded-[10px] border border-[#E1E4F2] bg-[#FBFAFF] text-xs font-semibold text-[#243FBA] hover:bg-[#E2E3FF] hover:border-[#B8BBFF] transition-colors whitespace-nowrap"
             >
               <LogIn className="w-3.5 h-3.5" aria-hidden="true" />
               <span>পোর্টাল</span>
@@ -148,7 +148,7 @@ export function AppHeader({ siteConfig }: AppHeaderProps) {
 
             <Link
               href="/consultancy"
-              className="inline-flex items-center justify-center h-10 px-4 rounded-[10px] bg-action-primary hover:bg-action-primary-hover text-white text-xs xl:text-sm font-semibold whitespace-nowrap shadow-xs transition-colors"
+              className="inline-flex items-center justify-center h-10 px-4 rounded-[10px] bg-[#243FBA] hover:bg-[#1D329B] text-white text-xs xl:text-sm font-semibold whitespace-nowrap shadow-xs transition-colors"
             >
               পরামর্শ নিন
             </Link>

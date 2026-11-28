@@ -15,8 +15,8 @@ export function EmptyState({
   resetLabelBn = "সব দেখুন",
 }: EmptyStateProps) {
   return (
-    <div className="rounded-[16px] border border-[#D4CCE3] bg-white p-8 sm:p-12 text-center space-y-4">
-      <div className="inline-flex items-center justify-center w-12 h-12 rounded-[12px] bg-[#F2EFF8] text-[#51406F] border border-[#D4CCE3]">
+    <div className="rounded-[16px] border border-[#E1E4F2] bg-white p-8 sm:p-12 text-center space-y-4">
+      <div className="inline-flex items-center justify-center w-12 h-12 rounded-[12px] bg-[#E2E3FF] text-[#243FBA] border border-[#B8BBFF]">
         <SearchX className="w-6 h-6" aria-hidden="true" />
       </div>
       <div className="space-y-1.5 max-w-md mx-auto">

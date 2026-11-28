@@ -77,7 +77,7 @@ export function PortalOrderCancelButton({
         type="button"
         disabled={loading}
         onClick={() => setConfirming(false)}
-        className="px-2 py-1 rounded border border-[#D4CCE3] bg-white text-[11px] font-semibold text-[#51406F] hover:bg-[#F2EFF8] cursor-pointer"
+        className="px-2 py-1 rounded border border-[#E1E4F2] bg-white text-[11px] font-semibold text-[#243FBA] hover:bg-[#FBFAFF] cursor-pointer"
       >
         না
       </button>

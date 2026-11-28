@@ -60,13 +60,13 @@ export function BusinessSolutionFinder() {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-      <div className="rounded-[16px] border border-[#D4CCE3] bg-white p-6 sm:p-8 shadow-sm">
+      <div className="rounded-[16px] border border-[#E1E4F2] bg-white p-6 sm:p-8 shadow-sm">
         <div className="mb-6 flex items-start gap-3">
-          <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] bg-[#51406F] text-white">
+          <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] bg-[#243FBA] text-white">
             <Compass className="h-5 w-5" aria-hidden="true" />
           </span>
           <div>
-            <p className="font-en text-xs font-semibold uppercase tracking-[0.18em] text-[#51406F]">
+            <p className="font-en text-xs font-semibold uppercase tracking-[0.18em] text-[#243FBA]">
               Guided Discovery
             </p>
             <h2 className="text-xl font-bold text-[#081838] sm:text-2xl">
@@ -83,7 +83,7 @@ export function BusinessSolutionFinder() {
               onChange={(event) =>
                 setGoal(event.target.value as keyof typeof ROUTES | "")
               }
-              className="mt-1.5 min-h-12 w-full rounded-[12px] border border-[#D4CCE3] bg-[#F2EFF8]/50 px-3 text-[#181D26] focus:border-[#51406F]"
+              className="mt-1.5 min-h-12 w-full rounded-[12px] border border-[#E1E4F2] bg-[#FBFAFF]/50 px-3 text-[#181D26] focus:border-[#243FBA]"
             >
               <option value="">একটি লক্ষ্য নির্বাচন করুন</option>
               {GOALS.map((item) => (
@@ -100,7 +100,7 @@ export function BusinessSolutionFinder() {
               <select
                 value={businessType}
                 onChange={(event) => setBusinessType(event.target.value)}
-                className="mt-1.5 min-h-12 w-full rounded-[12px] border border-[#D4CCE3] bg-[#F2EFF8]/50 px-3 text-[#181D26] focus:border-[#51406F]"
+                className="mt-1.5 min-h-12 w-full rounded-[12px] border border-[#E1E4F2] bg-[#FBFAFF]/50 px-3 text-[#181D26] focus:border-[#243FBA]"
               >
                 <option value="">নির্বাচন করুন</option>
                 <option value="individual">ব্যক্তি বা পেশাজীবী</option>
@@ -114,7 +114,7 @@ export function BusinessSolutionFinder() {
               <select
                 value={stage}
                 onChange={(event) => setStage(event.target.value)}
-                className="mt-1.5 min-h-12 w-full rounded-[12px] border border-[#D4CCE3] bg-[#F2EFF8]/50 px-3 text-[#181D26] focus:border-[#51406F]"
+                className="mt-1.5 min-h-12 w-full rounded-[12px] border border-[#E1E4F2] bg-[#FBFAFF]/50 px-3 text-[#181D26] focus:border-[#243FBA]"
               >
                 <option value="">নির্বাচন করুন</option>
                 <option value="idea">পরিকল্পনা পর্যায়</option>
@@ -127,7 +127,7 @@ export function BusinessSolutionFinder() {
         </div>
       </div>
 
-      <div className="flex min-h-72 flex-col justify-between rounded-[16px] border border-[#D4CCE3] bg-gradient-to-br from-[#51406F] via-[#463663] to-[#081838] p-6 text-white sm:p-8 shadow-sm">
+      <div className="flex min-h-72 flex-col justify-between rounded-[16px] border border-[#E1E4F2] bg-gradient-to-br from-[#243FBA] via-[#463663] to-[#081838] p-6 text-white sm:p-8 shadow-sm">
         {recommendation ? (
           <>
             <div className="space-y-4" aria-live="polite">
@@ -149,10 +149,10 @@ export function BusinessSolutionFinder() {
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 href={recommendation.href}
-                className="inline-flex min-h-12 items-center gap-2 rounded-[10px] bg-white px-5 font-semibold text-[#081838] hover:bg-[#F2EFF8] transition-colors"
+                className="inline-flex min-h-12 items-center gap-2 rounded-[10px] bg-white px-5 font-semibold text-[#081838] hover:bg-[#FBFAFF] transition-colors"
               >
                 <span>পরবর্তী ধাপে যান</span>
-                <ArrowRight className="h-4 w-4 text-[#51406F]" aria-hidden="true" />
+                <ArrowRight className="h-4 w-4 text-[#243FBA]" aria-hidden="true" />
               </Link>
               <button
                 type="button"

@@ -145,7 +145,7 @@ export default async function CustomerPortalPage() {
   const activeOrg = customer.organizations[0]?.name || "ব্যক্তিগত প্রোফাইল";
 
   return (
-    <div className="min-h-screen bg-[#F2EFF8]/50 text-[#081838] flex flex-col">
+    <div className="min-h-screen bg-[#FBFAFF]/50 text-[#081838] flex flex-col">
       {/* Top Command Bar */}
       <header className="bg-[#081838] text-white border-b border-[#C59028]/40 sticky top-0 z-40">
         <div className="ps-container py-3.5 flex items-center justify-between gap-4">
@@ -191,10 +191,10 @@ export default async function CustomerPortalPage() {
       {/* Main Command Dashboard */}
       <main className="ps-container py-8 space-y-8 flex-1">
         {/* Welcome & Overview Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-[16px] border border-[#D4CCE3] shadow-sm">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-[16px] border border-[#E1E4F2] shadow-sm">
           <div className="space-y-1">
-            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#51406F] uppercase tracking-wider">
-              <ShieldCheck className="w-4 h-4 text-[#51406F]" aria-hidden="true" />
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#243FBA] uppercase tracking-wider">
+              <ShieldCheck className="w-4 h-4 text-[#243FBA]" aria-hidden="true" />
               <span>বিজনেস কমপ্লায়েন্স পার্টনার • গ্রাহক পোর্টাল</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-[#081838]">
@@ -208,14 +208,14 @@ export default async function CustomerPortalPage() {
           <div className="flex flex-wrap items-center gap-2.5">
             <Link
               href="/services"
-              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-[10px] bg-[#51406F] text-white text-xs sm:text-sm font-bold hover:bg-[#3F315A] transition-colors shadow-sm"
+              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-[10px] bg-[#243FBA] text-white text-xs sm:text-sm font-bold hover:bg-[#1D329B] transition-colors shadow-sm"
             >
               <PlusCircle className="w-4 h-4 text-[#DFB15B]" aria-hidden="true" />
               <span>নতুন সেবার অনুরোধ</span>
             </Link>
             <Link
               href="/tools"
-              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-[10px] bg-[#F2EFF8] border border-[#D4CCE3] text-[#081838] text-xs sm:text-sm font-semibold hover:border-[#51406F] transition-colors"
+              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-[10px] bg-[#FBFAFF] border border-[#E1E4F2] text-[#081838] text-xs sm:text-sm font-semibold hover:border-[#243FBA] transition-colors"
             >
               <span>রেডিনেস টুলস</span>
               <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
@@ -225,8 +225,8 @@ export default async function CustomerPortalPage() {
 
         {/* 4 Core Operational Metric Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white p-5 rounded-[14px] border border-[#D4CCE3] shadow-sm flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-[#F2EFF8] flex items-center justify-center text-[#51406F] border border-[#D4CCE3] shrink-0">
+          <div className="bg-white p-5 rounded-[14px] border border-[#E1E4F2] shadow-sm flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-[#FBFAFF] flex items-center justify-center text-[#243FBA] border border-[#E1E4F2] shrink-0">
               <FileCheck2 className="w-6 h-6" aria-hidden="true" />
             </div>
             <div>
@@ -237,8 +237,8 @@ export default async function CustomerPortalPage() {
             </div>
           </div>
 
-          <div className="bg-white p-5 rounded-[14px] border border-[#D4CCE3] shadow-sm flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-[#F2EFF8] flex items-center justify-center text-[#51406F] border border-[#D4CCE3] shrink-0">
+          <div className="bg-white p-5 rounded-[14px] border border-[#E1E4F2] shadow-sm flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-[#FBFAFF] flex items-center justify-center text-[#243FBA] border border-[#E1E4F2] shrink-0">
               <Clock className="w-6 h-6" aria-hidden="true" />
             </div>
             <div>
@@ -249,8 +249,8 @@ export default async function CustomerPortalPage() {
             </div>
           </div>
 
-          <div className="bg-white p-5 rounded-[14px] border border-[#D4CCE3] shadow-sm flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-[#F2EFF8] flex items-center justify-center text-[#51406F] border border-[#D4CCE3] shrink-0">
+          <div className="bg-white p-5 rounded-[14px] border border-[#E1E4F2] shadow-sm flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-[#FBFAFF] flex items-center justify-center text-[#243FBA] border border-[#E1E4F2] shrink-0">
               <BookOpen className="w-6 h-6" aria-hidden="true" />
             </div>
             <div>
@@ -261,8 +261,8 @@ export default async function CustomerPortalPage() {
             </div>
           </div>
 
-          <div className="bg-white p-5 rounded-[14px] border border-[#D4CCE3] shadow-sm flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-[#F2EFF8] flex items-center justify-center text-[#51406F] border border-[#D4CCE3] shrink-0">
+          <div className="bg-white p-5 rounded-[14px] border border-[#E1E4F2] shadow-sm flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-[#FBFAFF] flex items-center justify-center text-[#243FBA] border border-[#E1E4F2] shrink-0">
               <Shield className="w-6 h-6" aria-hidden="true" />
             </div>
             <div>
@@ -275,11 +275,11 @@ export default async function CustomerPortalPage() {
         </div>
 
         {/* Section 1: Service Requests & Quotes */}
-        <section className="bg-white rounded-[16px] border border-[#D4CCE3] shadow-sm overflow-hidden">
-          <div className="p-5 sm:p-6 border-b border-[#D4CCE3] flex items-center justify-between">
+        <section className="bg-white rounded-[16px] border border-[#E1E4F2] shadow-sm overflow-hidden">
+          <div className="p-5 sm:p-6 border-b border-[#E1E4F2] flex items-center justify-between">
             <div>
               <h2 className="text-lg font-bold text-[#081838] flex items-center gap-2">
-                <FileText className="w-5 h-5 text-[#51406F]" aria-hidden="true" />
+                <FileText className="w-5 h-5 text-[#243FBA]" aria-hidden="true" />
                 <span>আমার সেবা অনুরোধ ও কোটেশন</span>
               </h2>
               <p className="text-xs text-[#596775]">
@@ -288,7 +288,7 @@ export default async function CustomerPortalPage() {
             </div>
             <Link
               href="/services"
-              className="text-xs font-bold text-[#51406F] hover:text-[#3F315A] hover:underline flex items-center gap-1"
+              className="text-xs font-bold text-[#243FBA] hover:text-[#1D329B] hover:underline flex items-center gap-1"
             >
               <span>নতুন সেবা</span>
               <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
@@ -306,17 +306,17 @@ export default async function CustomerPortalPage() {
                   return (
                     <div
                       key={req.id}
-                      className="p-4 rounded-xl border border-[#D4CCE3] bg-[#F2EFF8]/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                      className="p-4 rounded-xl border border-[#E1E4F2] bg-[#FBFAFF]/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                     >
                       <div className="space-y-1">
                         <div className="flex items-center gap-2 text-xs">
                           <span className="font-mono font-bold text-[#081838]">
                             {req.publicReference}
                           </span>
-                          <span className="text-[#A599C2]" aria-hidden="true">
+                          <span className="text-[#B8BBFF]" aria-hidden="true">
                             ·
                           </span>
-                          <span className="font-semibold text-[#51406F]">
+                          <span className="font-semibold text-[#243FBA]">
                             {req.status}
                           </span>
                         </div>
@@ -348,7 +348,7 @@ export default async function CustomerPortalPage() {
               </div>
             ) : (
               <div className="text-center py-8 space-y-3">
-                <div className="w-12 h-12 rounded-xl bg-[#F2EFF8] border border-[#D4CCE3] flex items-center justify-center mx-auto text-[#51406F]">
+                <div className="w-12 h-12 rounded-xl bg-[#FBFAFF] border border-[#E1E4F2] flex items-center justify-center mx-auto text-[#243FBA]">
                   <FileText className="w-6 h-6" aria-hidden="true" />
                 </div>
                 <h3 className="text-sm font-bold text-[#081838]">
@@ -359,7 +359,7 @@ export default async function CustomerPortalPage() {
                 </p>
                 <Link
                   href="/services"
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#51406F] text-white text-xs font-bold hover:bg-[#3F315A] transition-colors"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#243FBA] text-white text-xs font-bold hover:bg-[#1D329B] transition-colors"
                 >
                   <span>সেবা ক্যাটালগ দেখুন</span>
                   <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
@@ -372,15 +372,15 @@ export default async function CustomerPortalPage() {
         {/* Section 2: Learning & Compliance Dual Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* LMS Learning Box */}
-          <div className="bg-white rounded-[16px] border border-[#D4CCE3] shadow-sm p-5 sm:p-6 space-y-4">
-            <div className="flex items-center justify-between border-b border-[#D4CCE3] pb-3">
+          <div className="bg-white rounded-[16px] border border-[#E1E4F2] shadow-sm p-5 sm:p-6 space-y-4">
+            <div className="flex items-center justify-between border-b border-[#E1E4F2] pb-3">
               <h2 className="text-base font-bold text-[#081838] flex items-center gap-2">
-                <BookOpen className="w-4 h-4 text-[#51406F]" aria-hidden="true" />
+                <BookOpen className="w-4 h-4 text-[#243FBA]" aria-hidden="true" />
                 <span>আমার কোর্স ও অগ্রগতি</span>
               </h2>
               <Link
                 href="/courses"
-                className="text-xs font-bold text-[#51406F] hover:text-[#3F315A] hover:underline"
+                className="text-xs font-bold text-[#243FBA] hover:text-[#1D329B] hover:underline"
               >
                 সব কোর্স
               </Link>
@@ -391,19 +391,19 @@ export default async function CustomerPortalPage() {
                 {enrollments.map((enr) => (
                   <div
                     key={enr.id}
-                    className="p-3.5 rounded-xl border border-[#D4CCE3] bg-[#F2EFF8]/50 space-y-2"
+                    className="p-3.5 rounded-xl border border-[#E1E4F2] bg-[#FBFAFF]/50 space-y-2"
                   >
                     <div className="flex items-center justify-between">
                       <p className="text-sm font-bold text-[#081838]">
                         {enr.course.titleBn}
                       </p>
-                      <span className="text-xs font-bold text-[#51406F] tabular-nums">
+                      <span className="text-xs font-bold text-[#243FBA] tabular-nums">
                         {enr.progressPercentage}%
                       </span>
                     </div>
-                    <div className="w-full bg-[#DDD6EB] rounded-full h-2">
+                    <div className="w-full bg-[#E2E3FF] rounded-full h-2">
                       <div
-                        className="bg-[#51406F] h-2 rounded-full"
+                        className="bg-[#243FBA] h-2 rounded-full"
                         style={{ width: `${enr.progressPercentage}%` }}
                       />
                     </div>
@@ -417,7 +417,7 @@ export default async function CustomerPortalPage() {
                 </p>
                 <Link
                   href="/courses"
-                  className="inline-flex items-center gap-1 text-xs font-bold text-[#51406F] hover:text-[#081838] underline"
+                  className="inline-flex items-center gap-1 text-xs font-bold text-[#243FBA] hover:text-[#081838] underline"
                 >
                   ১০৫টি কোর্স এক্সপ্লোর করুন
                 </Link>
@@ -426,10 +426,10 @@ export default async function CustomerPortalPage() {
           </div>
 
           {/* Secure Document Vault Box */}
-          <div className="bg-white rounded-[16px] border border-[#D4CCE3] shadow-sm p-5 sm:p-6 space-y-4">
-            <div className="flex items-center justify-between border-b border-[#D4CCE3] pb-3">
+          <div className="bg-white rounded-[16px] border border-[#E1E4F2] shadow-sm p-5 sm:p-6 space-y-4">
+            <div className="flex items-center justify-between border-b border-[#E1E4F2] pb-3">
               <h2 className="text-base font-bold text-[#081838] flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-[#51406F]" aria-hidden="true" />
+                <ShieldCheck className="w-4 h-4 text-[#243FBA]" aria-hidden="true" />
                 <span>নিরাপদ ডকুমেন্ট ভল্ট</span>
               </h2>
               <span className="text-[11px] font-semibold text-[#596775]">
@@ -442,7 +442,7 @@ export default async function CustomerPortalPage() {
                 {documents.map((doc) => (
                   <div
                     key={doc.id}
-                    className="p-3 rounded-lg border border-[#D4CCE3] flex items-center justify-between gap-2 text-xs"
+                    className="p-3 rounded-lg border border-[#E1E4F2] flex items-center justify-between gap-2 text-xs"
                   >
                     <div>
                       <p className="font-bold text-[#081838]">{doc.title}</p>
@@ -457,7 +457,7 @@ export default async function CustomerPortalPage() {
                       {doc.quarantineStatus === "CLEAR" ? (
                         <a
                           href={`/api/documents/${encodeURIComponent(doc.publicReference)}`}
-                          className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#51406F] hover:underline"
+                          className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#243FBA] hover:underline"
                         >
                           <Download className="w-3.5 h-3.5" aria-hidden="true" />
                           <span>ডাউনলোড</span>
@@ -481,15 +481,15 @@ export default async function CustomerPortalPage() {
         </div>
 
         {/* Section 3: Bookstore Orders */}
-        <section className="bg-white rounded-[16px] border border-[#D4CCE3] shadow-sm p-5 sm:p-6 space-y-4">
-          <div className="flex items-center justify-between border-b border-[#D4CCE3] pb-3">
+        <section className="bg-white rounded-[16px] border border-[#E1E4F2] shadow-sm p-5 sm:p-6 space-y-4">
+          <div className="flex items-center justify-between border-b border-[#E1E4F2] pb-3">
             <h2 className="text-base font-bold text-[#081838] flex items-center gap-2">
-              <ShoppingBag className="w-4 h-4 text-[#51406F]" aria-hidden="true" />
+              <ShoppingBag className="w-4 h-4 text-[#243FBA]" aria-hidden="true" />
               <span>আমার বই ক্রয়ের অর্ডারসমূহ</span>
             </h2>
             <Link
               href="/books"
-              className="text-xs font-bold text-[#51406F] hover:text-[#3F315A] hover:underline"
+              className="text-xs font-bold text-[#243FBA] hover:text-[#1D329B] hover:underline"
             >
               বুকস্টোর দেখুন →
             </Link>
@@ -509,11 +509,11 @@ export default async function CustomerPortalPage() {
                 return (
                   <div
                     key={order.id}
-                    className="p-4 rounded-xl border border-[#D4CCE3] bg-[#F2EFF8]/40 space-y-3"
+                    className="p-4 rounded-xl border border-[#E1E4F2] bg-[#FBFAFF]/40 space-y-3"
                   >
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
-                        <Package className="w-4 h-4 text-[#51406F]" aria-hidden="true" />
+                        <Package className="w-4 h-4 text-[#243FBA]" aria-hidden="true" />
                         <span className="font-mono text-xs font-bold text-[#081838]">
                           #{order.publicReference}
                         </span>
@@ -522,7 +522,7 @@ export default async function CustomerPortalPage() {
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold px-2 py-0.5 rounded bg-[#DDD6EB] text-[#51406F]">
+                        <span className="text-xs font-bold px-2 py-0.5 rounded bg-[#E2E3FF] text-[#243FBA]">
                           {order.status === "CONFIRMED"
                             ? "নিশ্চিতকৃত"
                             : order.status === "CANCELLED"
@@ -535,7 +535,7 @@ export default async function CustomerPortalPage() {
                       </div>
                     </div>
 
-                    <div className="divide-y divide-[#D4CCE3]/60 text-xs text-[#181D26]">
+                    <div className="divide-y divide-[#E1E4F2]/60 text-xs text-[#181D26]">
                       {order.bookItems.map((item) => (
                         <div
                           key={item.id}
@@ -554,7 +554,7 @@ export default async function CustomerPortalPage() {
                     </div>
 
                     {order.shippingAddress ? (
-                      <div className="text-[11px] text-[#596775] bg-white p-2.5 rounded-lg border border-[#D4CCE3]/60 flex flex-wrap items-center justify-between gap-2">
+                      <div className="text-[11px] text-[#596775] bg-white p-2.5 rounded-lg border border-[#E1E4F2]/60 flex flex-wrap items-center justify-between gap-2">
                         <span>
                           <strong>ডেলিভারি ঠিকানা:</strong> {order.shippingAddress}
                         </span>
@@ -577,7 +577,7 @@ export default async function CustomerPortalPage() {
               </p>
               <Link
                 href="/books"
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#51406F] text-white text-xs font-bold hover:bg-[#3F315A] transition-colors"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#243FBA] text-white text-xs font-bold hover:bg-[#1D329B] transition-colors"
               >
                 <BookOpen className="w-3.5 h-3.5" aria-hidden="true" />
                 <span>প্রকাশিত বই ও প্রিভিউ দেখুন</span>

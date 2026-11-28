@@ -29,7 +29,7 @@ test.describe("V7.3 Client Revision 01 — Courses -> Services -> Books", () => 
     await expect(navPillars.nth(1)).toContainText("Services");
     await expect(navPillars.nth(2)).toContainText("Books");
 
-    // 2. Flagship CTA cards exact order & identical #DDD6EB Muted Lavender background
+    // 2. Flagship CTA cards exact order & identical #E2E3FF AKIJ Periwinkle Light background
     const flagshipCards = page.locator("a[data-flagship-cta]");
     await expect(flagshipCards).toHaveCount(3);
     const flagshipOrder = await flagshipCards.evaluateAll((els) =>
@@ -48,9 +48,9 @@ test.describe("V7.3 Client Revision 01 — Courses -> Services -> Books", () => 
       els.map((el) => window.getComputedStyle(el).backgroundColor),
     );
     expect(cardColors).toEqual([
-      "rgb(221, 214, 235)",
-      "rgb(221, 214, 235)",
-      "rgb(221, 214, 235)",
+      "rgb(226, 227, 255)",
+      "rgb(226, 227, 255)",
+      "rgb(226, 227, 255)",
     ]);
 
     // 3. Homepage primary pillar sections sequence
@@ -92,12 +92,18 @@ test.describe("V7.3 Client Revision 01 — Courses -> Services -> Books", () => 
     await expect(mobilePillars.nth(2)).toContainText("Books");
   });
 
-  test("unified search filters cleanly across All | Courses | Services | Books", async ({
+  test("unified header search dialog searches cleanly across Courses | Services | Books", async ({
     page,
   }) => {
     await page.goto("/");
 
-    const searchSection = page.locator("#unified-search");
+    await page
+      .locator("button[data-quick-search-trigger]:visible")
+      .first()
+      .click();
+    const dialog = page.locator("dialog[open]");
+    await expect(dialog).toBeVisible();
+
     const responsePromise = page.waitForResponse(
       (res) =>
         res.url().includes("/api/catalogue/search") &&
@@ -105,36 +111,12 @@ test.describe("V7.3 Client Revision 01 — Courses -> Services -> Books", () => 
         res.status() === 200,
     );
 
-    await searchSection.getByRole("button", { name: "VAT", exact: true }).click();
+    await dialog.getByRole("button", { name: "VAT", exact: true }).click();
     await responsePromise;
 
-    await expect(
-      searchSection.locator('[data-search-group="courses"]'),
-    ).toBeVisible();
-    await expect(
-      searchSection.locator('[data-search-group="services"]'),
-    ).toBeVisible();
-    await expect(
-      searchSection.locator('[data-search-group="books"]'),
-    ).toBeVisible();
-
-    // Filter to Books only
-    await searchSection.locator('button[data-search-filter="books"]').click();
-    await expect(
-      searchSection.locator('[data-search-group="books"]'),
-    ).toBeVisible();
-    await expect(
-      searchSection.locator('[data-search-group="courses"]'),
-    ).toHaveCount(0);
-    await expect(
-      searchSection.locator('[data-search-group="services"]'),
-    ).toHaveCount(0);
-
-    // Filter back to All
-    await searchSection.locator('button[data-search-filter="all"]').click();
-    await expect(
-      searchSection.locator('[data-search-group="courses"]'),
-    ).toBeVisible();
+    await expect(dialog.locator('a[href^="/courses/"]').first()).toBeVisible();
+    await expect(dialog.locator('a[href^="/services/"]').first()).toBeVisible();
+    await expect(dialog.locator('a[href^="/books/"]').first()).toBeVisible();
   });
 
   test("cross-division journeys connect Course -> Services & Books and Service -> Courses & Books", async ({

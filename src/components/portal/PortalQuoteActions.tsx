@@ -97,7 +97,7 @@ export function PortalQuoteActions({
           type="button"
           disabled={loading}
           onClick={handleConvertToOrder}
-          className="inline-flex items-center gap-1 px-3 py-1.5 rounded bg-[#51406F] text-white text-[11px] font-bold hover:bg-[#3F315A] disabled:opacity-50 cursor-pointer"
+          className="inline-flex items-center gap-1 px-3 py-1.5 rounded bg-[#243FBA] text-white text-[11px] font-bold hover:bg-[#1D329B] disabled:opacity-50 cursor-pointer"
         >
           {loading ? (
             <Loader2 className="w-3 h-3 animate-spin" aria-hidden="true" />

@@ -24,7 +24,7 @@ export function LicensingCard({
       ? "text-[#00865A]"
       : entry.availabilityStatus === "INTEREST_ONLY"
         ? "text-[#9A6300]"
-        : "text-[#51406F]";
+        : "text-[#243FBA]";
 
   return (
     <article className="bcp-surface-card group p-6 flex flex-col justify-between gap-5">
@@ -46,7 +46,7 @@ export function LicensingCard({
         </h3>
 
         <p className="text-xs font-semibold text-[#596775] inline-flex items-center gap-1.5" lang="en">
-          <Building2 className="w-3.5 h-3.5 text-[#51406F] shrink-0" aria-hidden="true" />
+          <Building2 className="w-3.5 h-3.5 text-[#243FBA] shrink-0" aria-hidden="true" />
           <span>{entry.authorityName}</span>
         </p>
 
@@ -55,7 +55,7 @@ export function LicensingCard({
         </p>
       </div>
 
-      <div className="pt-3.5 border-t border-[#D4CCE3]/70 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+      <div className="pt-3.5 border-t border-[#E1E4F2]/70 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
         <WhatsAppEnquiryButton
           verifiedWhatsapp={verifiedWhatsapp}
           serviceName={entry.titleBn}
@@ -68,7 +68,7 @@ export function LicensingCard({
         />
         <Link
           href={`/licensing/${entry.slug}`}
-          className="inline-flex items-center justify-center sm:justify-end gap-1.5 min-h-10 px-2 text-sm font-semibold text-[#51406F] hover:text-[#3F315A] hover:underline underline-offset-4 whitespace-nowrap shrink-0"
+          className="inline-flex items-center justify-center sm:justify-end gap-1.5 min-h-10 px-2 text-sm font-semibold text-[#243FBA] hover:text-[#1D329B] hover:underline underline-offset-4 whitespace-nowrap shrink-0"
         >
           <span>বিস্তারিত দেখুন</span>
           <ArrowRight className="w-4 h-4" aria-hidden="true" />

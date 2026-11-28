@@ -275,16 +275,16 @@ export function NavLinksClient({ links }: NavLinksClientProps) {
     <div
       ref={navRef}
       onMouseLeave={scheduleClose}
-      className="relative flex items-center gap-2.5 xl:gap-4 text-[13px] xl:text-sm font-semibold"
+      className="relative flex items-center gap-2 xl:gap-3 text-[13px] font-semibold"
     >
       <Link
         href="/"
         aria-current={isRouteActive("/") ? "page" : undefined}
         className={cn(
-          "py-2 px-1 whitespace-nowrap shrink-0 underline-offset-8 decoration-[#51406F] decoration-2 transition-colors",
+          "py-2 px-1.5 whitespace-nowrap shrink-0 underline-offset-8 decoration-[#243FBA] decoration-2 transition-colors",
           isRouteActive("/")
-            ? "text-[#51406F] font-bold underline"
-            : "text-[#081838] hover:text-[#51406F] hover:underline",
+            ? "text-[#243FBA] font-bold underline"
+            : "text-[#081838] hover:text-[#243FBA] hover:underline",
         )}
       >
         হোম
@@ -308,10 +308,10 @@ export function NavLinksClient({ links }: NavLinksClientProps) {
               aria-current={isActive ? "page" : undefined}
               onClick={() => setOpenMenu(null)}
               className={cn(
-                "inline-flex items-baseline gap-1 py-2 ps-1.5 pe-0.5 whitespace-nowrap shrink-0 underline-offset-8 decoration-[#51406F] decoration-2 transition-colors",
+                "inline-flex items-baseline gap-1 py-2 ps-1.5 pe-0.5 whitespace-nowrap shrink-0 underline-offset-8 decoration-[#243FBA] decoration-2 transition-colors",
                 isActive || isExpanded
-                  ? "text-[#51406F] font-bold underline"
-                  : "text-[#081838] hover:text-[#51406F] hover:underline",
+                  ? "text-[#243FBA] font-bold underline"
+                  : "text-[#081838] hover:text-[#243FBA] hover:underline",
               )}
             >
               <span className="font-en font-bold tracking-tight" lang="en">
@@ -333,14 +333,14 @@ export function NavLinksClient({ links }: NavLinksClientProps) {
               className={cn(
                 "inline-flex items-center justify-center w-6 h-8 rounded-[6px] transition-colors cursor-pointer shrink-0",
                 isExpanded
-                  ? "text-[#51406F] bg-[#F2EFF8]"
-                  : "text-[#596775] hover:text-[#51406F] hover:bg-[#F2EFF8]/80",
+                  ? "text-[#243FBA] bg-[#E2E3FF]"
+                  : "text-[#596775] hover:text-[#243FBA] hover:bg-[#FBFAFF]",
               )}
             >
               <ChevronDown
                 className={cn(
                   "w-3.5 h-3.5 transition-transform duration-150",
-                  isExpanded && "rotate-180 text-[#51406F]",
+                  isExpanded && "rotate-180 text-[#243FBA]",
                 )}
                 aria-hidden="true"
               />
@@ -349,57 +349,14 @@ export function NavLinksClient({ links }: NavLinksClientProps) {
         );
       })}
 
-      {/* Supporting Resources Mega Menu */}
-      <div
-        onMouseEnter={() => handleOpen("resources")}
-        className="relative inline-flex items-center shrink-0"
-      >
-        <Link
-          href="/tools"
-          aria-current={isRouteActive("/tools") ? "page" : undefined}
-          onClick={() => setOpenMenu(null)}
-          className={cn(
-            "py-2 ps-1 pe-0.5 whitespace-nowrap shrink-0 underline-offset-8 decoration-[#51406F] decoration-2 transition-colors",
-            isRouteActive("/tools") || openMenu === "resources"
-              ? "text-[#51406F] font-bold underline"
-              : "text-[#081838] hover:text-[#51406F] hover:underline",
-          )}
-        >
-          রিসোর্স
-        </Link>
-        <button
-          type="button"
-          aria-expanded={openMenu === "resources"}
-          aria-controls="bcp-desktop-mega-menu"
-          aria-label="রিসোর্স ও টুলস সাব-মেনু"
-          onClick={() =>
-            setOpenMenu((prev) => (prev === "resources" ? null : "resources"))
-          }
-          className={cn(
-            "inline-flex items-center justify-center w-6 h-8 rounded-[6px] transition-colors cursor-pointer shrink-0",
-            openMenu === "resources"
-              ? "text-[#51406F] bg-[#F2EFF8]"
-              : "text-[#596775] hover:text-[#51406F] hover:bg-[#F2EFF8]/80",
-          )}
-        >
-          <ChevronDown
-            className={cn(
-              "w-3.5 h-3.5 transition-transform duration-150",
-              openMenu === "resources" && "rotate-180 text-[#51406F]",
-            )}
-            aria-hidden="true"
-          />
-        </button>
-      </div>
-
       <Link
         href="/about"
         aria-current={isRouteActive("/about") ? "page" : undefined}
         className={cn(
-          "py-2 px-1 whitespace-nowrap shrink-0 underline-offset-8 decoration-[#51406F] decoration-2 transition-colors hidden xl:inline-block",
+          "py-2 px-1.5 whitespace-nowrap shrink-0 underline-offset-8 decoration-[#243FBA] decoration-2 transition-colors hidden xl:inline-block",
           isRouteActive("/about")
-            ? "text-[#51406F] font-bold underline"
-            : "text-[#081838] hover:text-[#51406F] hover:underline",
+            ? "text-[#243FBA] font-bold underline"
+            : "text-[#081838] hover:text-[#243FBA] hover:underline",
         )}
       >
         আমাদের সম্পর্কে
@@ -409,10 +366,10 @@ export function NavLinksClient({ links }: NavLinksClientProps) {
         href="/contact"
         aria-current={isRouteActive("/contact") ? "page" : undefined}
         className={cn(
-          "py-2 px-1 whitespace-nowrap shrink-0 underline-offset-8 decoration-[#51406F] decoration-2 transition-colors",
+          "py-2 px-1.5 whitespace-nowrap shrink-0 underline-offset-8 decoration-[#243FBA] decoration-2 transition-colors",
           isRouteActive("/contact")
-            ? "text-[#51406F] font-bold underline"
-            : "text-[#081838] hover:text-[#51406F] hover:underline",
+            ? "text-[#243FBA] font-bold underline"
+            : "text-[#081838] hover:text-[#243FBA] hover:underline",
         )}
       >
         যোগাযোগ
@@ -431,17 +388,17 @@ export function NavLinksClient({ links }: NavLinksClientProps) {
             onMouseEnter={clearCloseTimer}
             className="absolute top-full start-1/2 -translate-x-1/2 pt-3 w-[min(90vw,680px)] z-[var(--z-dropdown)]"
           >
-            <div className="rounded-[18px] border border-border-subtle bg-surface-card shadow-[0_20px_48px_rgba(8,24,56,0.14)] overflow-hidden">
-              <div className="px-6 py-4 bg-surface-lavender border-b border-border-subtle flex items-center justify-between gap-4">
+            <div className="rounded-[18px] border border-[#E1E4F2] bg-white shadow-[0_20px_48px_rgba(32,45,114,0.14)] overflow-hidden">
+              <div className="px-6 py-4 bg-[#FBFAFF] border-b border-[#E1E4F2] flex items-center justify-between gap-4">
                 <div className="flex items-center gap-2.5">
-                  <span className="inline-flex items-center justify-center w-9 h-9 rounded-[10px] bg-surface-lavender-muted text-text-accent">
+                  <span className="inline-flex items-center justify-center w-9 h-9 rounded-[10px] bg-[#E2E3FF] text-[#243FBA]">
                     <ActiveIcon className="w-4 h-4" aria-hidden="true" />
                   </span>
                   <div>
-                    <p className="text-sm font-bold text-text-primary">
+                    <p className="text-sm font-bold text-[#081838]">
                       {activeData.headingBn}
                     </p>
-                    <p className="text-xs text-text-muted">
+                    <p className="text-xs text-[#596775]">
                       {activeData.intentBn}
                     </p>
                   </div>
@@ -449,7 +406,7 @@ export function NavLinksClient({ links }: NavLinksClientProps) {
                 <Link
                   href={activeData.href}
                   onClick={() => setOpenMenu(null)}
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-text-accent hover:text-action-primary-hover hover:underline underline-offset-4 whitespace-nowrap"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[#243FBA] hover:text-[#1D329B] hover:underline underline-offset-4 whitespace-nowrap"
                 >
                   <span>{activeData.viewAllLabelBn}</span>
                   <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
@@ -462,28 +419,28 @@ export function NavLinksClient({ links }: NavLinksClientProps) {
                     key={sub.href}
                     href={sub.href}
                     onClick={() => setOpenMenu(null)}
-                    className="group flex items-center justify-between gap-3 rounded-[12px] border border-transparent bg-[#F8F7FB] hover:bg-surface-lavender hover:border-border-subtle px-4 py-3 transition-colors"
+                    className="group flex items-center justify-between gap-3 rounded-[12px] border border-transparent bg-[#F5F6FA] hover:bg-[#E2E3FF]/75 hover:border-[#B8BBFF] px-4 py-3 transition-colors"
                   >
                     <div className="min-w-0">
-                      <p className="text-sm font-bold text-text-primary group-hover:text-text-accent truncate">
+                      <p className="text-sm font-bold text-[#081838] group-hover:text-[#243FBA] truncate">
                         {sub.titleBn}
                       </p>
-                      <p className="font-en text-xs text-text-muted" lang="en">
+                      <p className="font-en text-xs text-[#596775]" lang="en">
                         {sub.subtitleEn}
                       </p>
                     </div>
                     <ArrowRight
-                      className="w-4 h-4 text-text-accent opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all shrink-0"
+                      className="w-4 h-4 text-[#243FBA] opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all shrink-0"
                       aria-hidden="true"
                     />
                   </Link>
                 ))}
               </div>
 
-              <div className="px-6 py-3 bg-[#F8F8F8] border-t border-border-subtle flex items-center justify-between text-xs text-text-muted">
+              <div className="px-6 py-3 bg-[#F5F6FA] border-t border-[#E1E4F2] flex items-center justify-between text-xs text-[#596775]">
                 <span className="inline-flex items-center gap-1.5">
                   <HelpCircle
-                    className="w-3.5 h-3.5 text-text-accent"
+                    className="w-3.5 h-3.5 text-[#243FBA]"
                     aria-hidden="true"
                   />
                   <span>
@@ -493,7 +450,7 @@ export function NavLinksClient({ links }: NavLinksClientProps) {
                 <Link
                   href="/consultancy"
                   onClick={() => setOpenMenu(null)}
-                  className="inline-flex items-center gap-1 font-bold text-text-accent hover:underline"
+                  className="inline-flex items-center gap-1 font-bold text-[#243FBA] hover:underline"
                 >
                   <MessageSquareText className="w-3.5 h-3.5" aria-hidden="true" />
                   <span>পরামর্শ নিন</span>

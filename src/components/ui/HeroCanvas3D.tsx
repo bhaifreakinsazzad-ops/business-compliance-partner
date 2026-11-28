@@ -39,7 +39,7 @@ export const ECOSYSTEM_NODES: EcosystemNodeSpec[] = [
     href: "/courses",
     descriptionBn:
       "Tax, VAT, e-GP, E-commerce ও RJSC সহ ১০টি ব্যবহারিক প্রশিক্ষণ ট্র্যাক।",
-    colorHex: 0x51406f,
+    colorHex: 0x243fba,
   },
   {
     id: "services",
@@ -57,7 +57,7 @@ export const ECOSYSTEM_NODES: EcosystemNodeSpec[] = [
     href: "/books",
     descriptionBn:
       "আসন্ন কমপ্লায়েন্স হ্যান্ডবুক প্রিভিউ ও প্রাক-নিবন্ধন অনুসন্ধান।",
-    colorHex: 0x6b5691,
+    colorHex: 0x202d72,
   },
   {
     id: "licensing",
@@ -159,14 +159,14 @@ export function HeroCanvas3D({
       }
     }
 
-    const hemi = new THREE.HemisphereLight(0xf2eff8, 0x161d2e, 0.9);
+    const hemi = new THREE.HemisphereLight(0xfbfaff, 0x161d2e, 0.9);
     scene.add(hemi);
 
     const key = new THREE.DirectionalLight(0xfff5e4, 1.45);
     key.position.set(4, 6, 4);
     scene.add(key);
 
-    const rim = new THREE.DirectionalLight(0xddd6eb, 0.85);
+    const rim = new THREE.DirectionalLight(0xe2e3ff, 0.85);
     rim.position.set(-4, 2, -4);
     scene.add(rim);
 
@@ -211,7 +211,7 @@ export function HeroCanvas3D({
     const orbitRing = new THREE.Mesh(
       new THREE.TorusGeometry(2.05, 0.014, 12, 100),
       new THREE.MeshBasicMaterial({
-        color: 0xa599c2,
+        color: 0xb8bbff,
         transparent: true,
         opacity: 0.55,
       }),
@@ -503,10 +503,10 @@ export function HeroCanvas3D({
           {ECOSYSTEM_NODES.map((node) => (
             <div
               key={node.id}
-              className="rounded-[12px] border border-[#D4CCE3] bg-white px-3 py-2.5 text-center shadow-xs"
+              className="rounded-[12px] border border-[#E1E4F2] bg-white px-3 py-2.5 text-center shadow-xs"
             >
               <p className="text-xs font-bold text-[#081838]">{node.labelBn}</p>
-              <p className="text-[11px] text-[#51406F] font-en">{node.labelEn}</p>
+              <p className="text-[11px] text-[#243FBA] font-en">{node.labelEn}</p>
             </div>
           ))}
         </div>
